@@ -3,8 +3,8 @@
 TaskForge 面向个人开发者和小型项目，计划通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01—T07 已验收完成**：可注册、提交与查询任务，运行单个 Worker，以有界异步并发执行、
-持久化有限重试并保存状态与历史。停机宽限期、崩溃恢复和 CLI 尚未实现。
+**T01—T08 已验收完成**：可注册、提交与查询任务，运行单个 Worker，以有界异步并发执行、
+持久化有限重试、协作停机并恢复崩溃遗留尝试，保存状态与历史。CLI 尚未实现。
 包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
 
 ## 环境准备
@@ -41,8 +41,8 @@ uv build
 uv run --locked pytest
 ```
 
-T02—T07 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
-独立 Worker 子进程之间的锁互斥，以及持久化重试和新进程重启后的到期边界。
+T02—T08 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
+独立 Worker 子进程之间的锁互斥、持久化重试、强制退出与恢复再次崩溃后的原子状态。
 
 ## 任务注册与输入校验
 
@@ -384,15 +384,19 @@ if __name__ == "__main__":
 `Worker(store, registry, config=None)` 使用调用方拥有的 `SQLiteStore` 和显式注册表。
 数据库须先显式初始化，存储须保持打开直到 `run()` 返回。`WorkerConfig` 不可变：
 `concurrency=4` 为正整数，`poll_interval_seconds=1.0` 为有限正数；拒绝布尔值和字符串。
+`shutdown_grace_seconds=30.0` 为有限非负数；默认给运行任务 30 秒自然结束，0 表示立即
+请求协作取消，同样拒绝布尔值和字符串。宽限期使用事件循环单调时钟，不是硬超时。
 
 `await worker.run()` 先取得规范化数据库路径加 `.lock` 的非阻塞独占文件锁，
-再检查现有 schema，启动固定数量的异步槽位。每个槽位覆盖领取、用户执行及完成 commit；
+再检查现有 schema，完成遗留 RUNNING 恢复，启动固定数量的异步槽位。
+每个槽位覆盖领取、用户执行及完成 commit；
 用户代码运行时没有存储会话。空槽位每隔轮询间隔检查队列，不忙等。
 成功保存 SUCCESS；业务异常和框架超时按 Job 快照的剩余预算保存 RETRY_WAIT 或最终 FAILED。
 配置错误直接保存 FAILED。
 
-`worker.request_stop()` 同步停止新领取并唤醒空闲槽位；已开始的领取、用户执行和完成写入
-继续到结束。每个 Worker 实例只能 run 一次。以下示例保存为 `worker_once.py`，
+`worker.request_stop()` 同步停止新领取并唤醒空闲槽位；等待已启动工作，宽限期后请求取消
+用户执行。已开始的数据库操作继续到明确结束。每个 Worker 实例只能 run 一次。
+以下示例保存为 `worker_once.py`，
 复用前文的 `tasks.py`，运行 `uv run --locked python worker_once.py`，打印 `SUCCESS`：
 
 ```python
@@ -425,9 +429,9 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-同一数据库第二个 Worker 启动抛 `WorkerLockError`，不会进入领取；不同数据库独立。
+同一数据库第二个 Worker 启动抛 `WorkerLockError`，不会进入 schema 检查、恢复或领取；不同数据库独立。
 锁文件不删除，描述符直到全部已启动工作结束才关闭。数据库故障、结果不确定或
-`ExecutorError` 立即停止新领取，等待其他已启动任务完成后传播原异常及其 cause；
+`ExecutorError` 立即停止新领取，按相同停机流程等待其他已启动任务结束后传播原异常及其 cause；
 不自动重交或再次执行。`taskforge.worker` 的 `worker_error` 日志使用 JSONFormatter，
 类别为 STORAGE_ERROR、EXECUTOR_ERROR、LOCK_ERROR 或 WORKER_ERROR；有已知凭据时
 携带 job_id 和 attempt_number。领取前故障没有任务身份，记录 null。
@@ -436,16 +440,12 @@ if __name__ == "__main__":
 `ClaimUncertainError` / `CompletionUncertainError` 携带 job_id、number，调用方须在
 run 结束后用 `store.get(error.job_id)` 与 `store.history(error.job_id)` 查询确认；
 不确定领取不会执行用户函数，不确定完成不会再次执行。无法可靠完成的尝试保持 RUNNING。
-**T08 恢复实现前，遗留 RUNNING Job/Attempt 不会被自动恢复或重新领取。**
-
-外部取消 run 也只停止新领取，等待已启动用户协程及写入结束后传播 CancelledError；
-重复取消不会打断清理。当前没有停机宽限期、主动取消编排或中断持久化。
-框架超时依赖用户协作；用户清理不结束时槽位和锁持续占用，退出持续等待。
+恢复完成的 commit 不确定性也使用 CompletionUncertainError；先查询确认再决定后续行动。
 
 ## 持久化重试
 
 `max_retries=N` 表示最多 N 次额外尝试，总次数不超过 N+1；领取成功即消耗一次预算。
-TASK_ERROR（包括用户自行抛出的 TimeoutError）和框架 TIMEOUT 有预算时重试，
+TASK_ERROR（包括用户自行抛出的 TimeoutError）、框架 TIMEOUT 和 INTERRUPTED 有预算时重试，
 CONFIG_ERROR、成功、ExecutorError 和存储故障不会触发自动重执行。
 
 第 k 次失败后的等待为 `min(retry_cap_seconds, retry_base_seconds × 2^(k−1))`，
@@ -461,14 +461,42 @@ Worker 重启保留原到期时间，普通等待 Job 不会提前执行。
 
 每次重试保持 Job ID、参数、策略和首次 started_at，创建新的递增 Attempt。
 最终成功清空 Job 当前错误摘要，保留此前失败的类型、摘要与 traceback。
-重试可能重复业务副作用，任务须自行保证幂等；当前仍不恢复遗留 RUNNING 尝试。
+重试可能重复业务副作用，任务须自行保证幂等。
+
+## 停机与崩溃恢复
+
+取得独占锁才说明旧 Worker 已退出。Worker 在 schema 校验后逐个读取遗留 RUNNING
+Job，通过既有 `finish_attempt` 在一个短事务内将当前 Attempt 保存为 INTERRUPTED，
+按 Job 策略快照的剩余预算保存 RETRY_WAIT 或 FAILED，然后才开始正常领取。
+`SQLiteStore.get_running_attempt() -> AttemptClaim | None` 只读取恢复凭据，不授予所有权；
+恢复调用方须持有 WorkerLock，并持锁直到完成提交。Worker 已负责这个顺序。
+
+恢复不新增 Attempt、不增加次数，保留 ID、参数、策略、首次 started_at 与此前历史。
+Attempt.finished_at 表示确认中断的事务时间，实际崩溃时刻未知；退避从该时间计算。
+已在 RETRY_WAIT 的任务保留原 next_run_at，终态不重启。恢复期间再次退出时，已提交 Job
+不会重复中断，未提交 Job 仍为 RUNNING，下次启动继续恢复。
+
+停机宽限期过后只取消执行器，不取消领取、恢复或完成事务。用户协程实际结束后才保存
+INTERRUPTED、释放槽位；有预算仍安排持久化重试，本次停机不再领取。
+若宽限期已结束但先前领取尚未返回，该领取继续确认 commit；成功后直接保存中断，
+不开始用户函数。正常完成及已经开始的完成写入保留原结果。
+
+外部取消 `run()` 使用同一停机流程，等待用户清理及写入结束后传播 CancelledError；
+重复取消不会再次打断清理。用户自行取消也在结束后保存中断、停止领取并传播取消。
+宽限期到时仍有执行任务，`taskforge.worker` 记录 WARNING 事件 `shutdown_incomplete`，
+含 job_id、attempt_number 和 INTERRUPTED；表示停机尚未完成，不表示已持久化中断。
+用户忽略取消或清理一直不结束时，Worker 继续等待、占槽并持锁，不能返回成功停机。
+
+外部副作用与 SQLite 成功状态无法原子提交。真实子进程测试在文件副作用完成、成功事务
+尚未 commit 时强制退出；恢复后同一 Job 的第 2 次尝试再次写入文件，证明可能重复执行。
+业务可使用稳定 Job ID 实现自己的幂等；框架不提供业务去重或恰好执行一次保证。
 
 ## 已确认的 MVP 语义
 
 - 任务通过装饰器注册 `async` 函数，接收单个 Pydantic 输入模型。
 - SQLite 是持久队列；任务状态与每次尝试历史分别存储。
 - 每个任务保持稳定 ID，`max_retries=N` 最多产生 `N+1` 次尝试。
-- 重试到期时间持久化；异常退出后的恢复消耗现有尝试预算。
+- 重试到期时间持久化；领取即消耗预算，异常退出后的恢复不另增次数。
 - 独占进程锁限制同一数据库只运行一个 Worker。
 - 外部副作用完成后、成功状态提交前崩溃，可能导致重复执行；业务任务需要自行实现幂等。
 - 异步超时和取消依赖任务协作，不提供 CPU 执行池或硬超时保证。
@@ -476,5 +504,5 @@ Worker 重启保留原到期时间，普通等待 Job 不会提前执行。
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T08 交接 prompt](docs/prompts/T08.md)
-实现停机与崩溃恢复；T07 验收后按用户追加要求提交改动。
+T01—T10 每个任务由一个独立会话实现。下一会话使用 [T09 交接 prompt](docs/prompts/T09.md)
+实现完整 CLI；T08 验收后按用户追加要求提交改动。

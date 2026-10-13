@@ -1,7 +1,8 @@
 # TaskForge MVP 架构
 
 本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询、
-T04 原子领取与完成、T05 单次执行与超时、T06 Worker 与并发控制及 T07 持久化重试已实现；
+T04 原子领取与完成、T05 单次执行与超时、T06 Worker 与并发控制、T07 持久化重试及
+T08 停机与崩溃恢复已实现；
 其余能力为待实现设计，实际验收状态见 docs/verification.md。
 
 ## 场景与范围
@@ -156,6 +157,7 @@ commit 开始后的故障或取消返回 ClaimUncertainError / CompletionUncerta
 T07 已实现 policy.decide_completion(job, outcome) -> CompletionDecision 和
 policy.retry_delay_seconds(job) -> float。决策仅使用不可变 Job 快照：SUCCESS 直接成功，
 CONFIG_ERROR 直接失败，TASK_ERROR/TIMEOUT 有预算则 RETRY_WAIT，否则最终失败。
+T08 将同样的预算与退避决策扩展至 INTERRUPTED；领取已消耗预算，中断不再增加次数。
 浮点分解与指数比较先判定封顶，不构造巨大整数幂，也不产生无穷延迟。
 
 Worker 将决策的 retry_delay_seconds 传给 finish_attempt 的新增同名关键字参数。
@@ -177,6 +179,13 @@ Worker 将决策的 retry_delay_seconds 传给 finish_attempt 的新增同名关
 恢复逐个 Job 使用短事务：遗留尝试标记 `INTERRUPTED`；有预算则从确认中断时计算退避，
 无预算则进入 `FAILED`。恢复再次中断时，已提交记录不再为运行状态，未提交记录下次继续恢复。
 其他等待任务保留原到期时间；终态任务不自动重启。
+
+T08 已实现 SQLiteStore.get_running_attempt() -> AttemptClaim | None：短查询读取首个遗留
+RUNNING Job 的当前凭据；该接口不授予锁或执行所有权。Worker 持锁完成 schema 检查后循环
+读取凭据，调用纯 decide_completion，再通过既有 finish_attempt 原子提交每个中断结果。
+完成事务重新校验 Job/Attempt 的身份与运行状态，使用相对延迟从确认中断时安排重试。
+无需新表、schema 版本或第二套提交机制；恢复故障停止启动，不执行正常领取。
+SQL/commit 故障和取消复用 StorageError/CompletionUncertainError 及原异常链与可查询凭据。
 
 停机先停止领取，再等待运行任务；宽限期后请求取消。协程实际结束后才记录中断并释放槽位。
 不响应取消的任务需要报告停机未完成并继续持锁；框架不承诺硬超时。
@@ -200,23 +209,31 @@ WorkerConfig 的 concurrency 默认 4、poll_interval_seconds 默认 1.0，分�
 复用 initialize 检查现有表与列后开始领取；没有新增事务开启或清理机制。
 每个固定异步槽位覆盖领取、执行、完成 commit，领取入口串行并在进入前检查停止标志，
 用户执行及完成写入可重叠。空槽位按轮询间隔等待，request_stop 唤醒等待并停止新领取。
-已进入存储的领取继续完成并执行；正常退出等待所有槽位，不取消正在运行的用户任务。
+T06 初始版本已进入存储的领取继续完成并执行，正常退出只等待所有槽位；
+T08 使用下面的宽限期停机规则。
 T06 初始版本成功写 SUCCESS、普通失败写最终 FAILED；T07 已接入上述持久化重试决策。
 
 数据库故障、不确定结果和 ExecutorError 停止新领取，等待其他已启动槽位结束后
 传播原异常，已知凭据写入 worker_error 结构化日志。不确定领取不执行，不确定完成
 不重交或重执行；由调用方用 get/history 查询凭据确认。锁描述符保持到所有槽位结束，
-退出关闭而不删除锁文件；不同数据库独立。外部取消 run 只停止领取，屏蔽重复取消
-对已启动工作的干扰，等待真实结束后传播取消，不新增中断结果。
-每个 Worker 实例只运行一次。T06 不实现停机宽限期、主动取消、恢复或 CLI。
-T08 前遗留 RUNNING 尝试保持原状态，不会被领取；不响应超时取消的用户协程持续占槽并持锁。
+退出关闭而不删除锁文件；不同数据库独立。每个 Worker 实例只运行一次；CLI 尚未实现。
+
+T08 新增 WorkerConfig.shutdown_grace_seconds，默认 30.0，严格校验有限非负数，
+允许 0 立即请求协作取消，拒绝布尔值和字符串。request_stop、外部取消及框架故障停止新领取，
+唤醒空槽位并等待宽限期。到期只向活动 Executor 任务请求一次取消，用户真正退出后
+Worker 才保存 INTERRUPTED 并释放槽位。重复外部取消被屏蔽，run 最后传播原外部取消。
+自行取消的用户执行同样保存中断并停止领取，继续传播取消；Executor 自身契约不变。
+已开始的领取、恢复、完成事务不被停机取消；领取晚于宽限期确认时不开始用户函数，
+使用已提交凭据保存中断。已开始的完成写入保留原结果，不重交不确定结果。
+宽限期后仍有执行任务时记录 WARNING shutdown_incomplete，带任务与尝试身份；
+该事件表示仍在等待，不表示历史已完成。忽略取消时继续占槽持锁，没有硬超时机制。
 
 外部副作用与 Job 成功写入无法原子提交，崩溃恢复可能重复执行。稳定任务 ID 可以辅助业务幂等，
 不提供恰好执行一次或业务去重保证。
 
 ## 日志、schema 与验证
 
-T05—T07 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
+T05—T08 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
 contextvars 关联执行上下文，不默认记录完整参数。持久执行历史与实时日志分开，
 不承诺崩溃前最后几条日志全部保留。
 

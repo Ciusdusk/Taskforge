@@ -760,3 +760,126 @@ T07 验收后，用户追加要求创建 Git Commit。本次提交包含纯策�
 未继续实现 T08。README 与迭代计划同步提交状态，前述未创建提交的记录保留为验收阶段历史。
 提交前仅更新提交状态文档并重新构建，源码与已通过 370 项测试的版本一致；
 git diff --check 和依赖、锁文件、历史 T01 收据检查通过。
+
+## T08：停机与崩溃恢复
+
+验收日期：2026-10-13；环境：Linux、Python 3.12.13。
+
+**状态：T08 已完成。** 实现持锁启动恢复、宽限期停机及真实中断持久化。
+未实现 CLI、多 Worker、租约、心跳、人工重放或业务去重；未创建 Git Commit，未继续 T09。
+
+### 前置复核与环境
+
+已读取项目约束、karpathy-guidelines、T08 prompt、README、pyproject.toml、架构、
+计划、历史验收记录及相关源码与测试。开始时工作区干净；使用原 uv.lock 和完整缓存，
+未新增或升级依赖，历史 verification-t01.json 原样保留。
+
+uv sync --locked 退出码 0。默认沙箱 pytest 收集 370 项后挂在第一个真实 SQLite 测试；
+确认该进程仍运行后清理，实际退出码 143。按 T08 prompt 使用自动权限审核允许的
+沙箱外环境复核，修改前完整 370 项测试退出码 0。未修改 aiosqlite、db.py、_commit、
+finish_attempt 的事务语义、Executor 或锁实现来适配环境。
+
+### 接口与文件
+
+- config.py：新增不可变 WorkerConfig.shutdown_grace_seconds，默认 30.0，
+  严格接受有限非负数；0 立即请求协作取消，拒绝负数、布尔值、字符串、NaN 和无穷值。
+- storage.py：新增 get_running_attempt() -> AttemptClaim | None，短查询读取首个遗留
+  RUNNING 凭据，不授予所有权。Worker 必须先持锁；既有 finish_attempt 重新校验跨表身份
+  并逐 Job 原子保存结果，复用 CompletionUncertainError，无 schema 变更或新提交机制。
+- policy.py：INTERRUPTED 有预算时使用相同快照退避，否则 FAILED；业务失败和配置错误
+  决策不变，领取已消耗预算，恢复不另增次数或 Attempt。
+- worker.py：锁 → schema → 恢复 → 领取；执行器任务与数据库操作分开等待，使宽限期
+  只取消执行。用户真正退出后才保存中断，重复取消不打断清理；已开始的领取、恢复和完成
+  写入不被停机取消。恢复内部取消从 shield 的被取消任务取回原异常。
+- tests/test_recovery.py：50 项真实行为测试；test_retry_policy.py 新增 3 项中断预算测试。
+  test_worker.py 更新两个 T08 前的遗留状态断言，并加强第二进程不进入数据库的检查。
+- README、架构与计划同步当前状态，新增 docs/prompts/T09.md 交接；历史记录保留。
+
+### 行为证据
+
+全部存储测试使用真实临时 SQLite 文件，用户函数为 async；事件/屏障同步关键阶段，
+测试内部时钟仅控制数据库时间，实际宽限期由事件循环单调时钟验证。
+
+- test_completion_within_grace_keeps_success：request_stop 与外部取消均停止新领取，
+  宽限期内完成保留 SUCCESS，外部取消最后传播 CancelledError。
+- test_grace_cancellation_waits_for_user_and_repeated_cancellation：组合正常/外部停机、
+  协作/忽略取消、零/剩余预算；跨过实际宽限期后用户只收到一次取消请求，重复取消 run
+  不打断清理。放行前 Job/Attempt 仍 RUNNING、锁及槽位保留，后续 Job 未领取；放行后
+  INTERRUPTED 与 RETRY_WAIT/FAILED 原子保存，退避从清理结束后的完成事务时间开始。
+- test_cooperative_stop_returns_only_after_interruption_commit 与
+  test_parallel_shutdown_keeps_slots_and_json_identity_until_cleanup：清理结束但 commit
+  未完成时仍不返回、不释放锁；两槽并发停机保留各自 JSON 身份，无额外领取。
+  shutdown_incomplete 为 WARNING，含 job_id、attempt_number 和 INTERRUPTED，
+  仅表示停机尚未完成，不伪造历史完成。
+- test_grace_does_not_cancel_inflight_database_work：跨过宽限期及重复外部取消时，
+  已进入领取/完成操作继续。晚确认的领取不开始用户函数而保存中断；已开始完成保留 SUCCESS。
+- test_recovery_preserves_prior_history_waits_terminal_states_and_snapshots：保留先前失败
+  历史、ID、参数、原策略和首次 started_at；当前第 2 次尝试使用封顶退避，不再增次数。
+  未到期 RETRY_WAIT 的原时间及 SUCCESS/FAILED 均不变，第二次恢复不重复改写已恢复历史。
+- test_recovery_sql_fault_rolls_back_and_prevents_claims：真实 SELECT 故障与 Attempt/Job
+  更新触发器故障保留原异常链，跨表全部回滚，不进入正常领取。
+- test_recovery_uncertain_commit_preserves_credentials_and_stops：真实事务未提交/已提交
+  后分别注入 commit 故障或取消，保留 CompletionUncertainError 的凭据和 cause；
+  独立连接可查准确状态，无自动重交或正常领取。
+- test_recovery_cancellation_before_commit_rolls_back 与
+  test_external_repeated_cancellation_during_recovery_drains_commit：commit 前内部取消
+  保留原 CancelledError、回滚；外部反复取消等待已开始恢复 commit 完成并继续持锁。
+- test_uncertain_commit_after_stop_never_reexecutes_or_resubmits：领取、成功完成、中断完成
+  三阶段在停机后发生已提交/未提交、故障/取消的不确定结果，均保留原始异常和凭据，
+  仅调用一次 commit，不执行不确定领取、不重交完成；独立读连接核对跨表状态。
+- test_shutdown_fault_does_not_fabricate_completion_or_retry：停机中的真实 SQL 故障和
+  ExecutorError 不伪装成业务失败或当场重试，未可靠保存的尝试留为 RUNNING。
+- test_killed_worker_recovers_budget_and_demonstrates_duplicate_side_effects：真实 Worker
+  子进程分别在执行中、文件副作用完成且成功 SQL 已 flush 而 commit 尚未开始时收到 SIGKILL，
+  实际退出码 -9。下一 Worker 进程取得同一锁文件（inode 不变），按零/剩余预算恢复。
+  有预算的 Job 在到期前重启仍等待，到期第 2 次执行重复写文件；最终 SUCCESS 保留
+  原身份、首次开始时间和第 1 次 INTERRUPTED 历史，证明不保证恰好执行一次。
+- test_recovery_killed_again_keeps_committed_jobs_and_rolls_back_pending_job：恢复第 1 个
+  Job 已 commit、第 2 个跨表更新已 flush 尚未 commit 时强制退出。独立读连接始终看见
+  第 1 个完整 RETRY_WAIT 与其余完整 RUNNING；下一进程保留第 1 个原时间/历史，仅恢复剩余项。
+- 原进程互斥测试加强 contender 的 list/initialize/get_running_attempt 禁入断言；
+  原注册、存储、Executor、错误分类、CONFIG_ERROR 不重试、并发与重试到期测试全部通过。
+
+### 最终检查结果
+
+以下命令均使用 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"；
+SQLite、子进程及 README 示例使用自动审核允许的沙箱外环境。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 环境同步 | uv sync --locked | 退出码 0；27 个包解析、26 个安装包审核 |
+| 修改前回归 | uv run --locked pytest | 退出码 0；370 passed |
+| 针对性验证 | uv run --locked pytest tests/test_recovery.py tests/test_retry_policy.py tests/test_worker.py | 退出码 0；112 passed（最后加入的双槽停机测试在下行全量验证） |
+| 全部行为测试 | uv run --locked pytest | 退出码 0；423 passed，无告警 |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；36 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；13 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| README 五个示例 | 提取实际 Python 代码块，以 uv run --project 项目路径 --locked python 执行 | 五次退出码均为 0；Worker 保存 SUCCESS |
+| 示例类型 | uv run --project 项目路径 --locked mypy --strict 五个示例文件 | 退出码 0；5 个文件无问题 |
+| 差异及保护文件 | git diff --check；git diff --cached --check；git diff HEAD --exit-code -- pyproject.toml uv.lock docs/verification-t01.json src/taskforge/db.py src/taskforge/executor.py src/taskforge/locking.py | 退出码 0；依赖、锁文件、历史收据和原有事务/执行/进程锁实现未修改 |
+
+针对性测试初期发现冻结时钟下 Job 按 UUID 排序造成测试身份假设不成立，以及 shield
+合成取消异常导致恢复丢失原取消对象；已分别修正测试时序及 Worker 取消传播，并在全量验证。
+未缩减真实 SQLite、强制退出、原子状态或协作取消验证。
+
+测试均在 finally 放行并等待协程，子进程被终止后 communicate/wait 回收；
+本次保留的 pytest 临时数据库目录及挂起基线测试目录已清理，其他会话临时目录保留；
+README 示例使用 TemporaryDirectory 自动清理。沙箱外进程检查未发现遗留 pytest/uv。
+保留正常 dist 产物与工具缓存；本记录补全后重新构建，确保交接文档进入 sdist。
+
+### 限制与下一会话
+
+取消与超时依赖用户协作；用户忽略取消时一直等待、占槽持锁，不提供硬超时。
+不确定结果需先查询；框架错误无法可靠完成的尝试待下一次持锁启动恢复。
+恢复完成时间是确认时间，实际崩溃时刻未知；成功 commit 前的外部副作用可能重复。
+首期仅单机单 Worker；macOS、更高 Python 版本、CLI 尚未验收。
+下一独立会话使用 [T09 prompt](prompts/T09.md) 实现完整 CLI；本次停止，不创建 Git Commit。
+
+### T08 Git 提交
+
+T08 验收后，用户追加要求创建 Git Commit。本次提交包含持锁启动恢复、宽限期协作停机、
+中断预算决策、53 项新增测试、接口文档、验收记录与 T09 交接 prompt；未继续实现 T09。
+README 与迭代计划同步提交状态，前述未创建提交的记录保留为验收阶段历史。
+提交前仅更新提交状态文档并重新构建，源码与已通过 423 项测试的版本一致；
+git diff --check 和依赖、锁文件、历史 T01 收据检查通过。

@@ -585,7 +585,7 @@ async def test_stop_during_claim_drains_committed_claim_without_starting_another
     assert (await store.get(second.id)).attempt_count == 0
 
 
-async def test_self_cancelled_user_stops_without_fabricating_outcome(store):
+async def test_self_cancelled_user_stops_after_persisting_interruption(store):
     async def function(data: Input) -> None:
         raise asyncio.CancelledError
 
@@ -593,8 +593,8 @@ async def test_self_cancelled_user_stops_without_fabricating_outcome(store):
     job = await store.submit(tasks.get("demo"), {"value": 1})
     with pytest.raises(asyncio.CancelledError):
         await Worker(store, tasks, WorkerConfig(concurrency=1)).run()
-    assert (await store.get(job.id)).status is JobStatus.RUNNING
-    assert (await store.history(job.id))[0].status is AttemptStatus.RUNNING
+    assert (await store.get(job.id)).status is JobStatus.RETRY_WAIT
+    assert (await store.history(job.id))[0].status is AttemptStatus.INTERRUPTED
     with WorkerLock(store.config.database_path):
         pass
 
@@ -618,7 +618,7 @@ async def test_lock_open_failure_preserves_cause(tmp_path):
     assert isinstance(error.value.__cause__, FileNotFoundError)
 
 
-async def test_existing_running_attempt_is_left_for_t08_recovery(store, monkeypatch):
+async def test_existing_running_attempt_is_recovered_before_claiming(store, monkeypatch):
     async def function(data: Input) -> None:
         pytest.fail("legacy running attempt was executed")
 
@@ -636,8 +636,11 @@ async def test_existing_running_attempt_is_left_for_t08_recovery(store, monkeypa
 
     monkeypatch.setattr(store, "claim_next", observe_empty)
     await worker.run()
-    assert (await store.get(job.id)) == claim.job
-    assert (await store.history(job.id))[0].status is AttemptStatus.RUNNING
+    recovered = await store.get(job.id)
+    assert recovered.status is JobStatus.RETRY_WAIT
+    assert recovered.attempt_count == claim.number
+    assert recovered.started_at == claim.job.started_at
+    assert (await store.history(job.id))[0].status is AttemptStatus.INTERRUPTED
 
 
 PROCESS = r"""
@@ -654,6 +657,10 @@ async def main():
             store, TaskRegistry(), WorkerConfig(concurrency=1, poll_interval_seconds=60)
         )
         original = store.claim_next
+        async def forbidden(*args, **kwargs):
+            raise AssertionError("failed lock holder entered database")
+        if sys.argv[2] == "contender":
+            store.list = store.initialize = store.get_running_attempt = forbidden
         async def claim():
             if sys.argv[2] == "contender":
                 raise AssertionError("failed lock holder entered claim")

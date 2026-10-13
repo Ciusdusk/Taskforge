@@ -342,6 +342,21 @@ class SQLiteStore:
                 raise ClaimUncertainError(claim.job_id, claim.number) from exc
             raise
 
+    async def get_running_attempt(self) -> AttemptClaim | None:
+        """Read the first persisted RUNNING credential for exclusive-lock recovery.
+
+        This does not grant ownership. The caller must hold WorkerLock until the
+        recovery completion has committed; finish_attempt rechecks both tables.
+        """
+        async with self._session() as session:
+            row = await session.scalar(
+                select(JobRow)
+                .where(JobRow.status == JobStatus.RUNNING.value)
+                .order_by(JobRow.created_at, JobRow.id)
+                .limit(1)
+            )
+            return None if row is None else AttemptClaim(_job(row), row.attempt_count)
+
     async def finish_attempt(
         self,
         job_id: str,

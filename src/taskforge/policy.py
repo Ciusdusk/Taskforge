@@ -25,13 +25,14 @@ def retry_delay_seconds(job: Job) -> float:
 
 
 def decide_completion(job: Job, outcome: AttemptOutcome) -> CompletionDecision:
-    """Retry only business errors and framework timeouts with remaining budget."""
+    """Retry business failures, timeouts and interruptions with remaining budget."""
     if outcome.status is AttemptStatus.SUCCESS:
         return CompletionDecision(JobStatus.SUCCESS)
     if (
         outcome.status is AttemptStatus.FAILED
         and outcome.error_kind in (ErrorKind.TASK_ERROR, ErrorKind.TIMEOUT)
-        and job.attempt_count < job.max_retries + 1
-    ):
+        or outcome.status is AttemptStatus.INTERRUPTED
+        and outcome.error_kind is ErrorKind.INTERRUPTED
+    ) and job.attempt_count < job.max_retries + 1:
         return CompletionDecision(JobStatus.RETRY_WAIT, retry_delay_seconds(job))
     return CompletionDecision(JobStatus.FAILED)

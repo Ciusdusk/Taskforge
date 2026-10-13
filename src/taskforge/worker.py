@@ -1,4 +1,4 @@
-"""Single-process bounded execution and persistent retries."""
+"""Single-process execution, cooperative shutdown and crash recovery."""
 
 import asyncio
 import logging
@@ -7,7 +7,7 @@ from taskforge.config import WorkerConfig
 from taskforge.errors import ExecutorError, StorageError, WorkerLockError
 from taskforge.executor import Executor
 from taskforge.locking import WorkerLock
-from taskforge.models import AttemptClaim
+from taskforge.models import AttemptClaim, AttemptOutcome, AttemptStatus, ErrorKind
 from taskforge.policy import decide_completion
 from taskforge.registry import TaskRegistry
 from taskforge.storage import SQLiteStore
@@ -42,8 +42,8 @@ def _log_error(exc: BaseException, claim: AttemptClaim | None = None) -> None:
 class Worker:
     """Use an initialized, caller-owned store; run an instance at most once.
 
-    Stop and external cancellation drain started work without a grace deadline.
-    Framework faults leave uncompleted RUNNING attempts for future recovery.
+    Drain started work, then request cooperative cancellation after the grace.
+    Keep the lock until user cleanup and all started database writes have ended.
     """
 
     def __init__(
@@ -55,10 +55,59 @@ class Worker:
         self._stop = asyncio.Event()
         self._claim_lock = asyncio.Lock()
         self._started = False
+        self._executions: dict[asyncio.Task[AttemptOutcome], AttemptClaim] = {}
+        self._cancel_executions = False
 
     def request_stop(self) -> None:
-        """Prevent new claims and wake idle slots; started claims finish normally."""
+        """Stop new claims, wake idle slots and start the shutdown grace period."""
         self._stop.set()
+
+    async def _recover(self) -> None:
+        claim = None
+        try:
+            while (claim := await self._store.get_running_attempt()) is not None:
+                outcome = AttemptOutcome(
+                    AttemptStatus.INTERRUPTED,
+                    ErrorKind.INTERRUPTED,
+                    error_message="Previous Worker exited before attempt completion",
+                )
+                decision = decide_completion(claim.job, outcome)
+                await self._store.finish_attempt(
+                    claim.job_id,
+                    claim.number,
+                    outcome,
+                    status=decision.status,
+                    retry_delay_seconds=decision.retry_delay_seconds,
+                )
+                claim = None
+        except BaseException as exc:
+            self.request_stop()
+            _log_error(exc, claim)
+            raise
+
+    def _cancel_execution(self, task: asyncio.Task[AttemptOutcome], claim: AttemptClaim) -> None:
+        if task.done():
+            return
+        task.cancel()
+        try:
+            _logger.warning(
+                "shutdown_incomplete",
+                extra={
+                    "event": "shutdown_incomplete",
+                    "job_id": claim.job_id,
+                    "attempt_number": claim.number,
+                    "error_kind": ErrorKind.INTERRUPTED.value,
+                },
+            )
+        except Exception:
+            pass
+
+    async def _shutdown(self) -> None:
+        await self._stop.wait()
+        await asyncio.sleep(self.config.shutdown_grace_seconds)
+        self._cancel_executions = True
+        for task, claim in self._executions.items():
+            self._cancel_execution(task, claim)
 
     async def _slot(self) -> None:
         claim = None
@@ -77,7 +126,25 @@ class Worker:
                     except TimeoutError:
                         pass
                     continue
-                outcome = await self._executor.execute(claim)
+                execution = asyncio.create_task(self._executor.execute(claim))
+                self._executions[execution] = claim
+                if self._cancel_executions:
+                    self._cancel_execution(execution, claim)
+                interruption = None
+                try:
+                    outcome = await execution
+                except asyncio.CancelledError as exc:
+                    # Executor only propagates cancellation after user code has ended.
+                    outcome = AttemptOutcome(
+                        AttemptStatus.INTERRUPTED,
+                        ErrorKind.INTERRUPTED,
+                        error_message="Task execution was cancelled",
+                    )
+                    if not self._cancel_executions:
+                        self.request_stop()
+                        interruption = exc
+                finally:
+                    del self._executions[execution]
                 decision = decide_completion(claim.job, outcome)
                 await self._store.finish_attempt(
                     claim.job_id,
@@ -86,6 +153,8 @@ class Worker:
                     status=decision.status,
                     retry_delay_seconds=decision.retry_delay_seconds,
                 )
+                if interruption is not None:
+                    raise interruption
                 claim = None
         except BaseException as exc:
             self.request_stop()
@@ -101,8 +170,14 @@ class Worker:
             self.request_stop()
             _log_error(exc)
             raise
+        await self._recover()
         slots = [asyncio.create_task(self._slot()) for _ in range(self.config.concurrency)]
-        results = await asyncio.gather(*slots, return_exceptions=True)
+        shutdown = asyncio.create_task(self._shutdown())
+        try:
+            results = await asyncio.gather(*slots, return_exceptions=True)
+        finally:
+            shutdown.cancel()
+            await asyncio.gather(shutdown, return_exceptions=True)
         for result in results:
             if isinstance(result, BaseException):
                 raise result
@@ -123,6 +198,10 @@ class Worker:
             try:
                 await asyncio.shield(serving)
             except asyncio.CancelledError:
+                owner = asyncio.current_task()
+                if serving.cancelled() and owner is not None and not owner.cancelling():
+                    # shield synthesizes cancellation; retrieve the original from recovery.
+                    serving.result()
                 self.request_stop()
                 # Repeated cancellation cannot release the lock or interrupt cleanup.
                 while not serving.done():

@@ -24,3 +24,4 @@ class WorkerConfig(BaseModel):
 
     concurrency: int = Field(default=4, strict=True, ge=1)
     poll_interval_seconds: float = Field(default=1.0, strict=True, gt=0, allow_inf_nan=False)
+    shutdown_grace_seconds: float = Field(default=30.0, strict=True, ge=0, allow_inf_nan=False)

@@ -81,3 +81,13 @@ def test_success_and_zero_retry_budget(job):
         replace(job, max_retries=0), AttemptOutcome(AttemptStatus.FAILED, ErrorKind.TASK_ERROR)
     )
     assert failed.status is JobStatus.FAILED and failed.retry_delay_seconds is None
+
+
+@pytest.mark.parametrize("number", [1, 2, 4])
+def test_interruption_uses_consumed_budget_and_snapshot_backoff(job, number):
+    snapshot = replace(job, attempt_count=number)
+    decision = decide_completion(
+        snapshot, AttemptOutcome(AttemptStatus.INTERRUPTED, ErrorKind.INTERRUPTED)
+    )
+    assert decision.status is (JobStatus.RETRY_WAIT if number < 4 else JobStatus.FAILED)
+    assert decision.retry_delay_seconds == (retry_delay_seconds(snapshot) if number < 4 else None)
