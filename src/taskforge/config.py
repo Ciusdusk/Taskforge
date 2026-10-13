@@ -1,4 +1,4 @@
-"""Only the local database settings needed for persistence."""
+"""Validated local database and worker settings."""
 
 from pathlib import Path
 
@@ -17,3 +17,10 @@ class DatabaseConfig(BaseModel):
         if str(value) == ":memory:":
             raise ValueError("database_path must name a local SQLite file")
         return value.expanduser().resolve()
+
+
+class WorkerConfig(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    concurrency: int = Field(default=4, strict=True, ge=1)
+    poll_interval_seconds: float = Field(default=1.0, strict=True, gt=0, allow_inf_nan=False)

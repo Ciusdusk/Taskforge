@@ -76,3 +76,7 @@ class CompletionUncertainError(StorageError):
 
 class ExecutorError(TaskForgeError):
     """Framework execution failure; Worker must stop and retain the cause chain."""
+
+
+class WorkerLockError(TaskForgeError):
+    """The database's exclusive worker lock could not be acquired."""

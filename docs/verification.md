@@ -516,3 +516,118 @@ MVP 仍需完成 T06—T10。
 
 T05 验收后，用户追加要求创建 Git Commit。本次提交包含 T05 执行器、结构化日志、
 异步行为测试、接口说明、验收记录及 T06 交接 prompt；未继续实现 T06。
+
+## T06：Worker 与并发控制
+
+验证日期：2026-10-13。环境：Linux x86_64、uv 0.10.9、CPython 3.12.13；
+依赖保持 uv.lock 固定版本。
+
+**状态：T06 已完成。** 仅实现 Worker 基础执行闭环与并发、进程锁；
+未实现 T07 重试、T08 停机宽限期/恢复、CLI，未创建 Git Commit。
+
+### 前置条件与环境证据
+
+已读取 AGENTS.md、karpathy-guidelines、T06 prompt、README、pyproject.toml、架构、
+计划、验证记录、现有源码和测试。开始时 T05 改动已暂存，按当前文件复核并保留；
+最终工作区 HEAD 为 T05 提交 9a82f0a，本任务没有执行提交或修改历史。
+uv sync --locked 退出码 0，27 个包解析、26 个已安装包审核，不新增或升级依赖。
+
+默认沙箱中的原有测试停在首次 SQLite 操作，新增 Worker 测试也停在存储 fixture。
+最小复现确认同步 sqlite3 可用、后台线程运行，但 asyncio.call_soon_threadsafe
+不能唤醒等待的 Future；2s 存储初始化保护和 1s 跨线程通知保护均以 TimeoutError 退出。
+自动权限审核允许沙箱外运行本地测试；不修改库、事务或测试断言规避环境问题。
+两个挂起 pytest 进程经确认后以 SIGTERM 清理，对应命令退出码均为 143。
+在允许跨线程唤醒的环境中，T01—T05 原有 261 项测试全部通过，退出码 0。
+原有 Ruff、格式检查及 mypy 同样通过。
+
+### 接口、文件与行为证据
+
+新增 src/taskforge/worker.py、src/taskforge/locking.py、tests/test_worker.py 与
+下一会话 docs/prompts/T07.md；扩展 config.py、errors.py、__init__.py 的实际接口。
+未修改 storage.py、db.py、Executor、日志上下文或原有测试；依赖、uv.lock 和历史
+T01 收据保持原样。README、架构实现状态与计划同步，历史记录保留。
+
+- Worker(store, registry, config=None) 使用调用方已初始化且保持打开的存储。
+  WorkerConfig 默认 concurrency=4、poll_interval_seconds=1.0，不可变，
+  严格校验正整数与有限正数，拒绝布尔值、字符串及额外字段。
+  Worker 实例只 run 一次；request_stop 是同步停止新领取接口。
+- Worker 先获取规范化数据库路径加 .lock 的非阻塞独占 flock；整个生命周期保留描述符，
+  退出关闭但不删除文件。独立 holder/contender 子进程证明失败方不能进入 claim_next，
+  待领取 Job 与历史不变；另一个数据库可同时启动。正常退出后新进程可重新获锁，
+  锁文件 inode 不变。路径含 .. 的另一拼写仍争用同一个规范化锁。
+- 获锁后短查询拒绝未初始化版本，再复用 initialize 检查现有 schema；
+  不隐式建立未初始化 schema。不兼容数据库报错并释放锁。
+  固定异步槽位覆盖领取、执行和完成 commit。领取入口串行，锁等待者进入存储前检查停止。
+  两个真实用户协程通过事件形成重叠，最大并发为 2，无槽位时其余 Job 未领取。
+  用户悬挂期间独立 sqlite3 连接可执行 BEGIN IMMEDIATE 并写入，证明执行期间没有存储事务。
+- 完成 commit 屏障证明用户已返回仍占槽，未提交状态对其他连接仍为 RUNNING，
+  后续 Job 保持 PENDING；request_stop 后 run 等待写入，进程锁仍拒绝其他持有者。
+  超时用户 finally 使用事件延迟实际退出，期间仍占槽持锁；结束后才保存 TIMEOUT。
+- 成功、业务 ValueError、用户 TimeoutError、框架超时、未知名称、参数不匹配与后续成功
+  均通过真实 Worker 持久化闭环验证。失败直接保存最终 FAILED，即使预算允许重试；
+  配置错误不调用用户函数。每个已执行函数只调用一次，Attempt 数量、身份、时间、错误详情
+  与 Job 状态对应，成功错误字段为空；单个失败不终止其他任务。
+- 空队列两次真实领取之间有轮询延迟，不忙等；停止唤醒空槽位，无后续领取。
+  停止发生在领取进行中时，该领取继续提交、执行、完成，等待领取者不再进入数据库。
+  停止发生在用户运行或完成写入期间时，同样等待真实结束。
+- SQLite trigger 注入领取和完成中间 SQL 故障，Worker 停止领取，原错误 cause 保留；
+  领取故障完整回滚，完成故障保持 RUNNING，不重执行或伪造业务失败。
+  另一项事件测试在用户运行时让后续领取抛 StorageError，第三个等待者不进入存储，
+  已启动用户继续成功持久化后才传播错误。
+- 8 项 commit 故障组合覆盖领取/完成、已提交/未提交、OSError/CancelledError。
+  不确定领取不执行，不确定完成不重交/重执行；原 ClaimUncertainError 或
+  CompletionUncertainError 带 job_id、number 和底层 cause 传播。
+  重新打开存储查询状态与历史验证各实际结果，后续 Job 未领取。
+- 非 None 返回触发真实 ExecutorError/TypeError cause，停止新领取，
+  另一运行用户不被取消，等待它清理及成功保存后再传播故障；失败尝试保持 RUNNING。
+  用户自行取消传播 CancelledError，不伪造 INTERRUPTED 完成。
+- 外部重复取消 run 只停止新领取，运行用户和完成写入不被再次取消，
+  结束前 run 不返回也不释放锁；全部完成后传播 CancelledError。
+  遗留 RUNNING Job/Attempt 原样保留，不被领取，不在 T06 执行恢复。
+- JSONFormatter 解析真实并发执行日志，逐 Job 检查 attempt_started / attempt_finished 身份；
+  worker_error 对完成数据库故障、结果不确定和 ExecutorError 显式带 Job 与尝试，
+  类别分别为 STORAGE_ERROR、EXECUTOR_ERROR；领取前故障无已知身份时为 null。
+  类别仅用于日志，不扩展持久 ErrorKind，不输出完整参数或异常内容。
+- 35 项新增测试（10 项配置边界、25 项运行行为）使用真实 SQLite、用户 async 函数、
+  事件与必要子进程；定时等待仅用于真实轮询/框架超时，10s 测试截止只作失效保护。
+  所有受控协程在 finally 放行并等待；所有子进程关闭输入、等待退出，失败时终止并回收。
+
+首次新增 Ruff 检查退出码 1（导入排序及行宽），已修正并格式化；mypy 初次即通过。
+Worker 首轮 35 项测试退出码 0；补强子进程提前退出时的清理后再次完整验收。
+
+### 最终检查结果
+
+以下命令均使用 UV_OFFLINE=true 和 UV_CACHE_DIR="$PWD/.cache/uv"，无依赖变更；
+涉及 SQLite/子进程的运行使用自动审核允许的沙箱外环境。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 环境同步 | uv sync --locked | 退出码 0；27 个包解析、26 个安装包审核 |
+| 原有测试复核 | uv run --locked pytest 指定原有六个测试文件 | 退出码 0；261 passed |
+| 全部行为测试 | uv run --locked pytest | 退出码 0；296 passed（原有 261 + T06 35） |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；30 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；12 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| README 五个示例 | 从实际代码块提取，在自动清理临时目录以 uv run --project 项目路径 --locked python 执行 | 五次退出码均为 0；新增 Worker 示例保存 SUCCESS |
+| 示例类型 | uv run --project 项目路径 --locked mypy --strict 五个临时示例文件 | 退出码 0；5 个文件无问题 |
+| 归档与 wheel 闭环 | 检查 wheel/sdist；临时目录中 Python -I 优先加载 wheel 完成真实 Worker 闭环 | 退出码 0；实际导入自 wheel，Job/Attempt 成功，锁文件保留；包含新模块、测试和 T07 prompt |
+| 差异与前置文件 | git diff --check；git diff --cached --check；git diff HEAD --exit-code -- pyproject.toml uv.lock docs/verification-t01.json | 退出码 0；依赖、锁文件和历史收据未修改 |
+
+示例及隔离 wheel 使用自动清理临时目录，未遗留示例数据库、脚本或子进程；
+保留常规 dist 构建产物和既有工具缓存。最终文档更新后重新构建，保证交接记录进入 sdist。
+
+### 限制与下一会话
+
+T06 仅形成单 Worker 的基础执行持久化闭环。普通失败即最终失败，没有重试决策与退避；
+T07 按 Job 快照增加有限重试，下一独立会话使用 [T07 prompt](prompts/T07.md)。
+T08 前遗留 RUNNING 尝试不自动恢复，外部取消不会记录中断，没有停机宽限期或主动取消编排。
+用户超时清理若一直不结束，退出持续等待并持锁占槽；不提供硬超时、线程池或恰好执行一次保证。
+CLI、多 Worker、租约、人工重放均未实现，Python 更高版本和 macOS 尚未验证。
+完成 T06 后停止，不继续 T07，不创建 Git Commit。
+
+### T06 Git 提交
+
+T06 验收后，用户追加要求创建 Git Commit。本次提交包含 Worker 执行闭环、
+有界并发、进程锁、行为测试、接口文档、验收记录与 T07 交接 prompt；未继续实现 T07。
+README 与迭代计划同步提交状态，前述未创建提交的记录保留为验收阶段历史。

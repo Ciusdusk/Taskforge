@@ -1,7 +1,7 @@
 # TaskForge MVP 架构
 
 本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询、
-T04 原子领取与完成及 T05 单次执行与超时已实现；
+T04 原子领取与完成、T05 单次执行与超时及 T06 Worker 与并发控制已实现；
 其余能力为待实现设计，实际验收状态见 docs/verification.md。
 
 ## 场景与范围
@@ -62,7 +62,7 @@ Repository、消息代理或插件体系。模块文件随对应任务创建，�
 
 公共操作规划为 `registry.task(...)`、异步 `TaskForge.submit/get/list/history`、
 `Worker.run()` 和 `Worker.request_stop()`。CLI 命令规划为
-`init/submit/worker/list/show/history`。已实现 `registry.task(...)` 与异步 `TaskForge.submit/get/list/history`；Worker 和 CLI 尚不存在。
+`init/submit/worker/list/show/history`。已实现 `registry.task(...)`、异步 `TaskForge.submit/get/list/history` 及 Worker 接口；CLI 尚不存在。
 
 提交时先校验参数并保存规范化 JSON；Worker 执行前再次校验。执行策略在提交时保存快照，
 修改注册默认值只影响新任务。提交成功表示事务提交完成；结果不确定的提交错误需携带任务 ID，
@@ -182,12 +182,29 @@ contextvars 执行身份。执行器不接收存储对象，不计算重试，�
 `EXECUTOR_ERROR` 是 Worker 级错误：停止领取、输出结构化错误并非零退出；
 无法可靠持久化的运行尝试留待重启恢复，不伪装成业务失败。
 
+T06 已实现 Worker(store, registry, config=None)、WorkerConfig 和 WorkerLockError。
+WorkerConfig 的 concurrency 默认 4、poll_interval_seconds 默认 1.0，分别校验正整数和
+有限正数。Worker 使用调用方已初始化的存储，先获锁，再以短查询拒绝未初始化版本，
+复用 initialize 检查现有表与列后开始领取；没有新增事务开启或清理机制。
+每个固定异步槽位覆盖领取、执行、完成 commit，领取入口串行并在进入前检查停止标志，
+用户执行及完成写入可重叠。空槽位按轮询间隔等待，request_stop 唤醒等待并停止新领取。
+已进入存储的领取继续完成并执行；正常退出等待所有槽位，不取消正在运行的用户任务。
+成功写 SUCCESS，普通失败写最终 FAILED；重试决策留在 T07。
+
+数据库故障、不确定结果和 ExecutorError 停止新领取，等待其他已启动槽位结束后
+传播原异常，已知凭据写入 worker_error 结构化日志。不确定领取不执行，不确定完成
+不重交或重执行；由调用方用 get/history 查询凭据确认。锁描述符保持到所有槽位结束，
+退出关闭而不删除锁文件；不同数据库独立。外部取消 run 只停止领取，屏蔽重复取消
+对已启动工作的干扰，等待真实结束后传播取消，不新增中断结果。
+每个 Worker 实例只运行一次。T06 不实现停机宽限期、主动取消、恢复或 CLI。
+T08 前遗留 RUNNING 尝试保持原状态，不会被领取；不响应超时取消的用户协程持续占槽并持锁。
+
 外部副作用与 Job 成功写入无法原子提交，崩溃恢复可能重复执行。稳定任务 ID 可以辅助业务幂等，
 不提供恰好执行一次或业务去重保证。
 
 ## 日志、schema 与验证
 
-T05 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
+T05—T06 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
 contextvars 关联执行上下文，不默认记录完整参数。持久执行历史与实时日志分开，
 不承诺崩溃前最后几条日志全部保留。
 

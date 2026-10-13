@@ -3,7 +3,8 @@
 TaskForge 面向个人开发者和小型项目，计划通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01—T05 已验收完成**：可注册任务、持久化提交与查询、原子领取与完成、单次执行与超时；Worker 与 CLI 尚未实现。
+**T01—T06 已验收完成**：可注册、提交与查询任务，运行单个 Worker，以有界异步并发执行并保存状态与历史。
+重试决策、停机宽限期、崩溃恢复和 CLI 尚未实现。
 包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
 
 ## 环境准备
@@ -40,8 +41,8 @@ uv build
 uv run --locked pytest
 ```
 
-T02—T05 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消和并发日志上下文。
-后续 Worker 与恢复测试将使用真实子进程。
+T02—T06 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文
+以及独立 Worker 子进程之间的锁互斥。
 
 ## 任务注册与输入校验
 
@@ -372,7 +373,70 @@ if __name__ == "__main__":
 ```
 
 本例声明的用户函数正常返回；通用调用方需要分别处理失败结果、取消和框架错误。
-T05 尚无 Worker、重试决策与调度、进程锁、恢复或 CLI。
+下面的 Worker 接口负责领取、单次执行和完成提交。
+
+## Worker 与并发控制
+
+`Worker(store, registry, config=None)` 使用调用方拥有的 `SQLiteStore` 和显式注册表。
+数据库须先显式初始化，存储须保持打开直到 `run()` 返回。`WorkerConfig` 不可变：
+`concurrency=4` 为正整数，`poll_interval_seconds=1.0` 为有限正数；拒绝布尔值和字符串。
+
+`await worker.run()` 先取得规范化数据库路径加 `.lock` 的非阻塞独占文件锁，
+再检查现有 schema，启动固定数量的异步槽位。每个槽位覆盖领取、用户执行及完成 commit；
+用户代码运行时没有存储会话。空槽位每隔轮询间隔检查队列，不忙等。
+成功保存 SUCCESS；业务异常、框架超时、配置错误保存最终 FAILED，T06 不重试，
+即使 Job 快照的 max_retries 大于零也如此。
+
+`worker.request_stop()` 同步停止新领取并唤醒空闲槽位；已开始的领取、用户执行和完成写入
+继续到结束。每个 Worker 实例只能 run 一次。以下示例保存为 `worker_once.py`，
+复用前文的 `tasks.py`，运行 `uv run --locked python worker_once.py`，打印 `SUCCESS`：
+
+```python
+import asyncio
+from pathlib import Path
+
+from taskforge import DatabaseConfig, JobStatus, SQLiteStore, TaskForge, Worker, WorkerConfig
+from tasks import registry
+
+
+async def main() -> None:
+    config = DatabaseConfig(database_path=Path("worker.sqlite"))
+    async with SQLiteStore(config) as store:
+        await store.initialize()
+        job = await TaskForge(store, registry).submit("demo.count", {"count": 3})
+        worker = Worker(store, registry, WorkerConfig(concurrency=2, poll_interval_seconds=0.05))
+        run = asyncio.create_task(worker.run())
+        try:
+            while not run.done():
+                if (await store.get(job.id)).status in (JobStatus.SUCCESS, JobStatus.FAILED):
+                    break
+                await asyncio.sleep(0.05)
+        finally:
+            worker.request_stop()
+            await run
+        print((await store.get(job.id)).status.value)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+同一数据库第二个 Worker 启动抛 `WorkerLockError`，不会进入领取；不同数据库独立。
+锁文件不删除，描述符直到全部已启动工作结束才关闭。数据库故障、结果不确定或
+`ExecutorError` 立即停止新领取，等待其他已启动任务完成后传播原异常及其 cause；
+不自动重交或再次执行。`taskforge.worker` 的 `worker_error` 日志使用 JSONFormatter，
+类别为 STORAGE_ERROR、EXECUTOR_ERROR、LOCK_ERROR 或 WORKER_ERROR；有已知凭据时
+携带 job_id 和 attempt_number。领取前故障没有任务身份，记录 null。
+日志类别不扩展持久 ErrorKind，不默认输出参数或异常内容。
+
+`ClaimUncertainError` / `CompletionUncertainError` 携带 job_id、number，调用方须在
+run 结束后用 `store.get(error.job_id)` 与 `store.history(error.job_id)` 查询确认；
+不确定领取不会执行用户函数，不确定完成不会再次执行。无法可靠完成的尝试保持 RUNNING。
+**T08 恢复实现前，遗留 RUNNING Job/Attempt 不会被自动恢复或重新领取。**
+
+外部取消 run 也只停止新领取，等待已启动用户协程及写入结束后传播 CancelledError；
+重复取消不会打断清理。当前没有停机宽限期、主动取消编排或中断持久化。
+框架超时依赖用户协作；用户清理不结束时槽位和锁持续占用，退出持续等待。
 
 ## 已确认的 MVP 语义
 
@@ -387,5 +451,5 @@ T05 尚无 Worker、重试决策与调度、进程锁、恢复或 CLI。
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T06 交接 prompt](docs/prompts/T06.md)
-实现 Worker 与并发控制；T05 验收后按用户追加要求提交改动。
+T01—T10 每个任务由一个独立会话实现。下一会话使用 [T07 交接 prompt](docs/prompts/T07.md)
+实现持久化重试；T06 验收后按用户追加要求提交改动。

@@ -1,7 +1,7 @@
 """TaskForge: persistent async task execution for a single machine."""
 
 from taskforge.api import TaskForge
-from taskforge.config import DatabaseConfig
+from taskforge.config import DatabaseConfig, WorkerConfig
 from taskforge.errors import (
     AttemptConflictError,
     ClaimUncertainError,
@@ -18,6 +18,7 @@ from taskforge.errors import (
     TaskForgeError,
     UnknownJobError,
     UnknownTaskError,
+    WorkerLockError,
 )
 from taskforge.executor import Executor
 from taskforge.logging import ExecutionContext, JSONFormatter, get_execution_context
@@ -34,8 +35,12 @@ from taskforge.models import (
 )
 from taskforge.registry import TaskDefinition, TaskRegistry, load_registry
 from taskforge.storage import SQLiteStore
+from taskforge.worker import Worker
 
 __all__ = [
+    "Worker",
+    "WorkerConfig",
+    "WorkerLockError",
     "Executor",
     "ExecutorError",
     "ExecutionContext",
