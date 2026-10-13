@@ -985,3 +985,131 @@ T09 验收后，用户追加要求创建 Git Commit。提交包含六个 CLI 命
 提交前仅同步提交状态文档并重新构建，源码与通过 476 项测试的版本一致；
 git diff --check、uv.lock、历史 T01 收据与既有核心文件的保护检查通过。
 前述不创建提交的记录保留为验收阶段历史。
+
+## T10：场景验证与文档
+
+验证日期：2026-10-13。环境：Linux x86_64、CPython 3.12.13、uv 0.10.9、
+pytest 9.1.1、Ruff 0.17.0；依赖版本见 [真实场景收据](verification-t10.json)。
+使用已有完整缓存与固定依赖，没有新增或升级依赖。
+**状态：T10 已完成当前环境的场景、质量检查与文档验收，结果见下表。**
+本会话仅处理 T10，完成后停止，不创建 Git Commit。
+
+### 实现与可复现入口
+
+- `examples/local_service.py` 是仅监听 loopback 的 asyncio TCP API 替身，提供固定 JSON
+  记录、下载字节及按输出目标发生一次的上游故障；无第三方凭据或新依赖。
+- `examples/local_tasks.py` 提供同步、下载备份和 scratch 维护任务，以及可控超时、
+  协作停机和独立业务数据库的幂等对照。业务逻辑不进入核心包。
+- `examples/python_cycle.py` 用真实 Python 接口提交、执行、关闭存储、无注册表重开查询
+  及分页；同时验证 JSON 内容、备份字节和维护文件，不只检查 Job 状态。
+- `examples/verify_scenarios.py` 在临时目录中运行 Python 和实际安装的 CLI，保存真实
+  快照、退出码、日志、调用和副作用；`tests/test_scenarios.py` 从项目外调用该脚本。
+- README 增加一条命令的场景入口，`docs/scenarios.md` 提供独立 Python/CLI 步骤与
+  幂等边界。架构与计划同步实现状态；sdist 包含 examples，wheel 保持核心库与 CLI。
+  `pyproject.toml` 只增加 sdist 的 examples 目录；源码、uv.lock、历史 T01 收据未修改。
+
+在项目根目录执行以下命令可重新生成当前实测收据（路径由调用方选择）：
+
+```bash
+uv run --locked python examples/verify_scenarios.py --output /tmp/taskforge-t10.json
+```
+
+本次保留的 `verification-t10.json` 来自真实运行，脚本退出 0，时间为
+`2026-10-13T15:08:10.935163+00:00`。它包含 44 次退出 0 的 CLI 操作、1 次非法输入退出 2，
+各正常停机 Worker 的退出码 0，以及两个 SIGKILL 子进程的返回值 -9。
+本地服务作为验收 fixture 最后被 SIGTERM 回收，返回值 -15；它不是 Worker。
+收据中的源码 SHA256 已与当前文件逐个核对；临时路径统一替换为 `<temporary>`。
+
+### 真实业务、停机与崩溃证据
+
+Python 与 CLI 的同步任务均先得到真实服务返回的临时故障，历史为 TASK_ERROR/SUCCESS；
+重试领取时间不早于前次完成加 0.1 秒。下载文件的实际字节为
+`TaskForge local backup fixture\n`；维护删除 expired.tmp 并保留 keep.txt。
+输出父目录不存在时，两次 TASK_ERROR 后最终 FAILED。可控等待任务两次 TIMEOUT 后
+FAILED，第二次用户 finally 的清理标记已写入；业务失败和超时不使 Worker 停机非零退出。
+
+SIGINT 场景先通过用户进入标记和 CLI 快照确认 RUNNING，再请求宽限期为 0 的协作停机。
+用户 finally 清理结束、Attempt INTERRUPTED 与 Job FAILED 提交后 Worker 退出 0。
+排队 Job 保持 PENDING、空历史，后续独立 Worker 才执行；正常完成场景使用 SIGTERM。
+既有回归另外验证重复信号、忽略取消继续持锁、清理及数据库写入期间不提前释放槽位。
+
+两组崩溃均使用真实子进程、核心 SQLite 和独立业务 SQLite。只在该验收子进程中暂停
+SUCCESS SQL 已 flush、`_commit` 尚未调用原实现的时刻；未改核心文件或伪造持久状态。
+父进程读取屏障和 CLI 快照，确认业务副作用已提交、Job/Attempt 已提交状态仍 RUNNING，
+随后 SIGKILL。再次查询与崩溃前快照相等，证明 SUCCESS 未提交且被回滚。
+下一真实 CLI Worker 取得原锁、恢复中断、按持久退避再次领取；历史为 INTERRUPTED/SUCCESS。
+
+| 业务对照 | 稳定 Job ID | 崩溃返回值 | 实际调用 number | 已提交副作用 | value 合计 |
+| --- | --- | --- | --- | --- | --- |
+| 普通 INSERT | `57cd9a10-3435-4fec-bc48-9c5b14043a7c` | -9 | 1、2 | 2 条 | 14 |
+| Job ID 唯一键 + INSERT OR IGNORE | `66e08aec-8a0f-4783-ba00-2cb95020c4da` | -9 | 1、2 | 1 条 | 7 |
+
+calls 表证明幂等组第二次函数确实运行；effects 唯一 Job ID 与副作用在同一业务事务中
+提交，重复执行只保留第一次效果。这个唯一键不去重再次 submit 生成的新 Job ID，
+也不让外部 API 和核心 SUCCESS 原子提交。框架仍可能重复执行；业务幂等须由任务实现。
+
+### T01—T10 当前证据复核
+
+以下证据来自当前工作区的完整回归和实际产物，不仅复用历史计数或旧文件指纹。
+
+| 要求 | 当前证据 |
+| --- | --- |
+| T01 工程、锁文件、类型与构建 | locked sync、Ruff、mypy strict、sdist/wheel 检查；test_wheel_installed_outside_project_complete_command_cycle 实际隔离安装 |
+| T02 注册、输入、独立策略、可信加载 | test_registry.py、test_policy.py、test_loading.py 覆盖拒绝重名/同步函数、模型与 JSON 往返、注册隔离、显式导入 |
+| T03 显式初始化、持久提交与查询 | test_storage.py 覆盖重开、策略快照、非法输入不入库、schema 拒绝、空历史/未知 ID、排他分页、SQL 回滚和不确定提交 |
+| T04 原子领取与完成 | test_attempts.py 用独立连接验证并发唯一与顺序、状态和历史同事务、完成身份、重复完成拒绝、SQL 故障回滚、commit 不确定性 |
+| T05 单次执行、超时与上下文 | test_executor.py 验证 TASK_ERROR/TIMEOUT/CONFIG_ERROR、返回契约与框架异常链、协作取消、并发 contextvars/JSON 日志 |
+| T06 锁、轮询、槽位与故障停领 | test_worker.py 的 overlap、slot_and_lock、real_process_exclusion、real_sql_failure 等验证有界重叠、用户执行不占事务、持锁及故障不重执行 |
+| T07 持久重试 | test_retry_policy.py、test_retries.py 及 CLI restart 测试验证 N+1 预算、退避封顶、完成事务时间、快照、释放槽位、重启遵循到期与完整历史 |
+| T08 停机与恢复 | test_recovery.py 覆盖真实 SIGKILL、预算耗尽、恢复再次崩溃、重复取消/忽略取消、数据库操作不被停机取消；T10 另证实业务幂等 |
+| T09 六命令、输出与退出码 | test_cli.py 验证全部帮助、参数/JSON/文件/配置错误、0/2/3/4/5/6/7/8/9/130、查询不导入任务、信号与恢复、不确定结果凭据及项目外 wheel 完整闭环 |
+| T10 三用途、完整闭环与幂等 | test_scenarios.py、verification-t10.json、README 实际五段代码及独立 Python 场景入口；业务内容、真实子进程退出与持久记录均已检查 |
+
+项目外 wheel 验证沿用 T09 的固定依赖复用方式：在临时独立环境中复制已安装的第三方
+依赖，排除 TaskForge、所有 .pth 和 editable 路径，再以 `uv pip install --no-deps`
+安装新构建 wheel；包来源为该环境 site-packages，`uv pip check` 与全部帮助、六命令
+闭环通过，删除任务模块后仍可查询。此验收不等同于全新联网安装依赖。
+
+### 最终检查结果
+
+命令使用 `UV_OFFLINE=true`、`UV_CACHE_DIR="$PWD/.cache/uv"`。真实 SQLite、loopback
+服务、CLI 与子进程在自动权限审核允许的沙箱外运行。默认沙箱的单项真实 SQLite 检查
+在 12 秒内挂起，timeout 返回 124；原驱动、db.py begin hook 和核心事务清理保持原样。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 环境同步 | uv sync --locked | 退出码 0；27 个包解析，26 个安装包审核 |
+| 修改前回归 | uv run --locked pytest --basetemp=/tmp/taskforge-t10-baseline | 退出码 0；476 passed，163.02 秒 |
+| 新场景测试 | uv run --locked pytest tests/test_scenarios.py --basetemp=/tmp/taskforge-t10-scenarios -q | 退出码 0；1 passed，27.48 秒 |
+| 全部行为测试 | uv run --locked pytest；PYTEST_ADDOPTS 指定本次临时根 | 退出码 0；477 passed，181.95 秒，无告警；包含项目外 wheel 安装、帮助与全部命令闭环 |
+| 实测收据 | uv run --locked python examples/verify_scenarios.py --output docs/verification-t10.json | 退出码 0；真实三用途、失败/重试、超时、信号、崩溃与幂等均通过 |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；45 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；14 个源码文件无问题 |
+| README 五段代码 | 提取实际 Python 代码块，在临时目录以 uv run --project 项目路径 --locked python 执行 | 五次退出码 0；注册 count=3、提交 PENDING、原子完成 SUCCESS、Executor SUCCESS、Worker SUCCESS |
+| README 示例类型 | uv run --project 项目路径 --locked mypy --strict 五个示例 | 退出码 0；5 个文件无问题 |
+| 独立 Python 场景入口 | uv run --project 项目路径 --locked python examples/python_cycle.py --port 实际端口 | 退出码 0；三个 SUCCESS，临时数据清理 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel；最终记录更新后重建归档 |
+| 产物及保护检查 | zipfile/tarfile 比较归档与当前文件；git diff --check；uv.lock、verification-t01.json 与 src/taskforge 差异检查 | 退出码 0；sdist 含完整 examples 与实测记录，wheel 含 py.typed、CLI 入口和当前核心；保护文件未修改 |
+
+场景脚本所有子进程在 finally 中 communicate/wait 回收，Python Worker 在 finally 请求
+停止并等待，存储与本地连接显式关闭。原始收据证明场景临时目录已移除。
+验收后删除本次 baseline、场景、全量测试临时根、默认沙箱挂起的单项测试目录以及
+README 检查脚本与临时输出；保留其他会话的临时目录、正常工具缓存和 dist 分发产物。
+沙箱外进程检查未发现本次遗留 Worker、服务、场景脚本或 pytest。
+
+### 验证边界
+
+当前证据覆盖 Linux x86_64/CPython 3.12 的 T01—T10 行为；macOS、更高 Python 版本、
+全新联网依赖安装仍未验收，因此不宣称所有目标平台的 MVP 验收完成。
+真实第三方 HTTP API、凭据与大型备份的性能不属于本地替身的验证结果。
+所有架构范围保持：单机单 Worker、协作超时与停机；未扩展 Cron、租约、心跳、
+用户取消、人工重放、Web UI、迁移框架或核心业务去重。
+
+### T10 Git 提交
+
+T10 验收后，用户追加要求创建 Git Commit。提交包含本地三用途示例、Python/CLI 场景
+验收脚本、真实崩溃与业务幂等收据、新增端到端测试、sdist 示例分发和同步文档。
+提交前仅更新提交状态文档并重新构建，源码与通过 477 项测试的版本一致；
+git diff --check、收据源码指纹及 uv.lock、历史 T01 收据、既有核心源码的保护检查通过。
+前述不创建提交的记录保留为验收阶段历史。

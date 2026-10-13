@@ -3,10 +3,32 @@
 TaskForge 面向个人开发者和小型项目，通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01—T09 已实现**：可注册任务，并通过 Python 和 CLI 提交、查询及运行单个 Worker，
+**T01—T10 已实现**：可注册任务，并通过 Python 和 CLI 提交、查询及运行单个 Worker，
 以有界异步并发执行、持久化有限重试、协作停机并恢复崩溃遗留尝试，保存状态与历史。
-T09 的验收证据见验证记录；T10 场景验证尚未开始。
-包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
+本地数据同步、下载备份、维护、故障恢复及业务幂等示例见 [场景指南](docs/scenarios.md)。
+当前验收环境为 Linux/CPython 3.12；macOS、更高 Python 版本与全新联网依赖安装尚未验收。
+包版本 `0.1.0` 用于本地构建与验收，尚未发布。
+
+## 运行本地场景
+
+先完成下文环境同步，在项目根目录执行：
+
+```bash
+uv run --locked python examples/verify_scenarios.py --output /tmp/taskforge-t10.json
+```
+
+不需要第三方凭据。脚本启动仅监听 loopback 的本地 API 替身，以真实 Python 和安装后的
+`taskforge` CLI 完成提交、执行、分页与历史查询，再验证失败重试、超时清理、SIGINT/SIGTERM
+停机与 SIGKILL 恢复。成功退出码为 0；临时数据库、文件和全部子进程自动清理，保留指定的
+JSON 收据。省略 `--output` 时收据写到 stdout。
+
+收据保留稳定 Job ID、每次 Attempt、Worker 日志、实际退出码、源码指纹和副作用记录。
+在副作用已提交而 SUCCESS 尚未 commit 时强制退出，两组任务均真正执行两次：
+普通业务产生两条副作用、合计 14；以 Job ID 为唯一键的业务只产生一条、合计 7。
+已有实测收据见 [T10 场景证据](docs/verification-t10.json)，完整检查结果见
+[验证记录](docs/verification.md)。幂等逻辑由示例业务实现，核心不提供恰好一次保证。
+
+示例随 sdist 分发；wheel 提供核心库与 CLI，任务代码需要自行安装或放入 `PYTHONPATH`。
 
 ## 环境准备
 
@@ -42,7 +64,7 @@ uv build
 uv run --locked pytest
 ```
 
-T02—T09 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
+T02—T10 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
 独立 Worker/CLI 子进程之间的锁互斥、重复信号停机、持久化重试、强制退出与恢复的原子状态。
 
 ## CLI
@@ -163,7 +185,7 @@ uv run --locked python -c 'from taskforge import load_registry; print(load_regis
   `get(name)` 按稳定名称查找 `TaskDefinition`，不同注册表互相隔离。
 - `TaskDefinition` 保存 `name`、`function`、`input_model`、`policy`；
   `validate_input(data)` 校验 Python 输入，`serialize_input(data)` 生成 JSON 字符串，
-  `validate_json(payload)` 从 JSON 字符串重新校验。后续提交端与 Worker 复用这些边界。
+  `validate_json(payload)` 从 JSON 字符串重新校验。提交端与 Worker 复用这些边界。
 - `load_registry("module:attribute")` 导入指定模块并读取注册表属性；模块是本地可信代码。
 
 `input_model` 必须是具体 Pydantic 对象模型，不能是 `BaseModel` 本身或 `RootModel`，
@@ -379,7 +401,7 @@ commit 开始后的故障或取消分别抛 ClaimUncertainError / CompletionUnce
 
 执行器不领取、不写数据库、不计算重试；结果由调用方传给 `finish_attempt`，并明确选择
 Job 状态。错误详情保留完整文本，由存储边界截断为类型 256、摘要 2000、traceback 16000
-个字符。EXECUTOR_ERROR 不属于持久 `ErrorKind`；未来 Worker 应停止领取，
+个字符。EXECUTOR_ERROR 不属于持久 `ErrorKind`；Worker 会停止领取，
 无法可靠完成的尝试留待恢复，不能保存成业务或配置失败。模型 validator 的编程故障
 （如 `TypeError`）、错误详情生成或执行机制故障同样属于框架错误。
 用户函数自己抛出的 `ExecutorError` 仍属于 TASK_ERROR。
@@ -573,5 +595,5 @@ INTERRUPTED、释放槽位；有预算仍安排持久化重试，本次停机不
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T10 交接 prompt](docs/prompts/T10.md)
-完成场景验证与文档；T09 验收后按用户追加要求提交改动，未继续 T10。
+T01—T10 每个任务由独立会话实现。T10 完成场景与当前环境验收后停止，验收后按用户追加要求提交改动。
+其余平台的验收范围及历史交接记录保留在验证文档中。

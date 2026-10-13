@@ -2,8 +2,8 @@
 
 本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询、
 T04 原子领取与完成、T05 单次执行与超时、T06 Worker 与并发控制、T07 持久化重试及
-T08 停机与崩溃恢复及 T09 完整 CLI 已实现；
-其余能力为待实现设计，实际验收状态见 docs/verification.md。
+T08 停机与崩溃恢复、T09 完整 CLI 及 T10 场景与文档已实现。
+当前实际验收覆盖 Linux/CPython 3.12；其他平台范围见 docs/verification.md。
 
 ## 场景与范围
 
@@ -61,10 +61,9 @@ Repository、消息代理或插件体系。模块文件随对应任务创建，�
 注册表按 `module:attribute` 加载。任务模块是本地可信代码，不扫描目录，也不在数据库
 保存函数对象。提交端与 Worker 应使用一致的任务代码版本。
 
-公共操作规划为 `registry.task(...)`、异步 `TaskForge.submit/get/list/history`、
-`Worker.run()` 和 `Worker.request_stop()`。CLI 命令规划为
-`init/submit/worker/list/show/history`。已实现 `registry.task(...)`、异步 `TaskForge.submit/get/list/history`、
-Worker 接口与全部六个 Typer 命令，打包入口为 `taskforge = taskforge.cli:main`。
+已实现 `registry.task(...)`、异步 `TaskForge.submit/get/list/history`、
+`Worker.run()` 和 `Worker.request_stop()`，以及全部六个 Typer 命令
+`init/submit/worker/list/show/history`，打包入口为 `taskforge = taskforge.cli:main`。
 
 提交时先校验参数并保存规范化 JSON；Worker 执行前再次校验。执行策略在提交时保存快照，
 修改注册默认值只影响新任务。提交成功表示事务提交完成；结果不确定的提交错误需携带任务 ID，
@@ -252,6 +251,13 @@ contextvars 关联执行上下文，不默认记录完整参数。持久执行�
 
 策略与注册使用单元测试；存储、并发、CLI 与崩溃恢复使用真实临时数据库及子进程。
 事件与屏障控制并发，可替换内部时钟控制时间，不以固定长 sleep 作为同步条件。
+
+T10 的 `examples/` 提供 loopback API 替身、异步同步/下载备份/维护注册表、Python 闭环及
+真实 CLI 场景验收脚本；例子随 sdist 分发，wheel 仅包含核心包和 CLI。
+崩溃屏障只在验收子进程中暂停 SUCCESS commit 前的执行，不替换真实持久化。
+独立业务 SQLite 以稳定 Job ID 唯一键和副作用同事务提交，证明重复执行时副作用从两条
+降至一条；该逻辑属于示例业务，不是核心去重能力。步骤见 [scenarios.md](scenarios.md)，
+实测收据见 [verification-t10.json](verification-t10.json)。
 
 ## 技术依据
 

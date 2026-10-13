@@ -1,0 +1,1434 @@
+{
+  "verified_at": "2026-10-13T15:08:10.935163+00:00",
+  "environment": {
+    "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.13",
+    "dependencies": {
+      "taskforge": "0.1.0",
+      "pydantic": "2.14.1",
+      "sqlalchemy": "2.0.54",
+      "aiosqlite": "0.22.1",
+      "typer": "0.27.3"
+    }
+  },
+  "source_sha256": {
+    "examples/local_service.py": "6c2d578bf7d7f9a2cf4c9a787df8c5ce36f79aa200d15247f26db305cd803296",
+    "examples/local_tasks.py": "7725324d21a3fabf3e3ca80aa06f3f46f1dc1af0a4cb4d0f9af495b38cb1fa07",
+    "examples/python_cycle.py": "4f51a98668ec487d5c2c6e144da3f4e2593ed478a707bd15550e8b281272dde0",
+    "examples/verify_scenarios.py": "cfbed115f1ee14893bd1f078b095216fecd3c94ffd63b1e1ddd5a9154dba73af",
+    "pyproject.toml": "bbbb21377bb1c0d86ea28aba094027c272b9ceab8d629933643d85b076dbb733",
+    "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+    "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+    "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+    "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+    "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+    "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+    "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+    "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+    "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+    "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+    "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+    "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+    "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+    "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+    "uv.lock": "48adb22243275f44315ca27605555d0c49ab888f1f943a06797ff313eaed8447"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "init",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.sync",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 2
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.sync",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.backup",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.maintenance",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "db2dd65e-c164-4d68-8e8f-df8e6a6728c7",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "db2dd65e-c164-4d68-8e8f-df8e6a6728c7",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "a268ab8e-e378-4c82-807c-fcc80489ceb5",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "a268ab8e-e378-4c82-807c-fcc80489ceb5",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "list",
+        "--limit",
+        "2",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "list",
+        "--after",
+        "{\"created_at\": \"2026-10-13T15:08:13.295739+00:00\", \"id\": \"db2dd65e-c164-4d68-8e8f-df8e6a6728c7\"}",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.sync",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.timeout",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.stop",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.ledger",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "077c1fc0-c7d8-4047-97a5-3d74ac0f0aeb",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "077c1fc0-c7d8-4047-97a5-3d74ac0f0aeb",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "077c1fc0-c7d8-4047-97a5-3d74ac0f0aeb",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "077c1fc0-c7d8-4047-97a5-3d74ac0f0aeb",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.ledger",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "submit",
+        "local.ledger",
+        "--registry",
+        "local_tasks:registry",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "show",
+        "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/home/xciusdusk/projects/personal/TaskForge/.venv/bin/taskforge",
+        "history",
+        "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "--database",
+        "<temporary>/cli.sqlite"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "python": {
+    "jobs": [
+      {
+        "id": "45d839b4-4b3b-4f43-a147-ff4e9e32e1ae",
+        "task_name": "local.sync",
+        "params_json": "{\"port\":54199,\"target\":\"<temporary>/records.json\",\"transient\":true}",
+        "status": "SUCCESS",
+        "created_at": "2026-10-13 15:08:11.030931+00:00",
+        "started_at": "2026-10-13 15:08:11.091822+00:00",
+        "finished_at": "2026-10-13 15:08:11.316414+00:00",
+        "next_run_at": null,
+        "attempt_count": 2,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      {
+        "id": "00e4a83f-a44e-46cc-9edf-b636d6b8ba1e",
+        "task_name": "local.backup",
+        "params_json": "{\"port\":54199,\"target\":\"<temporary>/backup.bin\",\"transient\":false}",
+        "status": "SUCCESS",
+        "created_at": "2026-10-13 15:08:11.044196+00:00",
+        "started_at": "2026-10-13 15:08:11.120099+00:00",
+        "finished_at": "2026-10-13 15:08:11.262299+00:00",
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      {
+        "id": "37d13459-40cd-49b9-8464-b019f463e9e9",
+        "task_name": "local.maintenance",
+        "params_json": "{\"directory\":\"<temporary>/scratch\"}",
+        "status": "SUCCESS",
+        "created_at": "2026-10-13 15:08:11.054086+00:00",
+        "started_at": "2026-10-13 15:08:11.145222+00:00",
+        "finished_at": "2026-10-13 15:08:11.224886+00:00",
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 0,
+        "retry_base_seconds": 1.0,
+        "retry_cap_seconds": 60.0,
+        "timeout_seconds": 300.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      }
+    ],
+    "histories": [
+      [
+        {
+          "job_id": "45d839b4-4b3b-4f43-a147-ff4e9e32e1ae",
+          "number": 1,
+          "status": "FAILED",
+          "started_at": "2026-10-13 15:08:11.091822+00:00",
+          "finished_at": "2026-10-13 15:08:11.172453+00:00",
+          "error_kind": "TASK_ERROR",
+          "exception_type": "ConnectionError",
+          "error_message": "temporary upstream failure",
+          "traceback": "Traceback (most recent call last):\n  File \"/home/xciusdusk/projects/personal/TaskForge/src/taskforge/executor.py\", line 32, in _invoke\n    result: object = await cast(Awaitable[object], definition.function(data))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/projects/personal/TaskForge/examples/local_tasks.py\", line 42, in sync\n    response = await request(\n               ^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/projects/personal/TaskForge/examples/local_tasks.py\", line 33, in request\n    raise ConnectionError(response[\"error\"])\nConnectionError: temporary upstream failure\n"
+        },
+        {
+          "job_id": "45d839b4-4b3b-4f43-a147-ff4e9e32e1ae",
+          "number": 2,
+          "status": "SUCCESS",
+          "started_at": "2026-10-13 15:08:11.291014+00:00",
+          "finished_at": "2026-10-13 15:08:11.316414+00:00",
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ],
+      [
+        {
+          "job_id": "00e4a83f-a44e-46cc-9edf-b636d6b8ba1e",
+          "number": 1,
+          "status": "SUCCESS",
+          "started_at": "2026-10-13 15:08:11.120099+00:00",
+          "finished_at": "2026-10-13 15:08:11.262299+00:00",
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ],
+      [
+        {
+          "job_id": "37d13459-40cd-49b9-8464-b019f463e9e9",
+          "number": 1,
+          "status": "SUCCESS",
+          "started_at": "2026-10-13 15:08:11.145222+00:00",
+          "finished_at": "2026-10-13 15:08:11.224886+00:00",
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ]
+    ],
+    "records": [
+      {
+        "id": 1,
+        "name": "local fixture"
+      },
+      {
+        "id": 2,
+        "name": "TaskForge"
+      }
+    ],
+    "backup": "TaskForge local backup fixture\n",
+    "maintenance_remaining": [
+      "keep.txt"
+    ]
+  },
+  "cli": {
+    "snapshots": [
+      {
+        "job": {
+          "id": "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+          "task_name": "local.sync",
+          "params_json": "{\"port\":54199,\"target\":\"<temporary>/cli.json\",\"transient\":true}",
+          "status": "SUCCESS",
+          "created_at": "2026-10-13T15:08:12.803945+00:00",
+          "started_at": "2026-10-13T15:08:15.273905+00:00",
+          "finished_at": "2026-10-13T15:08:15.430186+00:00",
+          "next_run_at": null,
+          "attempt_count": 2,
+          "max_retries": 1,
+          "retry_base_seconds": 0.1,
+          "retry_cap_seconds": 0.1,
+          "timeout_seconds": 5.0,
+          "last_error_kind": null,
+          "last_error_message": null
+        },
+        "attempts": [
+          {
+            "job_id": "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+            "number": 1,
+            "status": "FAILED",
+            "started_at": "2026-10-13T15:08:15.273905+00:00",
+            "finished_at": "2026-10-13T15:08:15.307206+00:00",
+            "error_kind": "TASK_ERROR",
+            "exception_type": "ConnectionError",
+            "error_message": "temporary upstream failure",
+            "traceback": "Traceback (most recent call last):\n  File \"/home/xciusdusk/projects/personal/TaskForge/src/taskforge/executor.py\", line 32, in _invoke\n    result: object = await cast(Awaitable[object], definition.function(data))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/projects/personal/TaskForge/examples/local_tasks.py\", line 42, in sync\n    response = await request(\n               ^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/projects/personal/TaskForge/examples/local_tasks.py\", line 33, in request\n    raise ConnectionError(response[\"error\"])\nConnectionError: temporary upstream failure\n"
+          },
+          {
+            "job_id": "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+            "number": 2,
+            "status": "SUCCESS",
+            "started_at": "2026-10-13T15:08:15.410179+00:00",
+            "finished_at": "2026-10-13T15:08:15.430186+00:00",
+            "error_kind": null,
+            "exception_type": null,
+            "error_message": null,
+            "traceback": null
+          }
+        ]
+      },
+      {
+        "job": {
+          "id": "db2dd65e-c164-4d68-8e8f-df8e6a6728c7",
+          "task_name": "local.backup",
+          "params_json": "{\"port\":54199,\"target\":\"<temporary>/cli.bin\",\"transient\":false}",
+          "status": "SUCCESS",
+          "created_at": "2026-10-13T15:08:13.295739+00:00",
+          "started_at": "2026-10-13T15:08:15.322666+00:00",
+          "finished_at": "2026-10-13T15:08:15.342265+00:00",
+          "next_run_at": null,
+          "attempt_count": 1,
+          "max_retries": 1,
+          "retry_base_seconds": 0.1,
+          "retry_cap_seconds": 0.1,
+          "timeout_seconds": 5.0,
+          "last_error_kind": null,
+          "last_error_message": null
+        },
+        "attempts": [
+          {
+            "job_id": "db2dd65e-c164-4d68-8e8f-df8e6a6728c7",
+            "number": 1,
+            "status": "SUCCESS",
+            "started_at": "2026-10-13T15:08:15.322666+00:00",
+            "finished_at": "2026-10-13T15:08:15.342265+00:00",
+            "error_kind": null,
+            "exception_type": null,
+            "error_message": null,
+            "traceback": null
+          }
+        ]
+      },
+      {
+        "job": {
+          "id": "a268ab8e-e378-4c82-807c-fcc80489ceb5",
+          "task_name": "local.maintenance",
+          "params_json": "{\"directory\":\"<temporary>/cli-scratch\"}",
+          "status": "SUCCESS",
+          "created_at": "2026-10-13T15:08:13.788251+00:00",
+          "started_at": "2026-10-13T15:08:15.354883+00:00",
+          "finished_at": "2026-10-13T15:08:15.372721+00:00",
+          "next_run_at": null,
+          "attempt_count": 1,
+          "max_retries": 0,
+          "retry_base_seconds": 1.0,
+          "retry_cap_seconds": 60.0,
+          "timeout_seconds": 300.0,
+          "last_error_kind": null,
+          "last_error_message": null
+        },
+        "attempts": [
+          {
+            "job_id": "a268ab8e-e378-4c82-807c-fcc80489ceb5",
+            "number": 1,
+            "status": "SUCCESS",
+            "started_at": "2026-10-13T15:08:15.354883+00:00",
+            "finished_at": "2026-10-13T15:08:15.372721+00:00",
+            "error_kind": null,
+            "exception_type": null,
+            "error_message": null,
+            "traceback": null
+          }
+        ]
+      }
+    ],
+    "worker": {
+      "signal": "SIGTERM",
+      "exit_code": 0,
+      "events": [
+        {
+          "time": "2026-10-13T15:08:15.298749+00:00",
+          "level": "INFO",
+          "event": "attempt_started",
+          "job_id": "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+          "attempt_number": 1,
+          "error_kind": null
+        },
+        {
+          "time": "2026-10-13T15:08:15.301385+00:00",
+          "level": "ERROR",
+          "event": "attempt_finished",
+          "job_id": "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+          "attempt_number": 1,
+          "error_kind": "TASK_ERROR"
+        },
+        {
+          "time": "2026-10-13T15:08:15.336392+00:00",
+          "level": "INFO",
+          "event": "attempt_started",
+          "job_id": "db2dd65e-c164-4d68-8e8f-df8e6a6728c7",
+          "attempt_number": 1,
+          "error_kind": null
+        },
+        {
+          "time": "2026-10-13T15:08:15.338646+00:00",
+          "level": "INFO",
+          "event": "attempt_finished",
+          "job_id": "db2dd65e-c164-4d68-8e8f-df8e6a6728c7",
+          "attempt_number": 1,
+          "error_kind": null
+        },
+        {
+          "time": "2026-10-13T15:08:15.368597+00:00",
+          "level": "INFO",
+          "event": "attempt_started",
+          "job_id": "a268ab8e-e378-4c82-807c-fcc80489ceb5",
+          "attempt_number": 1,
+          "error_kind": null
+        },
+        {
+          "time": "2026-10-13T15:08:15.369153+00:00",
+          "level": "INFO",
+          "event": "attempt_finished",
+          "job_id": "a268ab8e-e378-4c82-807c-fcc80489ceb5",
+          "attempt_number": 1,
+          "error_kind": null
+        },
+        {
+          "time": "2026-10-13T15:08:15.424505+00:00",
+          "level": "INFO",
+          "event": "attempt_started",
+          "job_id": "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+          "attempt_number": 2,
+          "error_kind": null
+        },
+        {
+          "time": "2026-10-13T15:08:15.426548+00:00",
+          "level": "INFO",
+          "event": "attempt_finished",
+          "job_id": "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+          "attempt_number": 2,
+          "error_kind": null
+        }
+      ]
+    },
+    "pagination_ids": [
+      "6eeaf442-6789-4f1b-9799-7f5bbf6b6955",
+      "db2dd65e-c164-4d68-8e8f-df8e6a6728c7",
+      "a268ab8e-e378-4c82-807c-fcc80489ceb5"
+    ]
+  },
+  "failures": {
+    "business_failure": {
+      "job": {
+        "id": "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+        "task_name": "local.sync",
+        "params_json": "{\"port\":54199,\"target\":\"<temporary>/missing/records.json\",\"transient\":false}",
+        "status": "FAILED",
+        "created_at": "2026-10-13T15:08:20.121437+00:00",
+        "started_at": "2026-10-13T15:08:20.686148+00:00",
+        "finished_at": "2026-10-13T15:08:20.860769+00:00",
+        "next_run_at": null,
+        "attempt_count": 2,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": "TASK_ERROR",
+        "last_error_message": "[Errno 2] No such file or directory: '<temporary>/missing/records.json'"
+      },
+      "attempts": [
+        {
+          "job_id": "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+          "number": 1,
+          "status": "FAILED",
+          "started_at": "2026-10-13T15:08:20.686148+00:00",
+          "finished_at": "2026-10-13T15:08:20.722333+00:00",
+          "error_kind": "TASK_ERROR",
+          "exception_type": "FileNotFoundError",
+          "error_message": "[Errno 2] No such file or directory: '<temporary>/missing/records.json'",
+          "traceback": "Traceback (most recent call last):\n  File \"/home/xciusdusk/projects/personal/TaskForge/src/taskforge/executor.py\", line 32, in _invoke\n    result: object = await cast(Awaitable[object], definition.function(data))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/projects/personal/TaskForge/examples/local_tasks.py\", line 46, in sync\n    data.target.write_text(json.dumps(response[\"records\"]), encoding=\"utf-8\")\n  File \"/home/xciusdusk/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1047, in write_text\n    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<temporary>/missing/records.json'\n"
+        },
+        {
+          "job_id": "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+          "number": 2,
+          "status": "FAILED",
+          "started_at": "2026-10-13T15:08:20.836106+00:00",
+          "finished_at": "2026-10-13T15:08:20.860769+00:00",
+          "error_kind": "TASK_ERROR",
+          "exception_type": "FileNotFoundError",
+          "error_message": "[Errno 2] No such file or directory: '<temporary>/missing/records.json'",
+          "traceback": "Traceback (most recent call last):\n  File \"/home/xciusdusk/projects/personal/TaskForge/src/taskforge/executor.py\", line 32, in _invoke\n    result: object = await cast(Awaitable[object], definition.function(data))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/projects/personal/TaskForge/examples/local_tasks.py\", line 46, in sync\n    data.target.write_text(json.dumps(response[\"records\"]), encoding=\"utf-8\")\n  File \"/home/xciusdusk/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1047, in write_text\n    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/xciusdusk/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '<temporary>/missing/records.json'\n"
+        }
+      ],
+      "worker": {
+        "signal": "SIGTERM",
+        "exit_code": 0,
+        "events": [
+          {
+            "time": "2026-10-13T15:08:20.711730+00:00",
+            "level": "INFO",
+            "event": "attempt_started",
+            "job_id": "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+            "attempt_number": 1,
+            "error_kind": null
+          },
+          {
+            "time": "2026-10-13T15:08:20.715112+00:00",
+            "level": "ERROR",
+            "event": "attempt_finished",
+            "job_id": "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+            "attempt_number": 1,
+            "error_kind": "TASK_ERROR"
+          },
+          {
+            "time": "2026-10-13T15:08:20.854396+00:00",
+            "level": "INFO",
+            "event": "attempt_started",
+            "job_id": "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+            "attempt_number": 2,
+            "error_kind": null
+          },
+          {
+            "time": "2026-10-13T15:08:20.856771+00:00",
+            "level": "ERROR",
+            "event": "attempt_finished",
+            "job_id": "740b7d1e-13a3-4678-9a7a-caa10cb8d1bc",
+            "attempt_number": 2,
+            "error_kind": "TASK_ERROR"
+          }
+        ]
+      }
+    },
+    "timeout": {
+      "job": {
+        "id": "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+        "task_name": "local.timeout",
+        "params_json": "{\"started\":\"<temporary>/timeout.started\",\"cleaned\":\"<temporary>/timeout.cleaned\"}",
+        "status": "FAILED",
+        "created_at": "2026-10-13T15:08:22.401404+00:00",
+        "started_at": "2026-10-13T15:08:22.944993+00:00",
+        "finished_at": "2026-10-13T15:08:23.404966+00:00",
+        "next_run_at": null,
+        "attempt_count": 2,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 0.15,
+        "last_error_kind": "TIMEOUT",
+        "last_error_message": "Task exceeded its timeout_seconds snapshot"
+      },
+      "attempts": [
+        {
+          "job_id": "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+          "number": 1,
+          "status": "FAILED",
+          "started_at": "2026-10-13T15:08:22.944993+00:00",
+          "finished_at": "2026-10-13T15:08:23.125052+00:00",
+          "error_kind": "TIMEOUT",
+          "exception_type": null,
+          "error_message": "Task exceeded its timeout_seconds snapshot",
+          "traceback": null
+        },
+        {
+          "job_id": "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+          "number": 2,
+          "status": "FAILED",
+          "started_at": "2026-10-13T15:08:23.236569+00:00",
+          "finished_at": "2026-10-13T15:08:23.404966+00:00",
+          "error_kind": "TIMEOUT",
+          "exception_type": null,
+          "error_message": "Task exceeded its timeout_seconds snapshot",
+          "traceback": null
+        }
+      ],
+      "worker": {
+        "signal": "SIGTERM",
+        "exit_code": 0,
+        "events": [
+          {
+            "time": "2026-10-13T15:08:22.967239+00:00",
+            "level": "INFO",
+            "event": "attempt_started",
+            "job_id": "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+            "attempt_number": 1,
+            "error_kind": null
+          },
+          {
+            "time": "2026-10-13T15:08:23.118509+00:00",
+            "level": "ERROR",
+            "event": "attempt_finished",
+            "job_id": "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+            "attempt_number": 1,
+            "error_kind": "TIMEOUT"
+          },
+          {
+            "time": "2026-10-13T15:08:23.250339+00:00",
+            "level": "INFO",
+            "event": "attempt_started",
+            "job_id": "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+            "attempt_number": 2,
+            "error_kind": null
+          },
+          {
+            "time": "2026-10-13T15:08:23.401322+00:00",
+            "level": "ERROR",
+            "event": "attempt_finished",
+            "job_id": "4fefc99d-5bce-47b6-92d4-9d2317250ad1",
+            "attempt_number": 2,
+            "error_kind": "TIMEOUT"
+          }
+        ]
+      }
+    },
+    "timeout_cleanup_attempt": 2
+  },
+  "shutdown": {
+    "before": {
+      "job": {
+        "id": "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+        "task_name": "local.stop",
+        "params_json": "{\"started\":\"<temporary>/stop.started\",\"cleaned\":\"<temporary>/stop.cleaned\"}",
+        "status": "RUNNING",
+        "created_at": "2026-10-13T15:08:24.924445+00:00",
+        "started_at": "2026-10-13T15:08:25.965254+00:00",
+        "finished_at": null,
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 0,
+        "retry_base_seconds": 1.0,
+        "retry_cap_seconds": 60.0,
+        "timeout_seconds": 300.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": [
+        {
+          "job_id": "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+          "number": 1,
+          "status": "RUNNING",
+          "started_at": "2026-10-13T15:08:25.965254+00:00",
+          "finished_at": null,
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ]
+    },
+    "after": {
+      "job": {
+        "id": "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+        "task_name": "local.stop",
+        "params_json": "{\"started\":\"<temporary>/stop.started\",\"cleaned\":\"<temporary>/stop.cleaned\"}",
+        "status": "FAILED",
+        "created_at": "2026-10-13T15:08:24.924445+00:00",
+        "started_at": "2026-10-13T15:08:25.965254+00:00",
+        "finished_at": "2026-10-13T15:08:27.022000+00:00",
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 0,
+        "retry_base_seconds": 1.0,
+        "retry_cap_seconds": 60.0,
+        "timeout_seconds": 300.0,
+        "last_error_kind": "INTERRUPTED",
+        "last_error_message": "Task execution was cancelled"
+      },
+      "attempts": [
+        {
+          "job_id": "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+          "number": 1,
+          "status": "INTERRUPTED",
+          "started_at": "2026-10-13T15:08:25.965254+00:00",
+          "finished_at": "2026-10-13T15:08:27.022000+00:00",
+          "error_kind": "INTERRUPTED",
+          "exception_type": null,
+          "error_message": "Task execution was cancelled",
+          "traceback": null
+        }
+      ]
+    },
+    "worker": {
+      "signal": "SIGINT",
+      "exit_code": 0,
+      "events": [
+        {
+          "time": "2026-10-13T15:08:25.986874+00:00",
+          "level": "INFO",
+          "event": "attempt_started",
+          "job_id": "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+          "attempt_number": 1,
+          "error_kind": null
+        },
+        {
+          "time": "2026-10-13T15:08:27.015181+00:00",
+          "level": "WARNING",
+          "event": "shutdown_incomplete",
+          "job_id": "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+          "attempt_number": 1,
+          "error_kind": "INTERRUPTED"
+        },
+        {
+          "time": "2026-10-13T15:08:27.015571+00:00",
+          "level": "ERROR",
+          "event": "attempt_interrupted",
+          "job_id": "54b21ef3-30d6-4afc-916a-62e84cdcfe30",
+          "attempt_number": 1,
+          "error_kind": "INTERRUPTED"
+        }
+      ]
+    },
+    "cleaned": true,
+    "queued_at_stop": {
+      "job": {
+        "id": "077c1fc0-c7d8-4047-97a5-3d74ac0f0aeb",
+        "task_name": "local.ledger",
+        "params_json": "{\"database\":\"<temporary>/never.sqlite\",\"idempotent\":true,\"value\":7}",
+        "status": "PENDING",
+        "created_at": "2026-10-13T15:08:25.450456+00:00",
+        "started_at": null,
+        "finished_at": null,
+        "next_run_at": "2026-10-13T15:08:25.450456+00:00",
+        "attempt_count": 0,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": []
+    }
+  },
+  "crash_without_idempotency": {
+    "idempotent": false,
+    "barrier": {
+      "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+      "attempt_number": 1,
+      "stage": "success_sql_flushed_before_commit"
+    },
+    "crash_exit_code": -9,
+    "before_kill": {
+      "job": {
+        "id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "task_name": "local.ledger",
+        "params_json": "{\"database\":\"<temporary>/ledger-False.sqlite\",\"idempotent\":false,\"value\":7}",
+        "status": "RUNNING",
+        "created_at": "2026-10-13T15:08:31.517006+00:00",
+        "started_at": "2026-10-13T15:08:32.122838+00:00",
+        "finished_at": null,
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": [
+        {
+          "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+          "number": 1,
+          "status": "RUNNING",
+          "started_at": "2026-10-13T15:08:32.122838+00:00",
+          "finished_at": null,
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ]
+    },
+    "after_kill": {
+      "job": {
+        "id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "task_name": "local.ledger",
+        "params_json": "{\"database\":\"<temporary>/ledger-False.sqlite\",\"idempotent\":false,\"value\":7}",
+        "status": "RUNNING",
+        "created_at": "2026-10-13T15:08:31.517006+00:00",
+        "started_at": "2026-10-13T15:08:32.122838+00:00",
+        "finished_at": null,
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": [
+        {
+          "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+          "number": 1,
+          "status": "RUNNING",
+          "started_at": "2026-10-13T15:08:32.122838+00:00",
+          "finished_at": null,
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ]
+    },
+    "recovered": {
+      "job": {
+        "id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "task_name": "local.ledger",
+        "params_json": "{\"database\":\"<temporary>/ledger-False.sqlite\",\"idempotent\":false,\"value\":7}",
+        "status": "SUCCESS",
+        "created_at": "2026-10-13T15:08:31.517006+00:00",
+        "started_at": "2026-10-13T15:08:32.122838+00:00",
+        "finished_at": "2026-10-13T15:08:34.916365+00:00",
+        "next_run_at": null,
+        "attempt_count": 2,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": [
+        {
+          "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+          "number": 1,
+          "status": "INTERRUPTED",
+          "started_at": "2026-10-13T15:08:32.122838+00:00",
+          "finished_at": "2026-10-13T15:08:34.775854+00:00",
+          "error_kind": "INTERRUPTED",
+          "exception_type": null,
+          "error_message": "Previous Worker exited before attempt completion",
+          "traceback": null
+        },
+        {
+          "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+          "number": 2,
+          "status": "SUCCESS",
+          "started_at": "2026-10-13T15:08:34.883728+00:00",
+          "finished_at": "2026-10-13T15:08:34.916365+00:00",
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ],
+      "worker": {
+        "signal": "SIGTERM",
+        "exit_code": 0,
+        "events": [
+          {
+            "time": "2026-10-13T15:08:34.905796+00:00",
+            "level": "INFO",
+            "event": "attempt_started",
+            "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+            "attempt_number": 2,
+            "error_kind": null
+          },
+          {
+            "time": "2026-10-13T15:08:34.912981+00:00",
+            "level": "INFO",
+            "event": "attempt_finished",
+            "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+            "attempt_number": 2,
+            "error_kind": null
+          }
+        ]
+      }
+    },
+    "calls": [
+      {
+        "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "number": 1
+      },
+      {
+        "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "number": 2
+      }
+    ],
+    "effects_before": [
+      {
+        "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "number": 1,
+        "value": 7
+      }
+    ],
+    "effects_after": [
+      {
+        "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "number": 1,
+        "value": 7
+      },
+      {
+        "job_id": "57cd9a10-3435-4fec-bc48-9c5b14043a7c",
+        "number": 2,
+        "value": 7
+      }
+    ],
+    "total_value": 14
+  },
+  "crash_with_idempotency": {
+    "idempotent": true,
+    "barrier": {
+      "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+      "attempt_number": 1,
+      "stage": "success_sql_flushed_before_commit"
+    },
+    "crash_exit_code": -9,
+    "before_kill": {
+      "job": {
+        "id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "task_name": "local.ledger",
+        "params_json": "{\"database\":\"<temporary>/ledger-True.sqlite\",\"idempotent\":true,\"value\":7}",
+        "status": "RUNNING",
+        "created_at": "2026-10-13T15:08:36.439572+00:00",
+        "started_at": "2026-10-13T15:08:36.978238+00:00",
+        "finished_at": null,
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": [
+        {
+          "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+          "number": 1,
+          "status": "RUNNING",
+          "started_at": "2026-10-13T15:08:36.978238+00:00",
+          "finished_at": null,
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ]
+    },
+    "after_kill": {
+      "job": {
+        "id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "task_name": "local.ledger",
+        "params_json": "{\"database\":\"<temporary>/ledger-True.sqlite\",\"idempotent\":true,\"value\":7}",
+        "status": "RUNNING",
+        "created_at": "2026-10-13T15:08:36.439572+00:00",
+        "started_at": "2026-10-13T15:08:36.978238+00:00",
+        "finished_at": null,
+        "next_run_at": null,
+        "attempt_count": 1,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": [
+        {
+          "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+          "number": 1,
+          "status": "RUNNING",
+          "started_at": "2026-10-13T15:08:36.978238+00:00",
+          "finished_at": null,
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ]
+    },
+    "recovered": {
+      "job": {
+        "id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "task_name": "local.ledger",
+        "params_json": "{\"database\":\"<temporary>/ledger-True.sqlite\",\"idempotent\":true,\"value\":7}",
+        "status": "SUCCESS",
+        "created_at": "2026-10-13T15:08:36.439572+00:00",
+        "started_at": "2026-10-13T15:08:36.978238+00:00",
+        "finished_at": "2026-10-13T15:08:39.667114+00:00",
+        "next_run_at": null,
+        "attempt_count": 2,
+        "max_retries": 1,
+        "retry_base_seconds": 0.1,
+        "retry_cap_seconds": 0.1,
+        "timeout_seconds": 5.0,
+        "last_error_kind": null,
+        "last_error_message": null
+      },
+      "attempts": [
+        {
+          "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+          "number": 1,
+          "status": "INTERRUPTED",
+          "started_at": "2026-10-13T15:08:36.978238+00:00",
+          "finished_at": "2026-10-13T15:08:39.527681+00:00",
+          "error_kind": "INTERRUPTED",
+          "exception_type": null,
+          "error_message": "Previous Worker exited before attempt completion",
+          "traceback": null
+        },
+        {
+          "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+          "number": 2,
+          "status": "SUCCESS",
+          "started_at": "2026-10-13T15:08:39.633918+00:00",
+          "finished_at": "2026-10-13T15:08:39.667114+00:00",
+          "error_kind": null,
+          "exception_type": null,
+          "error_message": null,
+          "traceback": null
+        }
+      ],
+      "worker": {
+        "signal": "SIGTERM",
+        "exit_code": 0,
+        "events": [
+          {
+            "time": "2026-10-13T15:08:39.655344+00:00",
+            "level": "INFO",
+            "event": "attempt_started",
+            "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+            "attempt_number": 2,
+            "error_kind": null
+          },
+          {
+            "time": "2026-10-13T15:08:39.662920+00:00",
+            "level": "INFO",
+            "event": "attempt_finished",
+            "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+            "attempt_number": 2,
+            "error_kind": null
+          }
+        ]
+      }
+    },
+    "calls": [
+      {
+        "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "number": 1
+      },
+      {
+        "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "number": 2
+      }
+    ],
+    "effects_before": [
+      {
+        "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "number": 1,
+        "value": 7
+      }
+    ],
+    "effects_after": [
+      {
+        "job_id": "66e08aec-8a0f-4783-ba00-2cb95020c4da",
+        "number": 1,
+        "value": 7
+      }
+    ],
+    "total_value": 7
+  },
+  "local_service_exit_code": -15,
+  "cleanup": {
+    "temporary_directory_removed": true,
+    "all_children_reaped": true
+  }
+}
