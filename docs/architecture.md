@@ -1,6 +1,7 @@
 # TaskForge MVP 架构
 
-本文记录已确认的 Step 1 与 Step 2 设计。除工程骨架外，以下能力均为待实现设计。
+本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架及 T02 注册与输入校验已实现；
+其余能力为待实现设计，实际验收状态见 docs/verification.md。
 
 ## 场景与范围
 
@@ -60,7 +61,7 @@ Repository、消息代理或插件体系。模块文件随对应任务创建，�
 
 公共操作规划为 `registry.task(...)`、异步 `TaskForge.submit/get/list/history`、
 `Worker.run()` 和 `Worker.request_stop()`。CLI 命令规划为
-`init/submit/worker/list/show/history`。这些接口在 T01 尚不存在。
+`init/submit/worker/list/show/history`。T02 已实现 `registry.task(...)`，其余接口尚不存在。
 
 提交时先校验参数并保存规范化 JSON；Worker 执行前再次校验。执行策略在提交时保存快照，
 修改注册默认值只影响新任务。提交成功表示事务提交完成；结果不确定的提交错误需携带任务 ID，

@@ -167,3 +167,72 @@ T02 prompt 和源码分发配置中的使用要求。后续直接运行已有质
 当前文档中的本地链接有效，使用入口中无已删除脚本的引用；源码包不再包含 scripts，
 仍包含 uv.lock 和历史收据，wheel 仍包含包与 py.typed。
 本次未修改业务源码，未重复执行没有测试用例的 pytest。
+
+
+## T02：任务注册与输入校验
+
+验证日期：2026-10-13。环境沿用 T01：Linux x86_64、CPython 3.12.13、uv 0.10.9、
+Pydantic 2.14.1、pytest 9.1.1、pytest-asyncio 1.4.0、Ruff 0.17.0、mypy 1.20.2。
+
+**状态：T02 已完成。** 实现与验收阶段止于 T02；T03—T10 未实现，当时未创建 Git Commit。
+
+### 前置条件与实现边界
+
+已读取项目 AGENTS.md、karpathy-guidelines skill、T02 prompt、README、架构、迭代计划及
+T01 验收记录，检查当前源码与工作区。开始时工作区无未提交改动。
+uv.lock 存在，locked 离线同步、原有 Ruff、mypy 和隔离构建均通过。
+没有新增、升级依赖或修改全局环境；pyproject.toml、uv.lock 与 verification-t01.json 保持原样。
+T01 历史文件指纹仅用于说明当时验收，不作为当前文件门禁。
+
+本次实现 TaskRegistry、TaskDefinition、ExecutionPolicy、load_registry 及对应错误类型。
+不访问数据库，不实现提交、领取、执行器、Worker、CLI、日志系统、退避调度或崩溃恢复。
+默认策略为额外重试 0 次、退避基数 1s、上限 60s、超时 300s；范围及理由见 README。
+
+### 行为证据
+
+- tests/test_registry.py：注册后按稳定名称查找、原函数身份与直接 await；
+  重名及非法名称、同步函数、async generator、参数形态、错误模型和注解被拒绝；
+  失败不替换已有项，未知名称有明确错误，两份注册表互相隔离。
+- tests/test_registry.py：合法与非法 Python/JSON 输入；模型的 extra=ignore/allow/forbid；
+  严格类型、别名、datetime、Json 字段的 JSON 往返；不可序列化、必需字段被排除、
+  非 JSON 对象的输出得到明确 InputSerializationError，不修改用户模型配置。
+- tests/test_policy.py：非负严格整数、有限正时间、cap >= base、未知字段拒绝；
+  默认值及合法边界、不可变且独立的任务策略副本，修改后续声明不影响已有任务定义。
+  注册入口也重新校验绕过普通构造产生的策略对象。
+- tests/test_loading.py：真实临时模块的 module:attribute 加载；格式错误、模块不存在、
+  导入代码异常、属性缺失和属性不是注册表的失败路径及底层异常链。
+
+首轮 77 项行为测试与 mypy 通过；Ruff 发现行宽、导入排序及测试中的未定义注解写法，
+已修正。补充非 JSON 对象序列化测试后，最终 78 项全部通过。
+
+### 最终检查结果
+
+以下命令均设置 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"，使用已验收的本机缓存。
+没有使用 --no-sync 替代 locked 检查，也没有新增占位测试。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 前置 locked 同步 | uv sync --locked | 退出码 0；解析 27 个包、审核 26 个安装包 |
+| 完整行为测试 | uv run --locked pytest | 退出码 0；78 passed |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0 |
+| mypy strict | uv run --locked mypy | 退出码 0；4 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| README 示例 | 从 README 提取 Python 示例到自动清理的临时 tasks.py，再用 uv run --locked python 执行 | 退出码 0；输出 count=3 |
+| 显式加载示例 | 在临时模块路径调用 load_registry("tasks:registry") | 退出码 0；输出 demo.count |
+| 示例类型检查 | uv run --locked mypy --strict 临时 tasks.py | 退出码 0 |
+| 分发结构 | zipfile/tarfile 检查实际归档 | wheel 包含四个源码模块及 py.typed；sdist 包含锁文件、三个测试文件及 T03 prompt |
+| wheel 接口 | 从 /tmp 以项目 Python 的 -I 模式优先加载 wheel，确认模块来源，再注册并做 JSON 往返 | 退出码 0；实际模块来自 dist wheel，使用项目已有依赖 |
+| 改动检查 | git diff --check；核对依赖配置、锁文件及 T01 收据 | 退出码 0；三份前置文件未修改 |
+
+README、架构文档的实现状态、迭代计划与本记录已同步，docs/prompts/T03.md 提供下一会话交接。
+示例验证使用的临时目录已自动清理；原有 tests/.gitkeep 保留。
+
+剩余限制：这里只保存执行策略，尚无持久化或执行能力；注册阶段不执行用户函数。
+自定义模型需提供可重新校验的 JSON 表示，任意有损 serializer 不保证值完全相等。
+更高 Python 版本仍未验证，MVP 仍需完成 T03—T10。
+
+### T02 Git 提交
+
+T02 验收后，用户追加要求创建 Git Commit。本次提交包含 T02 源码、行为测试、
+说明文档、验收记录及 T03 交接 prompt；未继续实现 T03。
