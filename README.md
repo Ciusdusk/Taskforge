@@ -3,7 +3,7 @@
 TaskForge 面向个人开发者和小型项目，计划通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01—T03 已验收完成**：可注册任务、校验输入、持久化提交和查询；Worker 与 CLI 尚未实现。
+**T01—T04 已验收完成**：可注册任务、校验输入、持久化提交和查询、原子领取和完成尝试；Worker 与 CLI 尚未实现。
 包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
 
 ## 环境准备
@@ -34,13 +34,13 @@ uv build
 
 构建生成 `dist/` 下的 wheel 和源码分发包；wheel 包含 `src/taskforge` 及 `py.typed`。
 
-运行注册、校验、策略、显式加载与真实 SQLite 持久化的行为测试：
+运行注册、校验、策略、显式加载与真实 SQLite 持久化及原子领取完成的行为测试：
 
 ```bash
 uv run --locked pytest
 ```
 
-T02/T03 已加入实际行为测试，包括临时 SQLite 文件、并发提交与事务故障。
+T02—T04 已加入实际行为测试，包括临时 SQLite 文件、并发提交与领取、完成身份校验和事务故障。
 后续 Worker 与恢复测试将使用真实子进程。
 
 ## 任务注册与输入校验
@@ -192,7 +192,7 @@ if __name__ == "__main__":
 拒绝接管有表但无版本的数据库；不提供迁移，也不自动修复人为修改的 schema。
 SQLite 的状态、整数次数、预算、正有限时间、退避范围、外键及索引约束由数据库执行。
 错误摘要最多 2000 个字符，异常类型最多 256 个字符，traceback 最多 16000 个字符；
-超限写入被约束拒绝，后续执行层负责截断。
+直接超限写入被约束拒绝；finish_attempt 在保存错误文本前截断到这些上限。
 
 每次操作使用独立短会话；查询开启普通事务，写入与建表统一使用 `BEGIN IMMEDIATE`。
 每个连接开启外键，锁等待由 `busy_timeout_ms` 限制（允许 0—2147483647 的整数毫秒）。
@@ -203,7 +203,91 @@ commit 失败时使连接失效并关闭，防止残留事务被连接池复用�
 commit 阶段的协程取消也转为该错误，原 `CancelledError` 保留在异常链中；
 commit 前取消仍传播取消，并回滚。这里不提供自动重交或业务去重。
 
-T03 仅保存提交和查询；尚无领取、完成、任务执行、Worker、重试调度、进程锁或恢复。
+## 原子领取与完成
+
+SQLiteStore 提供以下接口，不要求注册表，也不执行用户任务函数：
+
+| 接口 | 返回值与行为 |
+| --- | --- |
+| await store.claim_next() | 返回不可变 AttemptClaim；没有可领取任务时返回 None |
+| claim.job / claim.job_id / claim.number | 已提交的 RUNNING Job 快照、稳定 ID 与本次尝试序号；后两项组成完成凭据 |
+| AttemptOutcome(status, error_kind=None, exception_type=None, error_message=None, traceback=None) | 不可变单次结果，字段在 finish_attempt 边界校验 |
+| await store.finish_attempt(job_id, number, outcome, *, status, next_run_at=None) | 同一事务结束 Attempt 并更新 Job；成功 commit 后返回不可变 Job |
+
+领取使用一个 BEGIN IMMEDIATE 事务，筛选 PENDING 或 RETRY_WAIT、next_run_at 不为空且已到期、
+attempt_count < max_retries + 1 的 Job，按 (next_run_at, created_at, id) 升序取首项。
+条件 UPDATE 再次检查状态、到期时间和预算，变为 RUNNING、计数加一并插入对应 RUNNING Attempt。
+首次设置 Job.started_at，重试保留首次时间；清空 next_run_at 和 finished_at，保留参数、策略
+和上次错误摘要。时间在获得写事务后读取，到期边界包含相等时间。
+
+完成要求 Job 为 RUNNING、number 等于 attempt_count 且对应 Attempt 仍为 RUNNING。
+未知 Job 抛 UnknownJobError；错误序号、错误 Job、过期或重复完成抛 AttemptConflictError，
+不会覆盖记录。number 必须是正整数，拒绝布尔值及浮点数。
+结果组合、字段类型或重试时间非法时抛 InvalidAttemptResultError，并保留原状态。
+
+| AttemptOutcome.status | error_kind | 可选 Job status |
+| --- | --- | --- |
+| AttemptStatus.SUCCESS | 必须为空，全部错误字段也必须为空 | JobStatus.SUCCESS |
+| AttemptStatus.FAILED | TASK_ERROR、TIMEOUT 或 CONFIG_ERROR | JobStatus.FAILED；非 CONFIG_ERROR 也可 RETRY_WAIT |
+| AttemptStatus.INTERRUPTED | 必须为 INTERRUPTED | JobStatus.FAILED 或 RETRY_WAIT |
+
+结果和状态必须使用枚举；RUNNING 不是完成结果。失败时 error_kind 必填，其他错误字段可为空。
+异常类型、摘要、traceback 必须是字符串或 None；分别按 Python 字符截取前 256、2000、16000
+个字符，不修改调用方的 outcome。Job 当前摘要与本次 Attempt 相同；成功清空当前错误，
+已有失败 Attempt 的详情保持不变。
+
+Attempt.finished_at 使用本次完成事务的 UTC 时间。终态 Job.finished_at 与之相同且
+next_run_at 为空；RETRY_WAIT 的 Job.finished_at 为空，next_run_at 必须带时区、严格晚于
+本次完成时间，且必须仍有尝试预算。此接口保存调用方明确给出的重试安排；
+重试决策与退避计算留在 T07。
+
+先保存前文的 tasks.py，再将以下示例保存为 claim_finish.py，运行
+uv run --locked python claim_finish.py。示例使用 attempts.sqlite 提交一条任务，
+手动提供成功结果来演示存储接口，输出 RUNNING SUCCESS 1：
+
+```python
+import asyncio
+from pathlib import Path
+
+from taskforge import (
+    AttemptOutcome,
+    AttemptStatus,
+    DatabaseConfig,
+    JobStatus,
+    SQLiteStore,
+    TaskForge,
+)
+from tasks import registry
+
+
+async def main() -> None:
+    config = DatabaseConfig(database_path=Path("attempts.sqlite"))
+    async with SQLiteStore(config) as store:
+        await store.initialize()
+        await TaskForge(store, registry).submit("demo.count", {"count": 3})
+        claim = await store.claim_next()
+        assert claim is not None
+        done = await store.finish_attempt(
+            claim.job_id,
+            claim.number,
+            AttemptOutcome(AttemptStatus.SUCCESS),
+            status=JobStatus.SUCCESS,
+        )
+        print(claim.job.status.value, done.status.value, len(await store.history(done.id)))
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+领取和完成复用短会话与 _commit；commit 前的数据库故障抛 StorageError 并完整回滚，
+底层异常保留在异常链中。commit 前取消传播 CancelledError 并回滚。
+commit 开始后的故障或取消分别抛 ClaimUncertainError / CompletionUncertainError，
+均携带 job_id 和 number；原始错误留在异常链中，失败连接会失效。
+不确定领取不返回可执行凭据；调用方应停止执行该领取，使用 get/history 核对持久状态。
+不确定完成也须先查询，不能直接认定失败或重新执行任务。这里不自动重领或重交结果。
+
+T04 尚无 Executor、Worker、重试决策与调度、进程锁、恢复、日志系统或 CLI。
 
 ## 已确认的 MVP 语义
 
@@ -218,5 +302,5 @@ T03 仅保存提交和查询；尚无领取、完成、任务执行、Worker、�
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T04 交接 prompt](docs/prompts/T04.md)
-实现原子领取与完成；T03 验收后按用户追加要求提交改动。
+T01—T10 每个任务由一个独立会话实现。下一会话使用 [T05 交接 prompt](docs/prompts/T05.md)
+实现单次执行与超时；T04 验收后按用户追加要求提交改动。

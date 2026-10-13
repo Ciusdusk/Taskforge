@@ -92,3 +92,29 @@ class Attempt:
     exception_type: str | None
     error_message: str | None
     traceback: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class AttemptClaim:
+    """Committed RUNNING Job snapshot and its completion credential."""
+
+    job: Job
+    number: int
+
+    @property
+    def job_id(self) -> str:
+        return self.job.id
+
+
+@dataclass(frozen=True, slots=True)
+class AttemptOutcome:
+    """One execution result; storage validates it before writing.
+
+    Job disposition and retry timing are supplied separately by the caller.
+    """
+
+    status: AttemptStatus
+    error_kind: ErrorKind | None = None
+    exception_type: str | None = None
+    error_message: str | None = None
+    traceback: str | None = None

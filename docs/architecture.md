@@ -1,6 +1,6 @@
 # TaskForge MVP 架构
 
-本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验及 T03 持久化提交与查询已实现；
+本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询及 T04 原子领取与完成已实现；
 其余能力为待实现设计，实际验收状态见 docs/verification.md。
 
 ## 场景与范围
@@ -128,6 +128,25 @@ Repository、消息代理或插件体系。模块文件随对应任务创建，�
 领取排序为 `next_run_at、created_at、id`，条件更新再次检查状态与到期时间。
 领取提交后才能执行；完成凭据为 `job_id + attempt number`，过期或重复结果不得覆盖状态。
 Worker 槽位覆盖领取、执行和完成持久化全过程。
+
+T04 已实现 SQLiteStore.claim_next() -> AttemptClaim | None 和
+finish_attempt(job_id, number, outcome, *, status, next_run_at=None) -> Job。
+AttemptClaim 保存不可变 RUNNING Job 快照及 number，job_id 属性与 number 构成凭据。
+AttemptOutcome 保存尝试终态与错误详情；接口拒绝不合法组合、过期和重复身份。
+失败结果可写 FAILED 或有预算的 RETRY_WAIT，CONFIG_ERROR 不允许重试；
+INTERRUPTED 结果要求同名错误类别。RETRY_WAIT 时间必须带时区且严格晚于本次完成时间。
+存储层只校验并保存调用方的安排，不计算重试决策或退避。
+
+领取在获得写事务后读取 UTC 微秒时间，条件更新再次检查等待状态、到期与预算；
+首次开始时间保留，重试不覆盖，参数与策略快照不变。
+完成时间由存储层在完成事务中读取，Attempt 总是结束，终态 Job 同时结束，
+重试等待的 Job.finished_at 为空。错误文本分别截断到摘要 2000、类型 256、堆栈 16000
+个字符，数据库长度约束仍生效。成功清空当前摘要而保留历史。
+
+两项操作只在 commit 成功后返回快照；commit 前 SQL 故障与取消完整回滚。
+commit 开始后的故障或取消返回 ClaimUncertainError / CompletionUncertainError，
+携带 job_id 与 number 供 get/history 核对，并复用 _commit 使失败连接失效。
+不确定领取不能直接执行；不确定完成不能据此重新执行用户任务。
 
 第 k 次失败后的等待时间为 `min(cap, base × 2^(k−1))`，首期不加抖动。
 `max_retries=N` 最多 `N+1` 次尝试；未知任务或参数不匹配不重试。

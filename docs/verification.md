@@ -322,3 +322,102 @@ README 示例的临时脚本及数据库自动清理；没有在工作区留下�
 
 T03 验收后，用户追加要求创建 Git Commit。本次提交包含 T03 源码、SQLite 行为测试、
 接口说明、验收记录及 T04 交接 prompt；未继续实现 T04。
+
+
+## T04：原子领取与完成
+
+验证日期：2026-10-13。环境沿用 T03：Linux x86_64、CPython 3.12.13、uv 0.10.9，
+使用已有完整离线缓存与锁定依赖，没有新增或升级依赖。
+
+**状态：T04 已完成。** 本会话仅实现原子领取、完成及必要公共模型和错误；
+验收阶段未继续 T05，没有创建 Git Commit。
+
+### 前置条件与范围
+
+已读取适用 AGENTS.md、karpathy-guidelines skill、T04 prompt、README、依赖配置、
+架构、计划、验证记录、源码和现有测试。开始时工作区干净，T03 已提交为 938a49b。
+uv.lock 存在；uv sync --locked 返回 0，解析 27 个包、审核 26 个安装包。
+按当前文件复核 T01—T03：152 项已有行为测试、Ruff、格式检查、mypy strict 与构建全部返回 0。
+T01 收据仅作历史证据；没有按历史指纹拒绝当前合法文件。
+
+修改 storage.py、models.py、errors.py、__init__.py，增加 tests/test_attempts.py。
+没有修改 schema 版本、表与约束、依赖配置、锁文件、历史 T01 收据或已有测试。
+不创建后续业务模块，不执行用户任务函数。
+
+### 接口与行为证据
+
+完整接口、结果组合和可运行示例见 README 的“原子领取与完成”。
+
+- claim_next() 返回 AttemptClaim 或 None；凭据含不可变 Job、job_id 属性和 number。
+  BEGIN IMMEDIATE 中按 (next_run_at, created_at, id) 查找到期等待任务，条件 UPDATE
+  再查状态、时间和预算；变为 RUNNING、次数加一，并插入对应 RUNNING Attempt。
+  首次 started_at 保留；清空 next_run_at，参数与全部策略不变；commit 成功后才返回凭据。
+- finish_attempt(job_id, number, outcome, *, status, next_run_at=None) 返回不可变 Job。
+  校验 Job、当前尝试序号与双方 RUNNING 状态；未知 ID 抛 UnknownJobError，
+  重复、过期或不匹配身份抛 AttemptConflictError。非法结果抛 InvalidAttemptResultError。
+- AttemptOutcome 为不可变单次结果，支持 SUCCESS、FAILED 和 INTERRUPTED。
+  Job 完成状态为 SUCCESS、FAILED 或调用方明确给出的 RETRY_WAIT；
+  存储层只校验并保存，不计算重试决策或退避。CONFIG_ERROR 禁止重试，
+  RETRY_WAIT 必须还有预算，next_run_at 带时区且严格晚于完成时间。
+- 完成时间为事务中的 UTC 微秒时间：Attempt 总是结束，终态 Job 同时结束；
+  重试等待的 Job.finished_at 为空。失败保存错误历史及当前摘要，成功清空当前摘要，
+  历史错误不变。按字符将异常类型、摘要、traceback 截断至 256、2000、16000，
+  保留调用方结果原值和现有数据库约束。
+- 复用 db.py 的 begin hook 和 storage.py 的 _commit，未引入另一套事务开启方式。
+  commit 前 SQL 故障完整回滚，取消传播并回滚；commit 开始后的故障或取消抛
+  ClaimUncertainError / CompletionUncertainError，携带 job_id 与 number，
+  保留异常链并使失败连接失效。调用方必须查询确认，不能直接执行不确定领取或重新执行任务。
+
+tests/test_attempts.py 的 69 项真实临时 SQLite 文件测试覆盖：
+
+- 屏障同时启动八个独立存储连接争抢同一 Job，仅一个成功；四个独立连接领取十二个 Job，
+  根据写事务实际 UPDATE 顺序核对三个排序键，领取无重复。次数等于历史条数。
+- 空队列、未到期、空到期时间、已到期但非等待状态、PENDING/RETRY_WAIT 预算耗尽均不领取；
+  可替换内部微秒时钟，验证相等到期边界及未来一微秒不提前领取。
+- 领取时间、次数、新 Attempt、策略和参数快照正确；重开后 RUNNING 与完成状态仍可查询；
+  Job、Attempt、领取凭据不可变，旧快照不随后续完成变化。
+- 成功、任务错误、超时、配置错误、中断，以及合法失败/中断的重试等待同时更新状态和历史；
+  重领保持首次开始时间，成功清除摘要但保留第一次失败历史，Unicode 文本长度截断正确。
+- 错误 Job、序号、未知 ID、过期、重复完成、Attempt 已非 RUNNING 与非法字段/结果组合均拒绝，
+  保留原记录。屏障并发完成只有一次成功。
+- AFTER INSERT attempts 的真实 RAISE(FAIL) 验证领取回滚已更新 Job 与已插入 Attempt；
+  AFTER UPDATE jobs 的真实故障验证完成回滚已结束 Attempt 与已更新 Job。
+- 事件阻塞 commit 时独立连接只能读到两个表的原状态，调用尚未返回；
+  放行后状态和历史同时可见。commit 前取消已 flush 的领取或完成完整回滚。
+- commit 应答丢失覆盖实际已提交和未提交两种状态及取消路径，错误凭据可查询；
+  真实 SQLite 读锁阻塞 COMMIT 验证两项操作的连接失效、完整回滚及同一存储后续可用。
+  BEGIN IMMEDIATE 锁故障有有限等待并返回 StorageError，未误报提交不确定。
+
+首轮新增测试返回 1（65 passed、2 failed）：测试数据的远期整数超出 Python datetime 范围，
+以及固定时间被误当成当前过去时间。已改为合法远期值、明确过去值，并用内部时钟验证精确边界。
+首轮 Ruff 返回 1，提示 zip 缺少 strict 参数；已修正。后续新增测试及全部检查均通过。
+
+### 最终检查结果
+
+以下命令均设置 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"；
+没有以 --no-sync 替代 locked 检查，没有占位测试。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 前置同步 | uv sync --locked | 退出码 0；解析 27 个包、审核 26 个安装包 |
+| 全部行为测试 | uv run --locked pytest | 退出码 0；221 passed（T02 78、T03 74、T04 69） |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；21 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；8 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| README 三个示例 | 从实际代码块提取到自动清理临时目录，用 uv run --project 项目路径 --locked python 执行 | 三次退出码均为 0；count=3；PENDING/空历史；RUNNING SUCCESS 1 |
+| README 示例类型 | uv run --project 项目路径 --locked mypy --strict 三个临时示例文件 | 退出码 0；3 个文件无问题 |
+| 改动与前置文件 | git diff --check；git diff --exit-code -- pyproject.toml uv.lock docs/verification-t01.json | 退出码 0；依赖、锁文件与历史收据未修改 |
+
+README、架构实现状态、迭代计划和本记录已同步，docs/prompts/T05.md 提供下一独立会话交接。
+示例脚本与数据库随临时目录自动清理；未留下验收脚本或示例数据库。
+
+剩余限制：T04 只保存领取与完成状态，没有 Executor、Worker、重试决策或调度、进程锁、
+恢复、日志系统或 CLI；不提供自动重交与业务去重。提交结果不确定仍需查询确认；
+更高 Python 版本尚未验证，MVP 仍需完成 T05—T10。
+
+
+### T04 Git 提交
+
+T04 验收后，用户追加要求创建 Git Commit。本次提交包含 T04 源码、真实 SQLite 行为测试、
+接口说明、验收记录及 T05 交接 prompt；未继续实现 T05。

@@ -46,3 +46,29 @@ class SubmissionUncertainError(StorageError):
     def __init__(self, job_id: str) -> None:
         self.job_id = job_id
         super().__init__(f"Submission result is uncertain; query Job {job_id!r}")
+
+
+class AttemptConflictError(TaskForgeError):
+    """The credential does not identify the current RUNNING attempt."""
+
+
+class InvalidAttemptResultError(TaskForgeError, ValueError):
+    """An outcome, disposition, attempt number or retry time is invalid."""
+
+
+class ClaimUncertainError(StorageError):
+    """Claim commit was attempted; do not execute without confirming ownership."""
+
+    def __init__(self, job_id: str, number: int) -> None:
+        self.job_id = job_id
+        self.number = number
+        super().__init__(f"Claim result is uncertain; query Job {job_id!r}, attempt {number}")
+
+
+class CompletionUncertainError(StorageError):
+    """Completion commit was attempted; query Job and history before retrying."""
+
+    def __init__(self, job_id: str, number: int) -> None:
+        self.job_id = job_id
+        self.number = number
+        super().__init__(f"Completion result is uncertain; query Job {job_id!r}, attempt {number}")

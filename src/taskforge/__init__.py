@@ -3,7 +3,11 @@
 from taskforge.api import TaskForge
 from taskforge.config import DatabaseConfig
 from taskforge.errors import (
+    AttemptConflictError,
+    ClaimUncertainError,
+    CompletionUncertainError,
     InputSerializationError,
+    InvalidAttemptResultError,
     PaginationError,
     RegistrationError,
     RegistryLoadError,
@@ -16,6 +20,8 @@ from taskforge.errors import (
 )
 from taskforge.models import (
     Attempt,
+    AttemptClaim,
+    AttemptOutcome,
     AttemptStatus,
     ErrorKind,
     ExecutionPolicy,
@@ -28,6 +34,12 @@ from taskforge.storage import SQLiteStore
 
 __all__ = [
     "Attempt",
+    "AttemptClaim",
+    "AttemptOutcome",
+    "AttemptConflictError",
+    "ClaimUncertainError",
+    "CompletionUncertainError",
+    "InvalidAttemptResultError",
     "AttemptStatus",
     "DatabaseConfig",
     "ErrorKind",
