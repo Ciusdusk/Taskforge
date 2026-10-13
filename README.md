@@ -3,8 +3,8 @@
 TaskForge 面向个人开发者和小型项目，计划通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01—T06 已验收完成**：可注册、提交与查询任务，运行单个 Worker，以有界异步并发执行并保存状态与历史。
-重试决策、停机宽限期、崩溃恢复和 CLI 尚未实现。
+**T01—T07 已验收完成**：可注册、提交与查询任务，运行单个 Worker，以有界异步并发执行、
+持久化有限重试并保存状态与历史。停机宽限期、崩溃恢复和 CLI 尚未实现。
 包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
 
 ## 环境准备
@@ -41,8 +41,8 @@ uv build
 uv run --locked pytest
 ```
 
-T02—T06 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文
-以及独立 Worker 子进程之间的锁互斥。
+T02—T07 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
+独立 Worker 子进程之间的锁互斥，以及持久化重试和新进程重启后的到期边界。
 
 ## 任务注册与输入校验
 
@@ -123,7 +123,7 @@ JSON 使用别名及 Pydantic `round_trip` 序列化，再用同一模型检查�
 | `timeout_seconds` | `300.0` | 有限正数；为常见异步 I/O 提供五分钟的初始预算 |
 
 时间接受数值，拒绝布尔值和字符串；以上只是起始默认值，用户可声明任务自己的策略。
-T03 将这些字段保存为数据库快照；T05 按快照执行超时，退避调度尚未实现。
+T03 将这些字段保存为数据库快照；T05 按快照执行超时，T07 按快照决策重试和退避。
 
 ## 持久化提交与查询
 
@@ -213,7 +213,7 @@ SQLiteStore 提供以下接口，不要求注册表，也不执行用户任务�
 | await store.claim_next() | 返回不可变 AttemptClaim；没有可领取任务时返回 None |
 | claim.job / claim.job_id / claim.number | 已提交的 RUNNING Job 快照、稳定 ID 与本次尝试序号；后两项组成完成凭据 |
 | AttemptOutcome(status, error_kind=None, exception_type=None, error_message=None, traceback=None) | 不可变单次结果，字段在 finish_attempt 边界校验 |
-| await store.finish_attempt(job_id, number, outcome, *, status, next_run_at=None) | 同一事务结束 Attempt 并更新 Job；成功 commit 后返回不可变 Job |
+| await store.finish_attempt(job_id, number, outcome, *, status, next_run_at=None, retry_delay_seconds=None) | 同一事务结束 Attempt 并更新 Job；成功 commit 后返回不可变 Job |
 
 领取使用一个 BEGIN IMMEDIATE 事务，筛选 PENDING 或 RETRY_WAIT、next_run_at 不为空且已到期、
 attempt_count < max_retries + 1 的 Job，按 (next_run_at, created_at, id) 升序取首项。
@@ -239,8 +239,12 @@ attempt_count < max_retries + 1 的 Job，按 (next_run_at, created_at, id) 升�
 
 Attempt.finished_at 使用本次完成事务的 UTC 时间。终态 Job.finished_at 与之相同且
 next_run_at 为空；RETRY_WAIT 的 Job.finished_at 为空，next_run_at 必须带时区、严格晚于
-本次完成时间，且必须仍有尝试预算。此接口保存调用方明确给出的重试安排；
-重试决策与退避计算留在 T07。
+本次完成时间，且必须仍有尝试预算。此接口保存调用方明确给出的重试安排。
+也可提供 `retry_delay_seconds`：有限正数，拒绝布尔值和字符串，仅用于 RETRY_WAIT，
+不能与 `next_run_at` 同时提供。存储以本次完成事务时间加延迟生成到期时间，
+避免数据库锁等待耗尽退避间隔；延迟向上取整到微秒，最短 1 微秒，超出 datetime 范围时
+到期时间封顶为 UTC `datetime.max`。原有绝对时间接口仍严格校验未来时间。
+存储不决定是否重试，也不计算指数退避；Worker 负责这些决策。
 
 先保存前文的 tasks.py，再将以下示例保存为 claim_finish.py，运行
 uv run --locked python claim_finish.py。示例使用 attempts.sqlite 提交一条任务，
@@ -384,8 +388,8 @@ if __name__ == "__main__":
 `await worker.run()` 先取得规范化数据库路径加 `.lock` 的非阻塞独占文件锁，
 再检查现有 schema，启动固定数量的异步槽位。每个槽位覆盖领取、用户执行及完成 commit；
 用户代码运行时没有存储会话。空槽位每隔轮询间隔检查队列，不忙等。
-成功保存 SUCCESS；业务异常、框架超时、配置错误保存最终 FAILED，T06 不重试，
-即使 Job 快照的 max_retries 大于零也如此。
+成功保存 SUCCESS；业务异常和框架超时按 Job 快照的剩余预算保存 RETRY_WAIT 或最终 FAILED。
+配置错误直接保存 FAILED。
 
 `worker.request_stop()` 同步停止新领取并唤醒空闲槽位；已开始的领取、用户执行和完成写入
 继续到结束。每个 Worker 实例只能 run 一次。以下示例保存为 `worker_once.py`，
@@ -438,6 +442,27 @@ run 结束后用 `store.get(error.job_id)` 与 `store.history(error.job_id)` 查
 重复取消不会打断清理。当前没有停机宽限期、主动取消编排或中断持久化。
 框架超时依赖用户协作；用户清理不结束时槽位和锁持续占用，退出持续等待。
 
+## 持久化重试
+
+`max_retries=N` 表示最多 N 次额外尝试，总次数不超过 N+1；领取成功即消耗一次预算。
+TASK_ERROR（包括用户自行抛出的 TimeoutError）和框架 TIMEOUT 有预算时重试，
+CONFIG_ERROR、成功、ExecutorError 和存储故障不会触发自动重执行。
+
+第 k 次失败后的等待为 `min(retry_cap_seconds, retry_base_seconds × 2^(k−1))`，
+首期无抖动。内部 `policy.decide_completion(job, outcome)` 是纯函数，返回不可变
+`CompletionDecision(status, retry_delay_seconds)`；`policy.retry_delay_seconds(job)`
+使用有界浮点指数计算，支持很大的尝试次数和全部正有限浮点策略值。
+策略只来自提交时的 Job 快照，更换注册表默认值不改变已有 Job。
+
+完成事务同时保存失败 Attempt、RETRY_WAIT 和 next_run_at，成功 commit 后释放槽位。
+空槽位继续轮询数据库；重试等待不占用执行槽位，不靠长时间内存 sleep 保存计划。
+领取边界包含到期时刻，实际执行可能因轮询间隔或槽位繁忙稍晚。
+Worker 重启保留原到期时间，普通等待 Job 不会提前执行。
+
+每次重试保持 Job ID、参数、策略和首次 started_at，创建新的递增 Attempt。
+最终成功清空 Job 当前错误摘要，保留此前失败的类型、摘要与 traceback。
+重试可能重复业务副作用，任务须自行保证幂等；当前仍不恢复遗留 RUNNING 尝试。
+
 ## 已确认的 MVP 语义
 
 - 任务通过装饰器注册 `async` 函数，接收单个 Pydantic 输入模型。
@@ -451,5 +476,5 @@ run 结束后用 `store.get(error.job_id)` 与 `store.history(error.job_id)` 查
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T07 交接 prompt](docs/prompts/T07.md)
-实现持久化重试；T06 验收后按用户追加要求提交改动。
+T01—T10 每个任务由一个独立会话实现。下一会话使用 [T08 交接 prompt](docs/prompts/T08.md)
+实现停机与崩溃恢复；T07 验收后按用户追加要求提交改动。

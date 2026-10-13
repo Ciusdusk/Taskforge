@@ -1,4 +1,4 @@
-"""Single-process bounded execution; retry and recovery belong to later tasks."""
+"""Single-process bounded execution and persistent retries."""
 
 import asyncio
 import logging
@@ -7,7 +7,8 @@ from taskforge.config import WorkerConfig
 from taskforge.errors import ExecutorError, StorageError, WorkerLockError
 from taskforge.executor import Executor
 from taskforge.locking import WorkerLock
-from taskforge.models import AttemptClaim, AttemptStatus, JobStatus
+from taskforge.models import AttemptClaim
+from taskforge.policy import decide_completion
 from taskforge.registry import TaskRegistry
 from taskforge.storage import SQLiteStore
 
@@ -77,12 +78,14 @@ class Worker:
                         pass
                     continue
                 outcome = await self._executor.execute(claim)
-                status = (
-                    JobStatus.SUCCESS
-                    if outcome.status is AttemptStatus.SUCCESS
-                    else JobStatus.FAILED
+                decision = decide_completion(claim.job, outcome)
+                await self._store.finish_attempt(
+                    claim.job_id,
+                    claim.number,
+                    outcome,
+                    status=decision.status,
+                    retry_delay_seconds=decision.retry_delay_seconds,
                 )
-                await self._store.finish_attempt(claim.job_id, claim.number, outcome, status=status)
                 claim = None
         except BaseException as exc:
             self.request_stop()

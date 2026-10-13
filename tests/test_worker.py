@@ -245,7 +245,8 @@ async def test_success_business_errors_timeout_and_configuration_history(store, 
         if data.value == 3:
             await asyncio.Event().wait()
 
-    tasks = registry(function, timeout=0.02)
+    tasks = TaskRegistry()
+    tasks.task("demo", input_model=Input, policy=ExecutionPolicy(timeout_seconds=0.02))(function)
     jobs = [await store.submit(tasks.get("demo"), {"value": i}) for i in range(7)]
     with sqlite3.connect(store.config.database_path) as connection:
         connection.execute("UPDATE jobs SET task_name='missing' WHERE id=?", (jobs[4].id,))

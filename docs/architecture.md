@@ -1,7 +1,7 @@
 # TaskForge MVP 架构
 
 本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询、
-T04 原子领取与完成、T05 单次执行与超时及 T06 Worker 与并发控制已实现；
+T04 原子领取与完成、T05 单次执行与超时、T06 Worker 与并发控制及 T07 持久化重试已实现；
 其余能力为待实现设计，实际验收状态见 docs/verification.md。
 
 ## 场景与范围
@@ -153,6 +153,18 @@ commit 开始后的故障或取消返回 ClaimUncertainError / CompletionUncerta
 `max_retries=N` 最多 `N+1` 次尝试；未知任务或参数不匹配不重试。
 重试时间存于数据库，不依赖长时间内存 sleep。
 
+T07 已实现 policy.decide_completion(job, outcome) -> CompletionDecision 和
+policy.retry_delay_seconds(job) -> float。决策仅使用不可变 Job 快照：SUCCESS 直接成功，
+CONFIG_ERROR 直接失败，TASK_ERROR/TIMEOUT 有预算则 RETRY_WAIT，否则最终失败。
+浮点分解与指数比较先判定封顶，不构造巨大整数幂，也不产生无穷延迟。
+
+Worker 将决策的 retry_delay_seconds 传给 finish_attempt 的新增同名关键字参数。
+存储在已取得写事务并确认凭据后，以本次完成时间加延迟生成 next_run_at；
+原有 next_run_at 绝对时间接口保留，二者互斥。相对延迟须为有限正数，只可用于 RETRY_WAIT，
+向上取整到微秒（至少 1 微秒），日期超出可表示范围时封顶为 UTC datetime.max。
+存储继续校验预算和严格未来时间；不决定重试或计算退避，不变更事务开启及 _commit 清理。
+完成 commit 后释放槽位，既有轮询负责领取到期 Job；重启保留等待 Job 的原到期时间。
+
 ## 锁、恢复与停机
 
 首期支持 Linux/macOS 本地文件系统。锁文件位于规范化数据库路径旁，使用
@@ -189,7 +201,7 @@ WorkerConfig 的 concurrency 默认 4、poll_interval_seconds 默认 1.0，分�
 每个固定异步槽位覆盖领取、执行、完成 commit，领取入口串行并在进入前检查停止标志，
 用户执行及完成写入可重叠。空槽位按轮询间隔等待，request_stop 唤醒等待并停止新领取。
 已进入存储的领取继续完成并执行；正常退出等待所有槽位，不取消正在运行的用户任务。
-成功写 SUCCESS，普通失败写最终 FAILED；重试决策留在 T07。
+T06 初始版本成功写 SUCCESS、普通失败写最终 FAILED；T07 已接入上述持久化重试决策。
 
 数据库故障、不确定结果和 ExecutorError 停止新领取，等待其他已启动槽位结束后
 传播原异常，已知凭据写入 worker_error 结构化日志。不确定领取不执行，不确定完成
@@ -204,7 +216,7 @@ T08 前遗留 RUNNING 尝试保持原状态，不会被领取；不响应超时�
 
 ## 日志、schema 与验证
 
-T05—T06 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
+T05—T07 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
 contextvars 关联执行上下文，不默认记录完整参数。持久执行历史与实时日志分开，
 不承诺崩溃前最后几条日志全部保留。
 

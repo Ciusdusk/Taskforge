@@ -4,6 +4,7 @@ import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
+from math import isfinite
 from types import TracebackType
 from typing import Self
 from uuid import UUID, uuid4
@@ -48,6 +49,7 @@ from taskforge.models import (
 from taskforge.registry import TaskDefinition
 
 _EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
+_LATEST = datetime.max.replace(tzinfo=UTC)
 
 
 def _column_names(connection: Connection, table_name: str) -> set[str]:
@@ -348,9 +350,27 @@ class SQLiteStore:
         *,
         status: JobStatus,
         next_run_at: datetime | None = None,
+        retry_delay_seconds: float | None = None,
     ) -> Job:
-        """Finish the current attempt and persist a caller-selected disposition."""
-        _validate_result(number, outcome, status, next_run_at)
+        """Persist disposition; relative delays start at the completion transaction.
+
+        Supply either an absolute next_run_at or a positive finite retry delay.
+        Delays round upward to microseconds and saturate at datetime.max (UTC).
+        """
+        if retry_delay_seconds is not None and (
+            status is not JobStatus.RETRY_WAIT
+            or next_run_at is not None
+            or type(retry_delay_seconds) not in (int, float)
+            or (isinstance(retry_delay_seconds, float) and not isfinite(retry_delay_seconds))
+            or retry_delay_seconds <= 0
+        ):
+            raise InvalidAttemptResultError(
+                "retry_delay_seconds requires RETRY_WAIT, a finite positive number "
+                "and no next_run_at"
+            )
+        _validate_result(
+            number, outcome, status, next_run_at if retry_delay_seconds is None else _LATEST
+        )
         commit_attempted = False
         try:
             async with self._session(write=True) as session:
@@ -369,6 +389,10 @@ class SQLiteStore:
                     )
                 now = _now_us()
                 due = None if next_run_at is None else _epoch_us(next_run_at)
+                if retry_delay_seconds is not None:
+                    numerator, denominator = retry_delay_seconds.as_integer_ratio()
+                    delay_us = (numerator * 1_000_000 + denominator - 1) // denominator
+                    due = min(now + delay_us, _epoch_us(_LATEST))
                 if status is JobStatus.RETRY_WAIT and (
                     row.attempt_count >= row.max_retries + 1 or due is None or due <= now
                 ):

@@ -631,3 +631,132 @@ CLI、多 Worker、租约、人工重放均未实现，Python 更高版本和 ma
 T06 验收后，用户追加要求创建 Git Commit。本次提交包含 Worker 执行闭环、
 有界并发、进程锁、行为测试、接口文档、验收记录与 T07 交接 prompt；未继续实现 T07。
 README 与迭代计划同步提交状态，前述未创建提交的记录保留为验收阶段历史。
+
+## T07：持久化重试
+
+验证日期：2026-10-13。环境沿用 Linux x86_64、uv 0.10.9、CPython 3.12.13。
+
+**状态：T07 已完成。** 仅实现纯重试决策、封顶指数退避与 Worker 持久化重试，
+未实现 T08 停机宽限期/崩溃恢复或 CLI，未创建 Git Commit。
+
+### 前置复核与环境
+
+已读取 AGENTS.md、karpathy-guidelines、T07 prompt、README、pyproject.toml、架构、
+迭代计划、历史验收记录及相关源码和测试。开始时工作区干净；
+未修改依赖、uv.lock 或 docs/verification-t01.json，未调整历史文件指纹。
+UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv" 下 uv sync --locked 退出码 0，
+解析 27 个包、审核 26 个安装包，不新增或升级依赖。
+
+默认沙箱再次在首项真实 SQLite 测试挂起，与 T06 环境限制一致；
+已终止该次运行，退出码 130，不能视作通过。自动权限审核允许的沙箱外环境中，
+修改前原有 296 项测试退出码 0；初步接入后原有 296 项再次退出码 0。
+未修改 aiosqlite、db.py、事务开启 hook 或 _commit 清理语义。
+
+### 接口与文件
+
+- 新增 src/taskforge/policy.py：retry_delay_seconds(job) -> float，
+  decide_completion(job, outcome) -> CompletionDecision；后者是 frozen dataclass，
+  包含 status 与可空 retry_delay_seconds。纯函数只读取持久 Job 快照，不查注册表或数据库。
+  第 k 次失败后延迟为 min(cap, base × 2^(k−1))；先比较浮点指数再计算，避免巨大幂和溢出。
+- worker.py 在单次执行返回后调用纯决策，继续通过既有 finish_attempt 保存结果。
+  TASK_ERROR/TIMEOUT 有预算则 RETRY_WAIT，无预算 FAILED；CONFIG_ERROR 直接 FAILED，
+  SUCCESS 直接成功。完成 commit 后释放槽位，由原有轮询领取到期 Job。
+  锁、停止、外部取消、数据库故障及 ExecutorError 的处理路径保持原契约。
+- storage.py 的 finish_attempt 新增 retry_delay_seconds=None 关键字参数，
+  原 next_run_at 绝对时间接口保留。相对延迟仅允许 RETRY_WAIT 的有限正数，
+  拒绝布尔值、字符串以及同时提供绝对时间。存储在获得写事务并确认凭据后，
+  从本次完成时间生成到期时间，避免数据库锁等待耗尽 Worker 预先计算的绝对间隔。
+  延迟向上取整为微秒，最短 1 微秒；超出 datetime 范围封顶为 UTC datetime.max。
+  预算、严格未来时间和原子完成校验保留；存储不决定重试或计算指数退避。
+- 新增 tests/test_retry_policy.py（25 项纯策略测试）与 tests/test_retries.py
+  （49 项真实 SQLite/Worker 测试）。原 tests/test_worker.py 的错误分类/终态测试
+  改用 max_retries=0，保留原有单次执行断言；有预算失败转重试的行为由新增测试覆盖。
+- 同步 README、docs/architecture.md、docs/implementation-plan.md，
+  新增 docs/prompts/T08.md 作为下一独立会话交接；本次不实现恢复或主动取消编排。
+
+### 行为证据
+
+- max_retries=0、1、3，分别验证普通业务异常、用户 TimeoutError、框架 TIMEOUT，
+  覆盖全部失败耗尽预算与最后一次成功。用户 TimeoutError 历史为 TASK_ERROR，
+  框架超时清理结束后历史为 TIMEOUT；每个 Attempt 只调用一次。
+  另验证有 5 次额外预算的成功、未知任务、参数不匹配均只生成一个 Attempt。
+- 注册表替换成默认无重试、不同超时/退避策略后，已有 Job 仍使用提交时快照。
+  逐次核对 ID、参数、策略、首次 started_at、Attempt 序号与历史，
+  成功清空当前错误，先前失败 traceback 和摘要保留。逐条解析 JSON 日志，
+  同一 Job 的各次 attempt_started/attempt_finished 身份和错误分类正确。
+- 精确验证 0.25、0.5、1、2、3 的指数增长与封顶，等基数上限、精确幂边界、
+  10**1000 的尝试序号、最小正 subnormal 到最大有限浮点数，结果始终正且有限。
+  真实 SQLite 中验证小于 1 微秒延迟与巨大日期的持久表示；非法延迟保留 RUNNING。
+- 独立 sqlite3 写者持有 BEGIN IMMEDIATE，观察实际完成事务进入锁等待，
+  推进存储时钟 10 秒后释放锁；0.125 秒退避仍从取得完成事务后的时间开始。
+  未为满足验证调整数据库事务机制。
+- 单槽位先保存 RETRY_WAIT 后继续执行另一个任务；以真实空领取事件确认
+  到期前 1 微秒不会执行，推进到精确边界才领取。真实时钟另验证两段 0.0625/0.125 秒
+  退避，由正常轮询执行，历史 started_at 与函数调用时间均不早于持久 next_run_at。
+- 关闭首个 Worker 存储后，两个独立新子进程分别在原 next_run_at 前 1 微秒和边界启动。
+  前者不执行、保留原时间，后者成功创建第二个 Attempt，首次开始时间与失败详情仍保留；
+  新进程注册默认无重试，不影响既有快照。
+- 两个事件控制的失败任务及随后重试均可并发，最大用户并发为 2，上下文互相隔离。
+  暂停真实 RETRY_WAIT 完成 commit 时，单槽位仍占用，后续两项未领取；
+  重复取消 run 不打断写入、不提前释放锁，commit 完成后才传播 CancelledError。
+- SQLite trigger 注入领取与 RETRY_WAIT 更新故障，前者完整回滚，后者 Job/Attempt
+  保持 RUNNING；停止新领取且不重新执行，原 StorageError cause 保留。
+  8 项 commit 故障组合覆盖领取/重试完成、已提交/未提交、OSError/CancelledError：
+  保留不确定错误身份，重开存储确认状态，不执行不确定领取、不重交不确定完成。
+- 第一次业务失败后，第二次返回非 None 触发 ExecutorError/TypeError cause；
+  停止领取，第二次 Attempt 留 RUNNING，没有伪造业务失败或第三次执行。
+  原有 T06 测试继续覆盖进程锁互斥、其他已运行槽位排空、停止、取消和遗留 RUNNING。
+
+首轮新增 Ruff 检查退出码 1（4 处行宽），格式化后退出码 0。
+新增测试首轮退出码 1（71 passed、1 failed）：槽位测试把提交时间误当首次领取时间，
+二者因测试时钟推进相差 1 微秒；改为核对首次 Attempt 与 Job 的 started_at。
+补充真实时钟和双槽位重试后，全部新增 74 项测试退出码 0。
+
+### 最终检查结果
+
+以下命令均使用 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"；
+SQLite、子进程、示例和隔离 wheel 验证使用自动审核允许的沙箱外环境。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 环境同步 | uv sync --locked | 退出码 0；27 个包解析、26 个安装包审核 |
+| 原有测试复核 | uv run --locked pytest，修改前及初步接入后 | 两次退出码均为 0；296 passed |
+| 新增测试 | uv run --locked pytest tests/test_retries.py tests/test_retry_policy.py | 退出码 0；74 passed |
+| 全部行为测试 | uv run --locked pytest | 退出码 0；370 passed，1 次线程告警，见下文 |
+| 线程告警单项复核 | uv run --locked pytest tests/test_storage.py::test_real_commit_lock_failure_is_uncertain_and_rolls_back -W error::pytest.PytestUnhandledThreadExceptionWarning | 退出码 0；1 passed |
+| 全量严格告警复核 | uv run --locked pytest -W error::pytest.PytestUnhandledThreadExceptionWarning | 退出码 0；370 passed，无告警 |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；34 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；13 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| README 五个示例 | 提取实际代码块，在自动清理临时目录以 uv run --project 项目路径 --locked python 执行 | 五次退出码均为 0；Worker 示例保存 SUCCESS |
+| 示例类型 | uv run --project 项目路径 --locked mypy --strict 五个临时示例文件 | 退出码 0；5 个文件无问题 |
+| 归档与 wheel 闭环 | 检查实际归档；项目外 Python -I 优先加载 wheel，运行真实时钟重试 | 退出码 0；FAILED → RETRY_WAIT → SUCCESS，两次 Attempt；原默认策略、首次时间与错误历史保留 |
+| 差异与前置文件 | git diff --check；git diff --cached --check；git diff HEAD --exit-code -- pyproject.toml uv.lock docs/verification-t01.json | 退出码 0；依赖、锁文件与历史收据未修改 |
+
+普通全量检查在原 test_real_commit_lock_failure_is_uncertain_and_rolls_back 附近报告一次
+PytestUnhandledThreadExceptionWarning：aiosqlite 后台线程通知已关闭的事件循环。
+上述单项和告警视作错误的全量复核均通过；记录该偶发观察，不宣称根因已经修复，
+不修改驱动或已验证的存储清理语义。
+
+测试协程均放行并等待，子进程等待退出、失败时终止回收；
+示例与 wheel 数据库、脚本在 TemporaryDirectory 退出时清理，不遗留任务临时文件。
+保留正常 dist 产物及既有工具缓存。文档记录补全后重新构建，确保验收记录进入 sdist。
+
+### 限制与下一会话
+
+T07 只调度有预算的业务失败和框架超时。RETRY_WAIT 重启保留原计划，
+遗留 RUNNING 尚不恢复；外部取消仍等待已启动工作，无宽限期、主动取消或中断持久化。
+协程不响应超时取消时继续占槽持锁，不提供硬超时、业务去重或恰好执行一次保证。
+到期后执行可能受轮询间隔和槽位影响；微秒精度及 datetime 范围按上述规则表示。
+CLI、多 Worker、租约、人工重放未实现，macOS 和更高 Python 版本尚未验证。
+下一独立会话使用 [T08 prompt](prompts/T08.md) 实现停机与崩溃恢复；
+完成 T07 后停止，不继续 T08，不创建 Git Commit。
+
+### T07 Git 提交
+
+T07 验收后，用户追加要求创建 Git Commit。本次提交包含纯策略决策、Worker 持久化重试、
+完成事务相对延迟接口、74 项新增行为测试、接口文档、验收记录与 T08 交接 prompt；
+未继续实现 T08。README 与迭代计划同步提交状态，前述未创建提交的记录保留为验收阶段历史。
+提交前仅更新提交状态文档并重新构建，源码与已通过 370 项测试的版本一致；
+git diff --check 和依赖、锁文件、历史 T01 收据检查通过。
