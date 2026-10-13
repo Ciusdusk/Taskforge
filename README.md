@@ -1,10 +1,11 @@
 # TaskForge
 
-TaskForge 面向个人开发者和小型项目，计划通过 Python 接口和 CLI 提供持久化的异步任务执行。
+TaskForge 面向个人开发者和小型项目，通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01—T08 已验收完成**：可注册、提交与查询任务，运行单个 Worker，以有界异步并发执行、
-持久化有限重试、协作停机并恢复崩溃遗留尝试，保存状态与历史。CLI 尚未实现。
+**T01—T09 已实现**：可注册任务，并通过 Python 和 CLI 提交、查询及运行单个 Worker，
+以有界异步并发执行、持久化有限重试、协作停机并恢复崩溃遗留尝试，保存状态与历史。
+T09 的验收证据见验证记录；T10 场景验证尚未开始。
 包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
 
 ## 环境准备
@@ -22,7 +23,7 @@ uv run --locked python -c 'import taskforge; print(taskforge.__file__)'
 运行依赖为 Pydantic 2、SQLAlchemy 2.0、aiosqlite 和 Typer；开发依赖为 pytest、
 pytest-asyncio、Ruff 和 mypy。`uv.lock` 固定具体版本，`uv sync --locked` 安装运行与开发依赖。
 T01 已使用完整本机缓存完成离线验收，见 [验证记录](docs/verification.md)。
-尚未提供 CLI 入口，因此当前不能运行 `taskforge submit` 或 `taskforge worker`。
+同步后提供 `taskforge` 命令入口，也可运行 `uv run --locked python -m taskforge.cli --help`。
 
 ## 质量检查与构建
 
@@ -41,8 +42,76 @@ uv build
 uv run --locked pytest
 ```
 
-T02—T08 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
-独立 Worker 子进程之间的锁互斥、持久化重试、强制退出与恢复再次崩溃后的原子状态。
+T02—T09 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
+独立 Worker/CLI 子进程之间的锁互斥、重复信号停机、持久化重试、强制退出与恢复的原子状态。
+
+## CLI
+
+所有命令用 `--database PATH` 指定本地 SQLite 文件，默认 `taskforge.sqlite`；路径按
+`DatabaseConfig` 展开并规范化，父目录须已存在。先显式 `init`，提交、查询和 Worker
+不会自动为未初始化数据库建表。各命令的 `--help` 不加载任务模块或执行用户函数。
+
+先保存下文的 `tasks.py`，在它所在目录执行。控制台入口通过 Python 的模块搜索路径加载
+可信任务模块；本地单文件模块可显式设置 `PYTHONPATH="$PWD"`，已安装模块无需设置。
+
+```bash
+uv run --locked taskforge --help
+uv run --locked taskforge init --database jobs.sqlite
+printf '%s\n' '{"count":"3"}' | PYTHONPATH="$PWD" uv run --locked taskforge submit demo.count \
+  --registry tasks:registry --database jobs.sqlite
+uv run --locked taskforge list --database jobs.sqlite --limit 10
+```
+
+将 submit 输出的 UUID 保存为 `JOB_ID` 后，在一个终端启动 Worker，在另一个终端查询。
+任务完成后向 Worker 发送 Ctrl-C 或 SIGTERM；Worker 持续轮询，不在队列空时自动退出。
+
+```bash
+PYTHONPATH="$PWD" uv run --locked taskforge worker --registry tasks:registry \
+  --database jobs.sqlite --concurrency 4 --poll-interval-seconds 1 \
+  --shutdown-grace-seconds 30
+uv run --locked taskforge show "$JOB_ID" --database jobs.sqlite
+uv run --locked taskforge history "$JOB_ID" --database jobs.sqlite
+```
+
+| 命令 | 参数与标准输出 |
+| --- | --- |
+| `init` | JSON 对象，含规范化 `database_path` 和 `initialized: true`；已有 schema 只校验 |
+| `submit TASK_NAME --registry module:attribute` | `--input PATH` 读取 UTF-8 JSON 文件，默认 `-` 读取 stdin；输出一行已提交的 Job UUID |
+| `worker --registry module:attribute` | 并发默认 4，轮询默认 1 秒，宽限默认 30 秒；配置复用 `WorkerConfig`；框架日志输出到 stderr |
+| `list` | `--limit` 为 1—1000，默认 100；`--after` 接收上一页 `next_cursor` 字符串；输出 `{"jobs": [...], "next_cursor": "..."}` |
+| `show JOB_ID` | 完整 Job JSON 快照，含参数 JSON 字符串、状态、策略、时间与错误摘要 |
+| `history JOB_ID` | `{"job_id": "...", "attempts": [...]}`，按 number 升序；已有但未领取的 Job 返回空数组，未知 ID 报错 |
+
+输出时间为带 UTC 时区的 ISO 8601 字符串，枚举使用其字符串值，空值为 JSON null。
+list 的 `next_cursor` 是含 `created_at` 和 `id` 的 JSON 字符串，原样作为一个参数传给
+`--after`；边界排他。非空页总是返回末项游标，空页返回 null；游标不保证后面还有记录。
+show/history/list 无需 `--registry`，即使原任务模块已删除或无法导入仍可查询。
+查询输出包含持久参数与错误详情；Worker 框架日志默认不输出参数或捕获完整 stdout/stderr。
+用户函数自行 print 的内容仍写到自身 stdout，CLI 不拦截它。
+
+参数语法错误由 Typer 输出帮助诊断，退出码 2；操作错误以单行 JSON 输出到 stderr，含
+`error`、`message`、`job_id`、`attempt_number`（未知凭据为 null），stdout 不输出成功结果。
+Worker 的最后一行错误报告前可能有 JSON 事件日志。
+
+| 退出码 | 含义 |
+| --- | --- |
+| 0 | 帮助、初始化、提交、查询成功；Worker 已完成停止与持久化 |
+| 2 | 参数语法、JSON/文件输入、模型/配置、序列化或分页校验失败 |
+| 3 | 未知任务名称或 Job ID |
+| 4 | 注册表引用、导入或属性加载失败 |
+| 5 | 未初始化或不兼容 schema |
+| 6 | Worker 锁冲突或锁文件访问失败 |
+| 7 | 数据库路径或存储操作失败 |
+| 8 | Executor 或其他框架/编程故障 |
+| 9 | 提交、领取或完成的 commit 结果不确定；报告含可查询凭据 |
+| 130 | 用户任务自行取消或运行协程取消，清理与中断持久化后传播 |
+
+业务 TASK_ERROR/TIMEOUT 与 CONFIG_ERROR 按核心契约写入 Job/Attempt；它们本身不使
+Worker 退出，最终状态用 show/history 查询。SIGINT/SIGTERM 只调用 `request_stop`；
+重复信号不再取消用户清理。宽限期到时请求一次协作取消；用户不退出时 stderr 报告
+`shutdown_incomplete`，进程继续等待、占槽持锁，尚未返回退出码 0。
+结果不确定时先用 show/history 核对 `job_id` 与 `attempt_number`，CLI 不自动重交、
+重新执行用户函数或判断副作用是否完成。SIGKILL 之后的恢复复用 Worker 原有流程。
 
 ## 任务注册与输入校验
 
@@ -504,5 +573,5 @@ INTERRUPTED、释放槽位；有预算仍安排持久化重试，本次停机不
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T09 交接 prompt](docs/prompts/T09.md)
-实现完整 CLI；T08 验收后按用户追加要求提交改动。
+T01—T10 每个任务由一个独立会话实现。下一会话使用 [T10 交接 prompt](docs/prompts/T10.md)
+完成场景验证与文档；T09 验收后按用户追加要求提交改动，未继续 T10。

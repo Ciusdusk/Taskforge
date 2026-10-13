@@ -15,6 +15,9 @@ dependencies = [
     "typer>=0.12,<1",
 ]
 
+[project.scripts]
+taskforge = "taskforge.cli:main"
+
 [dependency-groups]
 dev = [
     "mypy>=1.11,<2",

@@ -883,3 +883,105 @@ T08 验收后，用户追加要求创建 Git Commit。本次提交包含持锁�
 README 与迭代计划同步提交状态，前述未创建提交的记录保留为验收阶段历史。
 提交前仅更新提交状态文档并重新构建，源码与已通过 423 项测试的版本一致；
 git diff --check 和依赖、锁文件、历史 T01 收据检查通过。
+
+## T09：完整 CLI
+
+验证日期：2026-10-13。环境：Linux x86_64、CPython 3.12.13、uv 0.10.9、
+pytest 9.1.1、Ruff 0.17.0。使用既有依赖与完整安装环境，没有新增或升级依赖。
+**状态：T09 已完成。** 本会话只实现 T09，不创建 Git Commit，不继续 T10。
+
+### 接口与改动
+
+- 新增 `src/taskforge/cli.py`：Typer 的 init/submit/worker/list/show/history 六个命令。
+  `pyproject.toml` 声明安装入口 `taskforge = taskforge.cli:main`，支持模块入口。
+- init 显式初始化或校验；submit 显式加载可信注册表，读取 UTF-8 文件或 stdin JSON，
+  调用 TaskForge.submit，成功只输出已提交 Job ID。输入错误不入库、不执行任务。
+- list/show/history 只使用 TaskForge 查询，不导入任务模块。完整快照保留策略与 UTC 时间，
+  list 输出排他分页游标，history 区分未知 Job 与已有 Job 的空历史。
+- worker 管理存储与 Worker 生命周期；SIGINT/SIGTERM 仅调用 request_stop，
+  重复信号不取消用户清理；等待真正退出及持久化后才关闭存储。
+  使用既有 JSONFormatter 向 stderr 输出框架日志，不配置 root logger。
+- CLI 错误以 JSON 输出 stderr；输入 2、未知名称/ID 3、注册加载 4、schema 5、锁 6、
+  存储 7、框架 8、不确定结果 9、协程取消 130。正常命令与已完成停机返回 0；
+  业务/配置失败通过 Job 与 Attempt 查询，不直接使 Worker 退出。
+- 同步 README 的参数、输出、退出码、信号语义与限制；更新架构实现状态、迭代计划，
+  新增 `docs/prompts/T10.md`。核心 API、存储、事务、Worker、Executor、锁实现原样保留。
+
+### 真实行为证据
+
+`tests/test_cli.py` 新增 53 项验证，均使用真实命令子进程与 SQLite 文件：
+
+- 安装入口及所有 --help 正常返回，不加载故障任务模块或创建数据库；init 可重复校验，
+  submit 输出规范 UUID4，合法文件/stdin 输入按模型规范化保存，策略与 Python 接口一致。
+- 非法 JSON、NaN、模型输入、UTF-8、文件/数据库路径、分页、Worker 配置和 Typer 语法
+  均有实际退出码断言；未知名称/ID、注册加载、schema 与存储失败明确报告。
+  未初始化的查询/Worker 不创建表或改变 user_version。
+- 查询时任务模块即使抛导入异常仍正常；分页排他且有序、最后空页游标为 null，
+  已有 Job 空历史与未知 ID 明确区分，历史按 number 升序。
+- 两个 worker 命令的真实进程锁互斥。SIGINT 与 SIGTERM 均覆盖宽限期内正常成功、
+  宽限期后取消、等待清理、忽略取消与重复信号；清理前 Job/Attempt 仍 RUNNING，
+  第二进程仍退出 6，排队 Job 不被领取。放行后才持久化 INTERRUPTED 并退出 0，
+  stderr 的 shutdown_incomplete 携带正确 Job/Attempt 身份；锁文件保留。
+- 业务失败按预算产生三次 TASK_ERROR 后 FAILED；缺失任务与模型版本不匹配只产生
+  一次 CONFIG_ERROR，不调用函数。返回契约违规退出 8，尝试保持 RUNNING 待恢复；
+  用户自行取消退出 130，先保存 INTERRUPTED。
+- 在真实提交后注入确认丢失，分别得到 SubmissionUncertainError、ClaimUncertainError、
+  CompletionUncertainError 与退出码 9；报告凭据可用 show/history 核对。
+  不确定领取未调用函数，不确定完成只调用一次。恢复阶段同样输出原凭据，不重新执行。
+- 将真实完成 SQL 替换为访问不存在表的 SQL，得到 StorageError 与退出码 7，
+  完成事务回滚，Job/Attempt 保持 RUNNING，函数只执行一次；没有伪装业务失败。
+- 重启遵循持久重试到期时间；CLI Worker 被 SIGKILL 后下一进程将原 Attempt 原子中断，
+  退避恰从确认完成时间开始，后续实际调用时间不早于到期，历史为 INTERRUPTED/SUCCESS。
+  恢复时间用单个 SQLite 查询捕获，避免 CLI 启动耗时跨过短暂 RETRY_WAIT 的观察竞争。
+- 构建 wheel，在项目外创建独立虚拟环境，安装实际 wheel，确认包来自该环境的
+  site-packages；全部帮助及 init/submit/worker/list/show/history 闭环通过。
+  删除任务模块后仍可查询。uv pip check 返回 0，实际入口以 SIGTERM 完成停机。
+
+隔离安装最初使用 uv export 的带 hash requirements；离线缓存中缺少可解析的当前平台
+greenlet wheel，uv pip install 返回 1。最终验证复制项目已安装的固定版本第三方依赖，
+排除 TaskForge、所有 .pth 与 editable 路径，再以 uv pip install --no-deps 安装真实 wheel。
+此证据证明分发产物与入口在项目外可运行，不声称全新联网依赖安装已验证。
+
+初次路径错误测试发现：不存在父目录的驱动连接失败可能在解释器退出阶段异常终止。
+CLI 现在连接前拒绝不存在的父目录与非文件路径，返回明确存储错误；真实 SQL 故障仍单独
+验证。未修改 aiosqlite、db.py begin hook、_commit 或原有事务清理语义。
+初次故障注入的签名与执行层选择错误已修正，最终全量验证覆盖修正后的测试。
+
+### 最终检查结果
+
+以下命令均使用 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"；真实 SQLite 与 CLI
+子进程在自动权限审核允许的沙箱外运行。默认沙箱下修改前测试在 12 秒观察上限内挂起，
+timeout 退出 124；改用沙箱外后原有 423 项全部通过，没有用窄测试替代回归。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 环境同步 | uv sync --locked | 退出码 0；27 个包解析，26 个安装包审核 |
+| 修改前回归 | uv run --locked pytest -q | 退出码 0；423 passed |
+| 全部行为测试 | uv run --locked pytest | 退出码 0；476 passed，185.60 秒，无告警 |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；39 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；14 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| 项目外安装入口与闭环 | test_wheel_installed_outside_project_complete_command_cycle | 全量测试通过；真实 wheel 安装、包来源检查、全部命令及 pip check 通过 |
+| 保护文件与差异 | git diff --check；uv.lock、历史 T01 收据及既有核心文件差异检查 | 退出码 0；只添加 CLI 与入口、测试和对应文档 |
+
+全部子进程以 communicate/wait 回收，测试 finally 放行清理后等待；本次最终测试使用
+独立临时根，验收后删除该目录及本会话残留测试目录，保留其他会话目录与正常工具缓存。
+最终文档更新后重新构建并检查归档，确保 README、验证记录与 T10 prompt 进入 sdist。
+
+### 限制与交接
+
+首期仍为单机单 Worker，不提供用户取消命令、人工重放、迁移框架或业务去重。
+超时与停机依赖用户协作，忽略取消时继续持锁等待；框架日志报告未完成，不承诺硬超时。
+外部副作用完成但 SUCCESS commit 前崩溃可能重复执行；T08 的真实证据与历史记录保留。
+本次验证为 Linux/Python 3.12，macOS、更高 Python 版本及全新联网依赖安装未验收。
+下一独立会话使用 [T10 prompt](prompts/T10.md) 完成场景示例、幂等验证和完整 MVP 文档；
+本次停止，不继续实现 T10，不创建 Git Commit。
+
+### T09 Git 提交
+
+T09 验收后，用户追加要求创建 Git Commit。提交包含六个 CLI 命令、打包入口、53 项
+新增测试、接口文档、验收记录和 T10 交接 prompt；未继续实现 T10。
+提交前仅同步提交状态文档并重新构建，源码与通过 476 项测试的版本一致；
+git diff --check、uv.lock、历史 T01 收据与既有核心文件的保护检查通过。
+前述不创建提交的记录保留为验收阶段历史。

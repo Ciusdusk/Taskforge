@@ -2,7 +2,7 @@
 
 本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询、
 T04 原子领取与完成、T05 单次执行与超时、T06 Worker 与并发控制、T07 持久化重试及
-T08 停机与崩溃恢复已实现；
+T08 停机与崩溃恢复及 T09 完整 CLI 已实现；
 其余能力为待实现设计，实际验收状态见 docs/verification.md。
 
 ## 场景与范围
@@ -63,7 +63,8 @@ Repository、消息代理或插件体系。模块文件随对应任务创建，�
 
 公共操作规划为 `registry.task(...)`、异步 `TaskForge.submit/get/list/history`、
 `Worker.run()` 和 `Worker.request_stop()`。CLI 命令规划为
-`init/submit/worker/list/show/history`。已实现 `registry.task(...)`、异步 `TaskForge.submit/get/list/history` 及 Worker 接口；CLI 尚不存在。
+`init/submit/worker/list/show/history`。已实现 `registry.task(...)`、异步 `TaskForge.submit/get/list/history`、
+Worker 接口与全部六个 Typer 命令，打包入口为 `taskforge = taskforge.cli:main`。
 
 提交时先校验参数并保存规范化 JSON；Worker 执行前再次校验。执行策略在提交时保存快照，
 修改注册默认值只影响新任务。提交成功表示事务提交完成；结果不确定的提交错误需携带任务 ID，
@@ -216,7 +217,7 @@ T06 初始版本成功写 SUCCESS、普通失败写最终 FAILED；T07 已接入
 数据库故障、不确定结果和 ExecutorError 停止新领取，等待其他已启动槽位结束后
 传播原异常，已知凭据写入 worker_error 结构化日志。不确定领取不执行，不确定完成
 不重交或重执行；由调用方用 get/history 查询凭据确认。锁描述符保持到所有槽位结束，
-退出关闭而不删除锁文件；不同数据库独立。每个 Worker 实例只运行一次；CLI 尚未实现。
+退出关闭而不删除锁文件；不同数据库独立。每个 Worker 实例只运行一次。
 
 T08 新增 WorkerConfig.shutdown_grace_seconds，默认 30.0，严格校验有限非负数，
 允许 0 立即请求协作取消，拒绝布尔值和字符串。request_stop、外部取消及框架故障停止新领取，
@@ -232,6 +233,15 @@ Worker 才保存 INTERRUPTED 并释放槽位。重复外部取消被屏蔽，run
 不提供恰好执行一次或业务去重保证。
 
 ## 日志、schema 与验证
+
+T09 的 CLI 只编排核心接口：init 显式 initialize；submit 显式加载注册表并读取文件/stdin JSON，
+调用 TaskForge.submit；list/show/history 不导入任务模块；worker 管理存储生命周期并调用 Worker.run。
+本地模块须位于 Python 搜索路径，不自动扫描目录。输入、输出、分页游标与退出码见 README 的 CLI 节。
+CLI 在连接前检查数据库父目录与文件类型，不创建目录，不改驱动或事务清理。
+Worker 命令安装 SIGINT/SIGTERM handler，只调用 request_stop；重复信号不取消执行器或清理。
+直到 Worker 真正退出才恢复信号 handler、关闭存储；框架日志使用既有 JSONFormatter 写 stderr。
+不确定错误报告保留 job_id/attempt_number，退出码 9；不确定领取不执行、不确定完成不重交。
+持久业务/配置失败通过查询呈现，Worker 正常停机返回 0；框架、存储、锁等故障非零退出。
 
 T05—T08 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
 contextvars 关联执行上下文，不默认记录完整参数。持久执行历史与实时日志分开，
