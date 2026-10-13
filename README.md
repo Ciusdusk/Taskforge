@@ -3,7 +3,7 @@
 TaskForge 面向个人开发者和小型项目，计划通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01—T04 已验收完成**：可注册任务、校验输入、持久化提交和查询、原子领取和完成尝试；Worker 与 CLI 尚未实现。
+**T01—T05 已验收完成**：可注册任务、持久化提交与查询、原子领取与完成、单次执行与超时；Worker 与 CLI 尚未实现。
 包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
 
 ## 环境准备
@@ -40,7 +40,7 @@ uv build
 uv run --locked pytest
 ```
 
-T02—T04 已加入实际行为测试，包括临时 SQLite 文件、并发提交与领取、完成身份校验和事务故障。
+T02—T05 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消和并发日志上下文。
 后续 Worker 与恢复测试将使用真实子进程。
 
 ## 任务注册与输入校验
@@ -122,7 +122,7 @@ JSON 使用别名及 Pydantic `round_trip` 序列化，再用同一模型检查�
 | `timeout_seconds` | `300.0` | 有限正数；为常见异步 I/O 提供五分钟的初始预算 |
 
 时间接受数值，拒绝布尔值和字符串；以上只是起始默认值，用户可声明任务自己的策略。
-T03 将这些字段保存为数据库快照；执行器、退避调度和超时执行尚未实现。
+T03 将这些字段保存为数据库快照；T05 按快照执行超时，退避调度尚未实现。
 
 ## 持久化提交与查询
 
@@ -287,7 +287,92 @@ commit 开始后的故障或取消分别抛 ClaimUncertainError / CompletionUnce
 不确定领取不返回可执行凭据；调用方应停止执行该领取，使用 get/history 核对持久状态。
 不确定完成也须先查询，不能直接认定失败或重新执行任务。这里不自动重领或重交结果。
 
-T04 尚无 Executor、Worker、重试决策与调度、进程锁、恢复、日志系统或 CLI。
+## 单次执行与超时
+
+`Executor(registry)` 提供 `await executor.execute(claim) -> AttemptOutcome`，只接受
+`claim_next()` 已成功提交的 `AttemptClaim`。执行前按任务名称查找定义，以用户模型再次校验
+`claim.job.params_json`，再将模型作为一个位置参数传入 async 函数。超时读取
+`claim.job.timeout_seconds` 快照，使用事件循环的单调计时器；注册默认策略变更不影响已有 Job。
+
+| 执行情况 | 返回或传播 |
+| --- | --- |
+| 正常返回 `None` | `AttemptOutcome(AttemptStatus.SUCCESS)`，无错误字段 |
+| 用户函数抛出 `Exception`，包括自行抛出的 `TimeoutError` | FAILED / TASK_ERROR，含异常类型、摘要和保留异常链的 traceback |
+| 未知任务、JSON 无法按模型校验 | FAILED / CONFIG_ERROR，不调用用户函数 |
+| 框架计时器触发 | 请求取消，等待用户协程退出，返回 FAILED / TIMEOUT |
+| 外部取消或用户自行取消 | 等待用户协程退出后传播 `CancelledError`；不返回中断结果 |
+| 框架故障、用户返回非 `None` | 抛出 `ExecutorError`，保留异常链；日志类别为 EXECUTOR_ERROR |
+
+执行器不领取、不写数据库、不计算重试；结果由调用方传给 `finish_attempt`，并明确选择
+Job 状态。错误详情保留完整文本，由存储边界截断为类型 256、摘要 2000、traceback 16000
+个字符。EXECUTOR_ERROR 不属于持久 `ErrorKind`；未来 Worker 应停止领取，
+无法可靠完成的尝试留待恢复，不能保存成业务或配置失败。模型 validator 的编程故障
+（如 `TypeError`）、错误详情生成或执行机制故障同样属于框架错误。
+用户函数自己抛出的 `ExecutorError` 仍属于 TASK_ERROR。
+
+超时和取消依赖协作：取消只向用户协程请求一次，等待其 `finally` 和其他清理结束；
+重复外部取消不会再次打断清理。清理期间的外部取消优先于超时，最终仍传播取消。
+超时取消后的业务异常或正常返回不会改成 TASK_ERROR 或 SUCCESS；返回契约违规仍抛框架错误。
+外部取消后的清理业务异常不替代取消。协程一直忽略取消时，执行接口保持等待，
+不提前报告结束或允许调用方释放槽位；没有线程池或硬超时，阻塞事件循环的代码也会阻塞计时器。
+
+标准库 `logging` 由调用方配置，不修改 root logger 或自动安装 handler。`JSONFormatter`
+输出 `time`（UTC ISO 时间）、`level`、`event`、`job_id`、`attempt_number` 和
+`error_kind`。执行器使用 `taskforge.executor` logger，记录 attempt_started、
+attempt_finished、attempt_interrupted、executor_error，默认不记录参数、异常内容或 stdout/stderr。
+`get_execution_context() -> ExecutionContext | None` 返回不可变的当前身份；
+contextvars 保证并发隔离，所有退出路径恢复进入前上下文。用户任务可以用同一个 formatter
+关联自己的同步 handler 日志；用户日志消息由用户控制。跨线程队列 handler 需由调用方在生产端
+保存上下文；执行器自身事件已显式携带身份。
+
+保存前文的 `tasks.py`，将下面示例保存为 `execute_once.py`，运行
+`uv run --locked python execute_once.py`。示例关闭领取端连接后执行，并由调用方保存成功结果；
+输出 count=3、SUCCESS，同时 stderr 输出可解析 JSON 日志：
+
+```python
+import asyncio
+import logging
+from pathlib import Path
+
+from taskforge import (
+    DatabaseConfig,
+    Executor,
+    JobStatus,
+    JSONFormatter,
+    SQLiteStore,
+    TaskForge,
+)
+from tasks import registry
+
+
+async def main() -> None:
+    handler = logging.StreamHandler()
+    handler.setFormatter(JSONFormatter())
+    logger = logging.getLogger("taskforge")
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+    config = DatabaseConfig(database_path=Path("execution.sqlite"))
+    async with SQLiteStore(config) as store:
+        await store.initialize()
+        await TaskForge(store, registry).submit("demo.count", {"count": 3})
+        claim = await store.claim_next()
+        assert claim is not None
+
+    outcome = await Executor(registry).execute(claim)
+    async with SQLiteStore(config) as store:
+        done = await store.finish_attempt(
+            claim.job_id, claim.number, outcome, status=JobStatus.SUCCESS
+        )
+        print(done.status.value)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+本例声明的用户函数正常返回；通用调用方需要分别处理失败结果、取消和框架错误。
+T05 尚无 Worker、重试决策与调度、进程锁、恢复或 CLI。
 
 ## 已确认的 MVP 语义
 
@@ -302,5 +387,5 @@ T04 尚无 Executor、Worker、重试决策与调度、进程锁、恢复、日�
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T05 交接 prompt](docs/prompts/T05.md)
-实现单次执行与超时；T04 验收后按用户追加要求提交改动。
+T01—T10 每个任务由一个独立会话实现。下一会话使用 [T06 交接 prompt](docs/prompts/T06.md)
+实现 Worker 与并发控制；T05 验收后按用户追加要求提交改动。

@@ -421,3 +421,98 @@ README、架构实现状态、迭代计划和本记录已同步，docs/prompts/T
 
 T04 验收后，用户追加要求创建 Git Commit。本次提交包含 T04 源码、真实 SQLite 行为测试、
 接口说明、验收记录及 T05 交接 prompt；未继续实现 T05。
+
+
+## T05：单次执行与超时
+
+验证日期：2026-10-13。沿用既有 Linux x86_64、CPython 3.12.13、uv 0.10.9
+与锁定依赖环境；全部命令使用 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"。
+
+**状态：T05 已完成。** 仅实现单次执行、协作式超时与取消、执行上下文和 JSON 日志；
+验收阶段没有继续 T06，没有创建 Git Commit。
+
+### 前置条件与范围
+
+已读取适用 AGENTS.md、karpathy-guidelines skill、T05 prompt、README、pyproject.toml、
+架构、计划、验证记录、现有源码和行为测试。开始时工作区干净；
+T04 最新提交为 f0d860f。uv.lock 存在，uv sync --locked 返回 0，
+解析 27 个包、审核 26 个安装包，无新增或升级依赖。
+
+按当前文件复核 T01—T04：221 项行为测试、Ruff、格式检查、mypy strict 及构建
+全部返回 0。历史 T01 收据原样保留，不把旧文件指纹当作当前门禁。
+
+新增 src/taskforge/executor.py、src/taskforge/logging.py 和 tests/test_executor.py；
+扩展 errors.py 与 __init__.py 的实际公共接口。未改 models.py、schema、db.py 或
+storage.py，没有 Worker、锁、策略层或 CLI 的空模块。
+README、架构状态和迭代计划已同步，docs/prompts/T06.md 提供下一独立会话交接。
+
+### 接口与行为证据
+
+- Executor(registry).execute(claim) -> AttemptOutcome 接收已提交领取；
+  再次按用户模型校验 Job.params_json，再调用 async 函数一次。未知名称和
+  Pydantic ValidationError 返回 CONFIG_ERROR，不调用用户函数。
+- 正常返回 None 得到无错误 SUCCESS；用户 Exception（包括 TimeoutError，
+  以及由用户主动抛出的 ExecutorError）得到 TASK_ERROR，保留类型、摘要与包含
+  原始 cause 的 traceback。错误详情生成故障属于框架错误。
+- 超时仅由事件循环单调计时器触发，读取持久 Job.timeout_seconds，而非当前注册默认值。
+  超时请求用户取消，实际退出后才返回 TIMEOUT；超时清理中的业务异常或正常返回
+  不改变 TIMEOUT，非 None 返回仍为框架契约违规。
+- 外部取消（包括超时清理期间的取消）等待真实退出后传播 CancelledError；
+  用户自行取消同样传播。重复外部取消不再次打断用户 finally，不吞掉取消，
+  不生成 INTERRUPTED outcome。执行未结束时不记录完成/中断事件。
+- ExecutorError 保留原始异常链，EXECUTOR_ERROR 只用于框架日志与未来 Worker 级处理，
+  不加入存储 ErrorKind、不转换成业务失败、不自动重试。
+  非 None 返回以 TypeError 为 cause；validator TypeError、查找、错误格式化、
+  计时器、任务创建、等待机制及日志故障均验证框架边界。
+  框架等待故障也必须等待用户清理，诊断日志故障不覆盖原始异常或取消。
+- 不可变 ExecutionContext 保存 job_id、attempt_number；
+  contextvars 关联任务上下文，正常、失败、超时和取消均恢复原上下文。
+  JSONFormatter 使用标准库 logging，字段为 time、level、event、job_id、
+  attempt_number、error_kind；框架不安装 handler，不记录完整参数或异常内容。
+  同步用户 handler 可复用上下文；跨线程队列 handler 的上下文捕获由调用方负责。
+- tests/test_executor.py 的 40 项测试使用真实 async 函数和事件/屏障，
+  验证模型重新校验、错误分类、异常链、返回契约、不可变结果、清理阶段的错误优先级、
+  受控忽略取消与重复取消、并发日志隔离、嵌套上下文恢复和日志参数隐私。
+  asyncio.sleep(0) 仅让已请求取消被事件循环处理，不以固定长 sleep 同步。
+  3s 测试超时只作失效保护；所有受控运行协程都在 finally 中放行并清理。
+- 真实 SQLite 测试关闭连接后，以不同默认超时的注册表执行已领取快照，
+  禁止调用 submit/claim_next/finish_attempt，验证 Job 和 Attempt 仍为 RUNNING。
+  另一项测试把真实业务异常结果传入 finish_attempt，确认 Unicode 摘要和
+  traceback 按既有存储契约保存/截断，原始 outcome 不变。
+
+首次源码 mypy 返回 1：直接检查声明为 None 的 await 返回值触发 func-returns-value；
+已在运行时契约边界将 awaitable 扩宽为 Awaitable[object]，不改变用户函数声明。
+首次 Ruff 返回 1：新增文件导入排序与行宽；已修正并格式化。
+首轮 34 项新增行为测试通过，随后按明确边界补充至 40 项；没有占位测试。
+
+### 最终检查结果
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 前置同步 | uv sync --locked | 退出码 0；27 个包解析、26 个已安装包审核 |
+| 全部行为测试 | uv run --locked pytest | 退出码 0；261 passed（T02 78、T03 74、T04 69、T05 40） |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；26 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；10 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| README 四个示例 | 从实际代码块提取，在自动清理临时目录以 uv run --project 项目路径 --locked python 执行 | 四次退出码均为 0；注册、查询、手动完成和执行完成均正确 |
+| README 日志 | json.loads 解析 execute_once.py 实际 stderr，核对事件和身份 | 退出码 0；attempt_started / attempt_finished 同一 Job、尝试 1 |
+| README 示例类型 | uv run --project 项目路径 --locked mypy --strict 四个临时示例文件 | 退出码 0；4 个文件无问题 |
+| 分发结构与 wheel 闭环 | 标准库检查实际归档，并在项目外使用 Python -I 优先加载 wheel 完成提交、领取、执行和持久化完成 | 退出码 0；模块实际来自 wheel；包含新模块、py.typed、测试、T06 prompt 与验证记录 |
+| 差异与前置文件 | git diff --check；git diff --exit-code -- pyproject.toml uv.lock docs/verification-t01.json | 退出码 0；依赖、锁文件和历史收据未修改 |
+
+最终源码修正后完整测试、Ruff、格式和 mypy 已重跑通过；更新本记录后重新构建，
+归档内容与隔离 wheel 闭环检查通过。示例脚本及数据库使用自动清理临时目录，
+未留下临时验收脚本或示例数据库；保留正常 dist 构建产物与现有工具缓存。
+
+剩余限制：取消依赖用户协作，忽略取消的协程将持续占用执行接口，
+阻塞事件循环会阻塞计时器，没有硬超时或线程池。执行器要求调用方持有已提交领取，
+不验证数据库所有权、不保存状态、不决定重试；外部取消后由未来 Worker/恢复流程处理尝试。
+尚无 Worker、重试调度、进程锁、停机编排、恢复或 CLI；Python 高版本仍未验证，
+MVP 仍需完成 T06—T10。
+
+
+### T05 Git 提交
+
+T05 验收后，用户追加要求创建 Git Commit。本次提交包含 T05 执行器、结构化日志、
+异步行为测试、接口说明、验收记录及 T06 交接 prompt；未继续实现 T06。

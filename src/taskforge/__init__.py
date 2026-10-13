@@ -6,6 +6,7 @@ from taskforge.errors import (
     AttemptConflictError,
     ClaimUncertainError,
     CompletionUncertainError,
+    ExecutorError,
     InputSerializationError,
     InvalidAttemptResultError,
     PaginationError,
@@ -18,6 +19,8 @@ from taskforge.errors import (
     UnknownJobError,
     UnknownTaskError,
 )
+from taskforge.executor import Executor
+from taskforge.logging import ExecutionContext, JSONFormatter, get_execution_context
 from taskforge.models import (
     Attempt,
     AttemptClaim,
@@ -33,6 +36,11 @@ from taskforge.registry import TaskDefinition, TaskRegistry, load_registry
 from taskforge.storage import SQLiteStore
 
 __all__ = [
+    "Executor",
+    "ExecutorError",
+    "ExecutionContext",
+    "JSONFormatter",
+    "get_execution_context",
     "Attempt",
     "AttemptClaim",
     "AttemptOutcome",

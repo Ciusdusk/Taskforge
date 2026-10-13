@@ -72,3 +72,7 @@ class CompletionUncertainError(StorageError):
         self.job_id = job_id
         self.number = number
         super().__init__(f"Completion result is uncertain; query Job {job_id!r}, attempt {number}")
+
+
+class ExecutorError(TaskForgeError):
+    """Framework execution failure; Worker must stop and retain the cause chain."""

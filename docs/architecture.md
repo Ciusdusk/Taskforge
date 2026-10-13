@@ -1,6 +1,7 @@
 # TaskForge MVP 架构
 
-本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询及 T04 原子领取与完成已实现；
+本文记录已确认的 Step 1 与 Step 2 设计。T01 工程骨架、T02 注册与输入校验、T03 持久化提交与查询、
+T04 原子领取与完成及 T05 单次执行与超时已实现；
 其余能力为待实现设计，实际验收状态见 docs/verification.md。
 
 ## 场景与范围
@@ -168,6 +169,14 @@ commit 开始后的故障或取消返回 ClaimUncertainError / CompletionUncerta
 停机先停止领取，再等待运行任务；宽限期后请求取消。协程实际结束后才记录中断并释放槽位。
 不响应取消的任务需要报告停机未完成并继续持锁；框架不承诺硬超时。
 
+T05 已实现 Executor(registry).execute(claim) -> AttemptOutcome、JSONFormatter 和
+contextvars 执行身份。执行器不接收存储对象，不计算重试，按 Job 快照重新校验参数与计时。
+外部取消等待用户协程实际结束后传播 CancelledError，重复取消不会再次打断清理；
+清理期间收到外部取消优先于超时。不会自行生成 INTERRUPTED 持久结果。
+正常返回必须为 None；违反契约抛 ExecutorError，底层 TypeError 保留为 cause。
+模型校验的 ValidationError 属于 CONFIG_ERROR，validator 编程故障及执行机制故障
+属于 ExecutorError。错误详情交由既有 finish_attempt 截断。
+
 业务异常属于 `TASK_ERROR`，框架计时器触发才属于 `TIMEOUT`。
 任务自行抛出的 `TimeoutError` 仍属于业务异常。
 `EXECUTOR_ERROR` 是 Worker 级错误：停止领取、输出结构化错误并非零退出；
@@ -178,7 +187,7 @@ commit 开始后的故障或取消返回 ClaimUncertainError / CompletionUncerta
 
 ## 日志、schema 与验证
 
-使用标准库 logging 与 JSON formatter，记录时间、级别、事件、Job ID、尝试序号和错误类别。
+T05 使用标准库 logging 与 JSONFormatter，记录 time、level、event、job_id、attempt_number 和 error_kind。
 contextvars 关联执行上下文，不默认记录完整参数。持久执行历史与实时日志分开，
 不承诺崩溃前最后几条日志全部保留。
 
