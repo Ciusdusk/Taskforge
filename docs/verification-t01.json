@@ -1,0 +1,19 @@
+{
+  "task": "T01",
+  "status": "passed",
+  "verified_at": "2026-10-13T06:35:44.692061+00:00",
+  "checks": [
+    "sync",
+    "locked_sync",
+    "ruff",
+    "format",
+    "mypy",
+    "build",
+    "wheel"
+  ],
+  "pytest": "no_tests_collected",
+  "sha256": {
+    "pyproject.toml": "beace3ad0667e35620e6654745c41afd47a6250e16eb4e2788f5ecf51c8eb155",
+    "uv.lock": "48adb22243275f44315ca27605555d0c49ab888f1f943a06797ff313eaed8447"
+  }
+}
