@@ -3,7 +3,7 @@
 TaskForge 面向个人开发者和小型项目，计划通过 Python 接口和 CLI 提供持久化的异步任务执行。
 目标运行方式是单机、单个 Worker 进程、多个异步任务并发执行。
 
-**T01 工程骨架与 T02 任务注册、输入校验已验收完成**，尚未实现持久化提交、Worker 或 CLI。
+**T01—T03 已验收完成**：可注册任务、校验输入、持久化提交和查询；Worker 与 CLI 尚未实现。
 包版本 `0.1.0` 用于开发阶段的构建验证，不代表 MVP 已完成或已发布。
 
 ## 环境准备
@@ -34,13 +34,14 @@ uv build
 
 构建生成 `dist/` 下的 wheel 和源码分发包；wheel 包含 `src/taskforge` 及 `py.typed`。
 
-运行注册、校验、策略与显式加载的行为测试：
+运行注册、校验、策略、显式加载与真实 SQLite 持久化的行为测试：
 
 ```bash
 uv run --locked pytest
 ```
 
-T02 已加入实际行为测试。后续并发与恢复测试将使用临时 SQLite 文件和真实子进程。
+T02/T03 已加入实际行为测试，包括临时 SQLite 文件、并发提交与事务故障。
+后续 Worker 与恢复测试将使用真实子进程。
 
 ## 任务注册与输入校验
 
@@ -121,7 +122,88 @@ JSON 使用别名及 Pydantic `round_trip` 序列化，再用同一模型检查�
 | `timeout_seconds` | `300.0` | 有限正数；为常见异步 I/O 提供五分钟的初始预算 |
 
 时间接受数值，拒绝布尔值和字符串；以上只是起始默认值，用户可声明任务自己的策略。
-本阶段没有数据库、提交 API、执行器、退避调度或超时执行。
+T03 将这些字段保存为数据库快照；执行器、退避调度和超时执行尚未实现。
+
+## 持久化提交与查询
+
+先保存上面的 `tasks.py`，再将以下内容保存为 `submit_query.py`，执行
+`uv run --locked python submit_query.py`。示例创建当前目录的 `taskforge.sqlite`，提交一条 Job，
+关闭连接后重新打开并查询。任务函数不会在提交时执行；每次运行都会提交新的 Job。
+
+```python
+import asyncio
+from pathlib import Path
+
+from taskforge import DatabaseConfig, SQLiteStore, TaskForge
+from tasks import registry
+
+
+async def main() -> None:
+    config = DatabaseConfig(database_path=Path("taskforge.sqlite"))
+    async with SQLiteStore(config) as store:
+        await store.initialize()
+        app = TaskForge(store, registry)
+        job = await app.submit("demo.count", {"count": "3"})
+        print(job.id, job.status.value, job.params_json)
+
+    async with SQLiteStore(config) as store:
+        query = TaskForge(store)
+        restored = await query.get(job.id)
+        assert restored == job
+        page = await query.list(limit=10)
+        print(f"jobs={len(page)}, attempts={len(await query.history(job.id))}")
+        if page:
+            following = await query.list(limit=10, after=page[-1].cursor)
+            print(f"next_page={len(following)}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+公共接口均从 `taskforge` 导入：
+
+| 接口 | 返回值与行为 |
+| --- | --- |
+| `DatabaseConfig(database_path=..., busy_timeout_ms=5000)` | 不可变配置；路径展开并规范化，必须指向本地文件，父目录须已存在 |
+| `SQLiteStore(config)` | async context manager；退出时 `close()` 释放连接，也可显式调用 |
+| `await store.initialize()` | 原子建表并以 `PRAGMA user_version=1` 记录版本；重复调用保留数据 |
+| `TaskForge(store, registry=None)` | 提交需要显式注册表；查询不需要导入任务模块 |
+| `await app.submit(task_name, data)` | 返回不可变 `Job`；先查任务并按 T02 契约校验、序列化，成功表示 commit 完成 |
+| `await app.get(job_id)` | 返回持久 `Job` 快照；不存在（含格式异常的字符串 ID）抛出 `UnknownJobError` |
+| `await app.list(limit=100, after=None)` | 返回 `tuple[Job, ...]`，按 `(created_at, id)` 升序；空页返回 `()` |
+| `await app.history(job_id)` | 返回按 `number` 升序的 `tuple[Attempt, ...]`；已存在且未领取的 Job 返回 `()`，不存在抛出 `UnknownJobError` |
+| `SQLiteStore.submit/get/list/history` | 相同存储行为；直接提交接收 `TaskDefinition` 和输入对象 |
+
+`limit` 必须是 1—1000 的整数，拒绝布尔值。`after` 为上一页末项的 `job.cursor`，
+或 `JobCursor(created_at, id)`：时间必须带时区，ID 必须是规范 UUID4 字符串；
+参数错误抛出 `PaginationError`。游标位置为排他边界，不要求对应记录仍存在。
+每页使用独立事务，分页期间的新提交可能出现在后续页；不承诺跨页一致性快照。
+
+`Job` 包含架构中的全部 Job 字段，策略字段直接保存在快照上；`JobStatus` 枚举表示状态。
+初始状态为 `PENDING`，`attempt_count=0`、`next_run_at=created_at`，开始、结束与错误字段为空。
+`Attempt` 包含全部尝试字段，使用 `AttemptStatus` 与 `ErrorKind` 枚举。
+返回模型为 frozen dataclass，列表为元组，参数为已校验 JSON 字符串；不会泄露 ORM 或会话。
+数据库时间使用 UTC epoch 微秒整数，对外为 UTC 带时区 `datetime`，不经过浮点时间戳转换。
+更改任务默认策略只影响后续提交。
+
+初始化是显式操作，已有兼容数据库重开后可直接查询。未初始化、版本不兼容、
+版本为 1 却缺少表或列不匹配时，初始化或操作明确报错；`SchemaError` 继承 `StorageError`。
+拒绝接管有表但无版本的数据库；不提供迁移，也不自动修复人为修改的 schema。
+SQLite 的状态、整数次数、预算、正有限时间、退避范围、外键及索引约束由数据库执行。
+错误摘要最多 2000 个字符，异常类型最多 256 个字符，traceback 最多 16000 个字符；
+超限写入被约束拒绝，后续执行层负责截断。
+
+每次操作使用独立短会话；查询开启普通事务，写入与建表统一使用 `BEGIN IMMEDIATE`。
+每个连接开启外键，锁等待由 `busy_timeout_ms` 限制（允许 0—2147483647 的整数毫秒）。
+写入失败回滚并抛出 `StorageError`，底层异常保留在异常链中。
+commit 失败时使连接失效并关闭，防止残留事务被连接池复用。
+如果 commit 已开始但未得到明确结果，抛出带 `job_id` 的 `SubmissionUncertainError`，
+调用方应重开存储并 `get(error.job_id)` 确认后再决定是否重新提交。
+commit 阶段的协程取消也转为该错误，原 `CancelledError` 保留在异常链中；
+commit 前取消仍传播取消，并回滚。这里不提供自动重交或业务去重。
+
+T03 仅保存提交和查询；尚无领取、完成、任务执行、Worker、重试调度、进程锁或恢复。
 
 ## 已确认的 MVP 语义
 
@@ -136,5 +218,5 @@ JSON 使用别名及 Pydantic `round_trip` 序列化，再用同一模型检查�
 详细设计见 [架构说明](docs/architecture.md)，开发顺序见 [迭代计划](docs/implementation-plan.md)，
 实际检查结果见 [验证记录](docs/verification.md)。
 
-T01—T10 每个任务由一个独立会话实现。下一会话使用 [T03 交接 prompt](docs/prompts/T03.md)
-实现持久化提交与查询。
+T01—T10 每个任务由一个独立会话实现。下一会话使用 [T04 交接 prompt](docs/prompts/T04.md)
+实现原子领取与完成；T03 验收后按用户追加要求提交改动。

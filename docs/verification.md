@@ -236,3 +236,89 @@ README、架构文档的实现状态、迭代计划与本记录已同步，docs/
 
 T02 验收后，用户追加要求创建 Git Commit。本次提交包含 T02 源码、行为测试、
 说明文档、验收记录及 T03 交接 prompt；未继续实现 T03。
+
+## T03：持久化提交与查询
+
+验证日期：2026-10-13。环境沿用 T02：Linux x86_64、CPython 3.12.13、uv 0.10.9、
+SQLAlchemy 2.0.54、aiosqlite 0.22.1、Pydantic 2.14.1、pytest 9.1.1、
+pytest-asyncio 1.4.0、Ruff 0.17.0、mypy 1.20.2。
+
+**状态：T03 已完成。** 实现与验收阶段止于持久化提交与查询，不继续 T04，当时没有创建 Git Commit。
+
+### 前置条件与范围
+
+已读取 AGENTS.md、karpathy-guidelines skill、T03 prompt、README、依赖配置、架构、迭代计划、
+验收记录及现有源码和测试。开始时 Git 工作区干净；T02 最新提交为 9490166。
+uv.lock 存在，使用已有完整离线缓存运行 uv sync --locked 成功。
+当前 T02 的 78 项行为测试、Ruff、格式检查、mypy strict 和构建均通过，退出码均为 0。
+T01 收据是历史证据，不使用其文件指纹作为当前门禁。
+
+新增 api.py、config.py、db.py、storage.py，扩展公共快照、状态枚举与错误类型。
+使用现有 SQLAlchemy 异步接口、aiosqlite 和本地 SQLite；没有新增或升级依赖。
+pyproject.toml、uv.lock、docs/verification-t01.json 保留原样，原有 T02 源码行为及测试保持。
+
+### 最终接口与行为证据
+
+完整接口、参数、错误与可运行示例见 README 的“持久化提交与查询”。
+
+- DatabaseConfig 只提供规范化的本地 database_path 和有上限的 busy_timeout_ms。
+  SQLiteStore 支持显式 initialize、close 和 async context manager。
+- jobs、attempts 以 schema 版本 1 建立，PRAGMA user_version 随 DDL 在同一写事务提交。
+  重复初始化保留数据；拒绝不兼容版本、有表的未版本化数据库、缺表或列不匹配。
+- Job/Attempt 为不可变快照，查询返回元组；不返回 ORM 或会话。
+  时间以整数 UTC epoch 微秒保存，通过整数 timedelta 转为带时区 datetime。
+- TaskForge.submit 先按稳定名称查找，再复用 T02 校验和 JSON 序列化；
+  SQLiteStore.submit 接收 TaskDefinition。提交不执行任务函数或创建 Attempt。
+  新 Job 为 UUID4、PENDING、次数 0，next_run_at=created_at，其余执行及错误字段为空。
+  全部执行策略字段持久化；后续策略声明变更不影响已有 Job。
+- get/list/history 查询不需要注册表。未知 Job（包括格式异常的字符串 ID）抛 UnknownJobError；
+  已存在且未领取的 Job 历史为空。list 按 (created_at, id) 升序，以 JobCursor 为排他边界，
+  limit 为 1—1000 严格整数；非法分页抛 PaginationError，空页为空元组。
+  游标不依赖源记录存在，支持等效非 UTC 时区；不承诺跨页一致性快照。
+- 独立短 AsyncSession；驱动不隐式 BEGIN，SQLAlchemy begin hook 统一发出普通读事务或
+  BEGIN IMMEDIATE 写事务；每个连接启用外键并设置有限锁等待。
+- tests/test_storage.py 的 74 项真实临时 SQLite 测试覆盖 schema、初始字段、JSON 往返、
+  非法输入不入库、重开查询、策略快照、稳定分页、不可变历史、实际状态/次数/时间/文本长度
+  约束、外键、索引、每个 Job 一个 RUNNING Attempt、并发初始化与 20 条并发提交。
+- AFTER INSERT 的真实 RAISE(FAIL) 故障验证完整回滚；commit 前实际协程取消也回滚已 flush
+  的记录。模拟 commit 应答丢失覆盖实际已提交及未提交两种结果，异常携带可查询的 job_id。
+  commit 阶段取消转换为 SubmissionUncertainError，原 CancelledError 保留在异常链中。
+- 真实读锁阻塞 COMMIT 的补充测试发现底层事务在 SQLAlchemy 认为事务已失效后仍保持开启，
+  单靠关闭会话导致下一次 BEGIN 失败。已通过统一 _commit 在失败时 invalidate 连接修复；
+  测试验证无残留记录、无嵌套 BEGIN，并可在同一存储再次成功查询与提交。
+  该故障仍返回带 job_id 的 SubmissionUncertainError，调用方查询确认后决定是否重交。
+
+### 最终检查结果
+
+以下命令均设置 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"，使用现有已锁定环境。
+没有以 --no-sync 替代 locked 检查，也没有添加占位测试。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 前置同步 | uv sync --locked | 退出码 0；解析 27 个包、审核 26 个安装包 |
+| 全部行为测试 | uv run --locked pytest | 退出码 0；152 passed（T02 78 项、T03 74 项） |
+| Ruff | uv run --locked ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked ruff format --check . | 退出码 0；20 files already formatted |
+| mypy strict | uv run --locked mypy | 退出码 0；8 个源码文件无问题 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel |
+| README 示例 | 提取实际两个 Python 代码块，在自动清理的临时目录通过 uv run --project 项目路径 --locked python 执行 | 两次退出码均为 0；count=3；Job 为 PENDING，jobs=1、attempts=0，下一页为空 |
+| 示例类型检查 | uv run --project 项目路径 --locked mypy --strict 临时 tasks.py 临时 submit_query.py | 退出码 0；两个示例文件无问题 |
+| 改动与前置文件 | git diff --check；git diff --exit-code -- pyproject.toml uv.lock docs/verification-t01.json | 退出码 0；依赖、锁文件与历史收据未修改 |
+
+README、架构的实现状态、迭代计划与本记录已同步，docs/prompts/T04.md 提供下一独立会话交接。
+README 示例的临时脚本及数据库自动清理；没有在工作区留下示例数据库或验收脚本。
+
+剩余限制：T03 不领取或执行任务，无 Worker、重试调度、进程锁、恢复或 CLI；
+不提供 schema 迁移、自动重交、业务去重及跨页一致性快照。错误文本上限由数据库约束执行，
+后续执行层负责截断。父目录须已存在；更高 Python 版本尚未验证。MVP 仍需完成 T04—T10。
+
+补充分发验证：更新验收文档后重新运行 uv build，退出码 0；用标准库 zipfile/tarfile 检查归档，
+退出码 0。wheel 包含八个源码模块和 py.typed；sdist 包含 uv.lock、T03 存储测试、T04 prompt
+及本验收记录。从项目外使用项目 Python 的 -I 模式优先加载实际 dist wheel，核对模块来源后
+完成注册、提交、关闭重开与无注册表 get/list/history 查询，退出码 0。
+该验证复用项目已安装依赖，没有安装新依赖；临时数据库与目录均自动清理。
+
+### T03 Git 提交
+
+T03 验收后，用户追加要求创建 Git Commit。本次提交包含 T03 源码、SQLite 行为测试、
+接口说明、验收记录及 T04 交接 prompt；未继续实现 T04。
