@@ -67,11 +67,11 @@ uv run --locked --extra github pytest
 T02—T10 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
 独立 Worker/CLI 子进程之间的锁互斥、重复信号停机、持久化重试、强制退出与恢复的原子状态。
 
-## GitHub 项目采集
+## GitHub 项目与 Issue 采集
 
 G01 提供 `integrations/github/` 中的严格配置、认证、HTTP、独立业务存储和锁基础。
-G02 已提供项目 Commit、Release 与技能采集；Issue、`github.refresh` 注册表和业务命令入口
-留给 G03—G04，七来源真实验收留给 G05。
+G02 已提供项目 Commit、Release 与技能采集，G03 已提供 Issue 增量采集；
+`github.refresh` 注册表和业务命令入口留给 G04，七来源真实验收留给 G05。
 默认七来源见 `integrations/github/default-sources.json`，配置与输入不保存凭据。
 
 在项目根目录同步可选依赖：
@@ -121,8 +121,33 @@ uv sync --locked --extra github
 批次覆盖保存前检查点、执行身份、观察 UTC、实际请求数、固定目标，以及各部分的覆盖、
 边界和诊断；技能链接保存在 `coverage.skills.changes`。失败可以保存 HTTP 缓存、冷却及
 尝试诊断，但不推进业务记录或检查点。`GitHubHTTP.iter_pages` 保留分页元数据，调用方
-须穷尽迭代器才算完整；`paginate` 继续只返回完整列表。
-当前 699 项全量回归及分发检查通过，下一独立会话见 [G03 prompt](docs/prompts/G03.md)。
+须穷尽迭代器才算完整列表；`paginate` 继续只返回完整列表。
+
+`issues.refresh_issues(data, credential, execution, *, transport=None, trust_env=True) -> bool`
+是独立 Issue 入口，初始化、来源登记、执行身份、完成输入核对及锁生命周期与项目入口相同。
+`issues.collect_issues(http, store, data, checkpoint, execution) -> BatchWrite` 只构造批次，
+要求调用方持来源锁。Issue 检查点为 `repository_id/repository/upper_bound`，不使用项目 SHA。
+
+- 请求前固定 UTC 上界 U；初次按更新时间降序选择最多 100 个匹配的真实 Issue，以
+  `pull_request` 键排除 PR，全部记为 `initial`。窗口满时可停止，否则须到列表末尾；
+  `mode=finite_initial_window`、`full_history=false` 和 `list_exhausted` 明确有限范围。
+- 增量以最新成功上界减 60 秒查询 `since`（UTC 秒格式向下取整），固定 `state=all`、
+  `sort=updated`、`direction=desc` 并完成全部分页；只应用 `updated_at ≤ U`，其余留待后续。
+  通过后同事务提交实体、版本、变化、覆盖、完成标记及检查点 U；失败保留旧检查点。
+- 标签全部命中，关键词在标题或正文任一字段内任一命中，编号任一命中；维度间 AND，
+  空维度不限。标签与关键词使用 `casefold`，关键词为字面子串。退出筛选的已关注对象继续更新，
+  匹配转为不匹配时记录 `exited_filter`；`tracked_issue_ids` 按来源及代次读取关注身份。
+- 保存 `id/number/title/body/state/labels/comments/created_at/updated_at/closed_at/html_url`。
+  `body/closed_at` 必需但可空；时间须带时区，规范化 UTC 微秒并核对时间顺序。
+  标签只保留排序去重的名称；标题/正文保留原文及 null。规范 JSON SHA-256 识别内容版本，
+  忽略远端扩展字段。旧时间快照不覆盖、不产生变化；同时间内容变化按较晚观察保存。
+- 已关注对象记录 `closed/reopened/updated`；首次关注且创建时间晚于前次 U 记 `added`，
+  其余记 `first_observed_history`（历史对象首次发现）。初始化全部 `initial`，筛选退出可同时记录。
+  只保存观察到的状态与评论数，不还原轮询间所有事件，也不宣称完整评论变化。
+
+Issue 覆盖保存前检查点、执行身份、观察上界、实际请求数、筛选快照、分页与排除/延后/旧快照计数。
+达到 100 个匹配对象的初始窗口会显式关闭迭代器，`complete` 只表示有限基线契约通过。
+当前 795 项全量回归及分发检查通过，下一独立会话见 [G04 prompt](docs/prompts/G04.md)。
 
 ## CLI
 

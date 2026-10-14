@@ -1,11 +1,11 @@
 # TaskForge GitHub 接入实施计划
 
-登记日期：2026-10-14。状态：G01、G02 已验收；G03—G05 待实现、待验收，整体真实接入待验收。
+登记日期：2026-10-14。状态：G01—G03 已验收；G04—G05 待实现、待验收，整体真实接入待验收。
 
 本文由用户提供的接入草案落盘，作为 GitHub 接入设计细则。架构边界见
 [architecture.md](architecture.md)，任务范围与交接顺序见
 [implementation-plan.md](implementation-plan.md)，实际验收以
-[verification.md](verification.md) 为准；G01、G02 已完成，下一独立会话从 [G03 prompt](prompts/G03.md) 继续。
+[verification.md](verification.md) 为准；G01—G03 已完成，下一独立会话从 [G04 prompt](prompts/G04.md) 继续。
 
 ## 1. 目标、依据与边界
 
@@ -18,7 +18,7 @@
 | openai/codex | Issue 基线、新增、更新、关闭与重开；排除 PR |
 
 草案准备阶段记录了核心接口、示例、依赖及官方 API 文档调查。实施准备时核对了项目文档、核心公开接口与配置，未重新执行核心验收或联网核验。
-G01 基础能力与 G02 项目/技能采集现已验收，具体证据见验证文档；真实 GitHub 接入仍待 G05 验收。
+G01 基础能力、G02 项目/技能及 G03 Issue 采集现已验收，具体证据见验证文档；真实 GitHub 接入仍待 G05 验收。
 
 用户已确认采用 httpx.AsyncClient，Release 内容更新覆盖已保存记录与后续新增记录。运行限定 WSL/Linux 本地文件系统，不依赖 Obsidian 接入，不增加周期调度、Web UI、LLM 摘要、技能执行或完整评论线程采集。
 
@@ -140,6 +140,13 @@ Release 列表没有更新时间增量参数，因此每次在预算内完整分
 
 筛选在本地完成：标签要求全部命中，关键词在标题和正文中任一命中，编号列表任一命中；不同维度组合采用 AND，空维度不限制。已关注对象不再匹配时仍更新其状态，并记录退出筛选范围，避免标签移除后失联。
 
+G03 实际入口为 issues.refresh_issues，纯收集器为 collect_issues；Issue 检查点包含
+repository_id、repository、upper_bound。初始覆盖明确 finite_initial_window/full_history=false
+及 list_exhausted；完整增量才穷尽所有分页。筛选使用标签/关键词 casefold，关键词为单字段字面子串。
+关注范围由已提交批次按来源代次读取；退出筛选继续关注。变化类型为 initial、added、
+first_observed_history、closed、reopened、updated、exited_filter；自然新增仅限创建时间晚于前次上界。
+完整字段、可空与规范化规则见 README，真实 SQLite 验收及边界证据见验证文档 G03 节。
+
 REST 分页不提供冻结快照；重叠窗口和身份去重用于减少轮询遗漏。首版只保证保存观察到的状态，不还原两次刷新之间的全部事件，也不声称识别完整评论变化。
 
 ### 事务、串行执行与恢复
@@ -172,7 +179,7 @@ G01—G05 已登记到 [implementation-plan.md](implementation-plan.md)，每个
 | G05 真实接入与最终交接 | G01—G04；第 6—7 天 | 七来源真实基线、重复刷新、历史重放、对照收据、完整检查和复现文档 |
 
 任务 prompt 使用 docs/prompts/ 的 G01—G05 对应文件：G01/G02 保留原任务契约，
-[G03.md](prompts/G03.md) 已交接，G04—G05 在前一任务验收后补齐。
+[G03.md](prompts/G03.md) 保留原任务契约，[G04.md](prompts/G04.md) 已交接，G05 在 G04 验收后补齐。
 每个 prompt 指明输入证据、允许修改范围、必要检查、完成标准和下一任务前置条件，并要求读取项目指定 skills。
 
 实施阶段按实际结果更新验证文档及架构状态；保留 T01/T10 历史证据。未通过真实接入前始终标为待验收，不将提案内容计入成果。
@@ -196,4 +203,5 @@ G01—G05 已登记到 [implementation-plan.md](implementation-plan.md)，每个
 默认假设是单机、单 Worker、同一业务实例共用凭据和请求门控，系统 UTC 时钟正常。
 真实网络、凭据权限、仓库身份和默认分支留待真实接入验证。G01 安装经用户批准，验收后按用户追加要求提交；
 G02 已完成受控项目/技能采集验收，验收后按用户追加要求创建 Git Commit。
-当前基础与采集接口、验收证据见验证文档 G02 节和 G03 prompt；G03—G05 仍待实施。
+G03 已完成受控 Issue 增量验收，新增 96 项行为测试、全量 795 项通过，验收后按用户追加要求创建 Git Commit。
+当前基础与采集接口、验收证据见验证文档 G03 节和 G04 prompt；G04—G05 仍待实施。

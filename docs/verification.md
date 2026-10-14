@@ -1391,3 +1391,121 @@ Obsidian/RSS 的三个独立文档保留在工作区，不纳入本次提交；�
 
 提交准备仅同步文档提交状态，实现与通过 699 项测试的版本一致；核心、依赖与历史收据保留。
 文档更新后重新构建并核对实际归档内容，git diff --check 与暂存差异检查通过。
+
+## G03：Issue 增量采集
+
+验证日期：2026-10-14。**状态：G03 已验收；G04—G05 待实现、待验收，整体真实 GitHub 接入待验收。**
+环境沿用 G02：WSL2/Linux、CPython 3.12.13、uv 0.10.9、httpx 0.28.1。
+本会话完成 Issue 收集器、必要业务读取接口及 [G04 交接](prompts/G04.md)，未创建 Git Commit。
+
+### 前置复核与外部契约
+
+读取适用 AGENTS.md、karpathy-guidelines、writing-for-agents、G03 prompt、架构、实施与接入计划、
+G01/G02 验证记录、T01/T10 历史收据、README、pyproject.toml、uv.lock、业务源码与默认配置、
+GitHub 行为测试、核心公开接口及 local_tasks 示例。开始时仅有三份无关未跟踪文档：
+obsidian-sync-requirements.md、rss-requirements.md、prompts/obsidian-sync-plan.md，保留原样。
+当前核心与示例的 18 个 SHA-256 匹配 T10 收据；依赖声明、锁文件及两份历史收据逐字节匹配 HEAD。
+修改前完整回归 699 passed，132.85 秒，退出码 0；历史计数未替代本次实际复核。
+
+重新读取 [Issues API（2026-03-10）](https://docs.github.com/en/rest/issues/issues?apiVersion=2026-03-10)
+及 [REST 分页](https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api)：
+仓库列表包含 PR，以 pull_request 键排除；state=all、sort=updated、direction=desc；
+since 表示更新时间之后，per_page 最大 100，Link 决定后续分页。版本保持 2026-03-10。
+本次仅使用假凭据、MockTransport、trust_env=False 与真实临时 SQLite；未读取个人凭据或采集 openai/codex。
+
+### 实际接口、字段与覆盖
+
+新增 integrations/github/issues.py、IssueRecord/IssueLabel 和 tests/test_github_issues.py。
+BusinessStore.tracked_issue_ids(repository_id, source_id, generation) 从已提交变化及批次读取关注身份，
+新代次不会继承旧代次关注范围。schema 保持 v1；仅将 HTTP iter_pages 的返回类型精确标为
+AsyncGenerator，以支持有限基线显式 aclose；HTTP 执行、驱动、核心事务及项目收集器行为不变。
+
+refresh_issues(data, credential, ExecutionIdentity, *, transport=None, trust_env=True) -> bool
+与项目入口遵守相同初始化、登记、完成核对、代次、来源锁和尝试预算约定。
+collect_issues(http, store, data, checkpoint, execution) -> BatchWrite 只构造批次，调用方持来源锁。
+请求前固定观察 UTC 上界 U，Issue 检查点包含 repository_id、repository、upper_bound，无项目 SHA。
+仓库重定向使用 canonical full_name；采集结束复核配置路径与规范路径身份，ID 改变要求 rebaseline。
+
+- 初次按更新时间降序取最多 100 个本地匹配的真实 Issue，全部 initial。达到窗口可提前停止；
+  不足窗口则须到末尾。coverage.issues 的 mode=finite_initial_window、full_history=false、
+  list_exhausted、pages/scanned/pr_excluded/selected 明确实际边界；complete 只代表有限基线契约通过。
+- 增量 since 为最新成功 upper_bound 减 60 秒，按官方 UTC 秒格式向下取整；重叠至少 60 秒。
+  固定查询参数并穷尽分页，包括第一页 304 后的后页；mode=complete_increment。
+  仅保存 updated_at ≤ U，晚于 U 的快照计入 deferred_after_upper；检查点推进到 U。
+- labels 全部命中、keywords 在标题或正文任一字段内任一命中、numbers 任一命中；维度间 AND，
+  空维度不限。标签与关键词使用 casefold 比较，关键词为字面子串；文本不跨标题/正文拼接匹配。
+  已关注对象退出筛选仍持续更新；只在由匹配转为不匹配时记录 exited_filter。
+- 内容保存 id、number、title、body、state、labels、comments、created_at、updated_at、closed_at、html_url。
+  body/closed_at 必须存在但可为 null；其他字段必需，ID/编号为正整数、comments 非负、state 为 open/closed。
+  时间必须带时区，规范化 UTC 微秒；创建时间不得晚于更新时间，非空关闭时间须位于两者之间。
+  labels 只保存名称，排序去重；标题/正文保留原文本及 null。规范 JSON SHA-256 为内容指纹，忽略 API 扩展字段。
+- 较旧 updated_at 在构造实体和变化前排除；相同时间内容不同以较晚串行观察保存。
+  已关注快照产生 closed、reopened 或 updated；筛选退出可与状态/内容变化同时记录。
+  首次关注且 created_at > 前次 U 记 added，其他既有对象记 first_observed_history；等于前次 U 也属历史。
+  首次基线均 initial。只记录观察到的状态及评论数，不还原中间事件或完整评论变化。
+
+完整批次经现有 apply 同事务保存实体、版本、变化、覆盖、检查点及完成标记；网络在事务外。
+覆盖同时包含 before_checkpoint、execution、observed_at、实际 requests、since、U、过滤快照、
+分页与排除/延后/旧快照计数。失败只允许缓存、冷却和尝试诊断独立保留。
+
+### 逐项行为证据
+
+以下测试均在 tests/test_github_issues.py，真实查询数据库记录、版本、变化、批次及检查点。
+
+| 契约 | 当前证据 |
+| --- | --- |
+| 有限初始范围与 PR 排除 | finite_initial_window；exact_100_at_end；filtered_baseline_crosses_pages；filtered_small_baseline；baseline_selects_latest：空/不足/正好 100/超过 100、多页筛选及预算中断；近期创建仍 initial |
+| 本地筛选与继续关注 | filter_dimensions_and_local_and；keywords_match_one_field；tracked_filter_exit；history_enters_filter：三维 AND、大小写、可空正文、标签/关键词退出、重新进入无伪新增 |
+| 状态及首次发现分类 | new_history_close_reopen_and_other_updates；creation_at_previous_upper；stale_filter_exit：added、历史首次发现、关闭、重开、内容更新、同时关闭和退出 |
+| 完整字段与指纹 | full_content_fingerprint_fields；normalized_times_labels；invalid_remote_fields；missing_required_fields；inconsistent_issue_times：每个选定字段、UTC/标签规范化、严格类型/可空、扩展字段忽略、异常无载荷链 |
+| 时间界限与幂等 | equal_timestamp_later_observation；upper_bound_deferred；initial_future；clock_regression：同时间编辑保存，旧快照无实体覆盖/版本/变化，上界外延后，检查点采用请求前 U |
+| 完整分页与共同预算 | complete_increment_multiple_pages_and_304；incomplete_increment；metadata_list_and_confirmation：205 条增量三页、304 后页编辑、后页 HTTP/页预算/请求预算/最终身份核对失败、重复身份/排序/Link 异常均不提交 |
+| 身份、代次与重试 | redirect_canonical_identity；identity_changes_during_collection；completed_input_conflict；rebaseline_new_repository；generation_changed_mid_network；failed_old_job_retry；failed_initial_retry：重定向保留 ID，换 ID 拒绝，旧代次隔离，历史保留，重试读最新成功上界 |
+| 原子与锁生命周期 | sql_fault_rolls_back；same_source_serializes；http_cancel_retains_source_and_api_locks；database_cancel_waits；client_close_repeated_cancel：真实 trigger 中途故障整批回滚，事件屏障与重复取消等待 HTTP/数据库/客户端清理后才解锁 |
+
+全量复验 G01 分页、缓存、冷却跨重启、真实进程锁、事务/不确定提交及取消清理，
+G02 Commit/Release/skills 共同完整性，以及核心 SQLite、CLI、Worker、信号与崩溃回归。
+本次没有新增 G04 真实 Worker 故障实验。
+
+### 实际命令与分发核验
+
+uv 命令均设置 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"，沿用已授权 github extra 与锁定版本。
+默认沙箱的真实 aiosqlite 前置测试挂起且无输出；确认进程后发送 TERM，回收得到退出码 143。
+其余真实数据库/CLI/子进程检查通过自动审批允许的沙箱外环境执行，没有替换驱动或缩小验证范围。
+
+| 检查 | 命令或方法 | 结果 |
+| --- | --- | --- |
+| 同步 | uv sync --locked --extra github | 退出码 0；33 个包解析、32 个包审核 |
+| 修改前全量 | uv run --locked --extra github pytest -q --basetemp=/tmp/taskforge-g03-before | 退出码 0；699 passed，132.85 秒 |
+| 专项首轮 | uv run --locked --extra github pytest tests/test_github_issues.py -x -q --basetemp=/tmp/taskforge-g03-issues | 退出码 0；93 passed，9.31 秒；随后补充 3 项边界测试并由最终全量覆盖 |
+| 最终全量 | uv run --locked --extra github pytest -q --basetemp=/tmp/taskforge-g03-full | 退出码 0；795 passed，142.29 秒；699 既有 + 96 新增，无告警 |
+| Ruff | uv run --locked --extra github ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked --extra github ruff format --check . | 退出码 0；74 files already formatted |
+| 核心及业务 strict | uv run --locked --extra github mypy --strict src/taskforge integrations | 退出码 0；28 个源码文件通过 |
+| 构建 | uv build | 退出码 0；sdist 及从 sdist 构建的 wheel；交接落盘后再次核对 |
+| 实际分发内容 | 标准库 tarfile/zipfile 逐字节核对当前文件和实际归档 | 退出码 0；首次 60、交接后 61 个业务/测试/文档及配置文件逐字节匹配，包含 G04 prompt；wheel 15 个核心文件、py.typed 与 CLI 边界通过 |
+| 保护文件及差异 | 18 个 T10 源码指纹；依赖/历史收据与 HEAD 比较；git diff --check | 退出码 0；核心、示例、依赖与历史收据原样保留，无空白错误 |
+
+首轮测试夹具将编号修改误作远端 ID 修改、PR 排序位置预期错误，以及行长/生成器类型问题已修正。
+最终没有降低 strict、绕过锁文件、读取个人凭据或在默认测试访问 GitHub。
+
+### 限制、清理与交接
+
+REST 分页不提供冻结快照；重叠与身份去重减少遗漏，但不能证明刷新间全部事件。
+初始最多 100 个本地匹配的 Issue，不是全历史；预算不足时初始/增量都明确失败。
+离开筛选范围的已关注对象继续保存；未观察到的对象不推断删除。
+采集器未注册 TaskForge 任务、编排业务 CLI、关联核心提交或导出正式文件。
+G04 负责入口、提交核对、导出与真实 Worker 故障；G05 负责七来源联网及 direct 对照，均待验收。
+
+README、架构、实施与接入状态已同步，G04 prompt 已创建；文档定稿后重新构建并复核归档字节。
+测试创建的临时根与文档草稿已清理，保留正常 dist 和工具缓存；全部本任务测试进程已结束。
+无关用户改动保留；本会话停止于 G03，未实现 G04，未创建 Git Commit。
+
+### G03 Git 提交
+
+G03 验收后，用户追加要求创建 Git Commit。本次提交包含 Issue 增量采集、必要业务读取接口、
+96 项新增行为测试、接口说明、验收记录和 G04 交接 prompt；此前未创建提交的记录保留为验收阶段历史。
+Obsidian/RSS 的三份独立文档保留在工作区，不纳入提交；未继续实现 G04。
+
+提交准备仅同步文档提交状态，实现与通过 795 项测试的版本一致；核心、依赖与历史收据保留。
+文档更新后重新构建并核对实际归档内容，git diff --check 与暂存差异检查通过。

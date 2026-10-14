@@ -5,7 +5,7 @@ import json
 import math
 import re
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 from datetime import UTC
 from email.utils import parsedate_to_datetime
@@ -259,7 +259,7 @@ class GitHubHTTP:
 
     async def iter_pages(
         self, path: str, *, list_field: str | None = None
-    ) -> AsyncIterator[CachedResponse]:
+    ) -> AsyncGenerator[CachedResponse]:
         """Yield validated pages; callers must exhaust this iterator before committing."""
         url = self._safe_url(path)
         parts = urlsplit(url)

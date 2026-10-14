@@ -491,6 +491,22 @@ class BusinessStore:
 
         return await self._read(read)
 
+    async def tracked_issue_ids(
+        self, repository_id: int, source_id: str, generation: int
+    ) -> tuple[str, ...]:
+        """Membership comes from committed observations in this source generation."""
+
+        async def read(connection: aiosqlite.Connection) -> tuple[str, ...]:
+            async with connection.execute(
+                """SELECT DISTINCT c.remote_id FROM changes c JOIN batches b
+                   ON c.refresh_id=b.refresh_id WHERE c.repository_id=? AND c.kind='issue'
+                   AND b.source_id=? AND b.generation=? ORDER BY c.remote_id""",
+                (repository_id, source_id, generation),
+            ) as cursor:
+                return tuple(str(row[0]) for row in await cursor.fetchall())
+
+        return await self._read(read)
+
     async def skill_snapshot(self, repository_id: int, commit_sha: str) -> "SkillSnapshot | None":
         async def read(connection: aiosqlite.Connection) -> SkillSnapshot | None:
             row = await self._one(

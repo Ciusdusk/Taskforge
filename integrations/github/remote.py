@@ -1,9 +1,17 @@
 """Validate the fields used to establish remote identity and coverage."""
 
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, JsonValue, ValidationError, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    JsonValue,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 
 from integrations.github.errors import CollectionError
 
@@ -88,6 +96,42 @@ class ReleaseRecord(RemoteModel):
 
 class ReleaseVisibility(RemoteModel):
     draft: bool
+
+
+class IssueLabel(RemoteModel):
+    name: str = Field(min_length=1)
+
+
+class IssueRecord(RemoteModel):
+    id: int = Field(gt=0)
+    number: int = Field(gt=0)
+    title: str
+    body: str | None
+    state: Literal["open", "closed"]
+    labels: list[IssueLabel]
+    comments: int = Field(ge=0)
+    created_at: str
+    updated_at: str
+    closed_at: str | None
+    html_url: str = Field(min_length=1)
+
+    @field_validator("created_at", "updated_at", "closed_at")
+    @classmethod
+    def normalize_time(cls, value: str | None) -> str | None:
+        return None if value is None else utc(value)
+
+    def content(self) -> dict[str, JsonValue]:
+        value = self.model_dump(mode="json")
+        value["labels"] = sorted({label.name for label in self.labels})
+        return value
+
+    @model_validator(mode="after")
+    def chronological(self) -> Self:
+        if self.created_at > self.updated_at or (
+            self.closed_at is not None and not self.created_at <= self.closed_at <= self.updated_at
+        ):
+            raise ValueError("inconsistent Issue timestamps")
+        return self
 
 
 class TreeEntry(RemoteModel):
