@@ -67,10 +67,11 @@ uv run --locked --extra github pytest
 T02—T10 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
 独立 Worker/CLI 子进程之间的锁互斥、重复信号停机、持久化重试、强制退出与恢复的原子状态。
 
-## GitHub 接入基础
+## GitHub 项目采集
 
 G01 提供 `integrations/github/` 中的严格配置、认证、HTTP、独立业务存储和锁基础。
-采集器、`github.refresh` 注册表和业务命令入口由 G02—G04 实现；七来源真实验收留给 G05。
+G02 已提供项目 Commit、Release 与技能采集；Issue、`github.refresh` 注册表和业务命令入口
+留给 G03—G04，七来源真实验收留给 G05。
 默认七来源见 `integrations/github/default-sources.json`，配置与输入不保存凭据。
 
 在项目根目录同步可选依赖：
@@ -96,6 +97,32 @@ uv sync --locked --extra github
 来源锁必须包住存储读取、HTTP 客户端生命周期、业务提交及后续导出；嵌套客户端须先关闭，
 再退出来源锁。数据库与 HTTP 操作及凭据子进程在重复取消时仍等待实际结束，锁文件保留。
 实际检查、沙箱限制和交接见 [验证记录](docs/verification.md)。
+
+`project.refresh_project(data, credential, execution, *, transport=None, trust_env=True) -> bool`
+是实际项目采集入口，`execution` 为 `project.ExecutionIdentity(execution_id, attempt_number)`。
+调用方先初始化业务库并登记来源；`rebaseline` 输入指向已创建的新代次，重试不重置代次。
+入口持来源锁读取最新检查点，固定默认分支 Commit SHA 及原生 tree SHA，共用一次尝试预算。
+返回 True 表示完整批次已提交，False 表示相同输入已完成；重复批次不发网络、不重复应用变化。
+`BusinessStore.completed_input(data)` 核对完整输入，冲突 refresh_id 明确拒绝。
+
+项目检查点包含 `repository_id/repository/default_branch/sha`，三部分共同通过后才一次提交：
+
+- Commit 初始最多 20 条，全标 `initial` 并注明有限历史；之后逐页 Compare 核对状态、
+  base/merge-base、数量、唯一 SHA 与目标。历史分叉、回退、不可比较或超增量上限抛
+  `RebaselineRequired`，保留旧检查点；仓库重定向后仍须核对远端 ID。
+- Release 每次完整核对已发布身份，包含 prerelease、排除 draft。初始只保存按 UTC
+  `published_at`、ID 降序最近最多 10 条内容；之后保存首次观察 ID 并核对已存内容编辑。
+  窗口外旧 ID 仅保留身份，消失保留历史并诊断。指纹不依赖 `updated_at`；“首次观察到”
+  与其中发布时间位于观察时刻前 7 天的数量分开统计。
+- 开启扫描的两个默认技能来源读取完整原生树，仅保存普通 `SKILL.md` 的路径与 blob SHA。
+  recursive 截断时丢弃部分清单并逐子树补齐；任一子树失败或预算中断均不推断删除。
+  symlink/submodule 不展开。新增、修改、删除及重命名差分的链接固定前后提交。
+
+批次覆盖保存前检查点、执行身份、观察 UTC、实际请求数、固定目标，以及各部分的覆盖、
+边界和诊断；技能链接保存在 `coverage.skills.changes`。失败可以保存 HTTP 缓存、冷却及
+尝试诊断，但不推进业务记录或检查点。`GitHubHTTP.iter_pages` 保留分页元数据，调用方
+须穷尽迭代器才算完整；`paginate` 继续只返回完整列表。
+当前 699 项全量回归及分发检查通过，下一独立会话见 [G03 prompt](docs/prompts/G03.md)。
 
 ## CLI
 

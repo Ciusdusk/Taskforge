@@ -5,6 +5,7 @@ import json
 import math
 import re
 import time
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from datetime import UTC
 from email.utils import parsedate_to_datetime
@@ -246,13 +247,26 @@ class GitHubHTTP:
                     await protected(response.aclose())
 
     async def paginate(self, path: str, *, list_field: str | None = None) -> list[JsonValue]:
+        records: list[JsonValue] = []
+        async for value in self.iter_pages(path, list_field=list_field):
+            items = value.body
+            if list_field is not None:
+                assert isinstance(items, dict)
+                items = items[list_field]
+            assert isinstance(items, list)
+            records.extend(items)
+        return records
+
+    async def iter_pages(
+        self, path: str, *, list_field: str | None = None
+    ) -> AsyncIterator[CachedResponse]:
+        """Yield validated pages; callers must exhaust this iterator before committing."""
         url = self._safe_url(path)
         parts = urlsplit(url)
         params = dict(parse_qsl(parts.query, keep_blank_values=True))
         params.update(per_page="100", page="1")
         url = str(httpx.URL(url).copy_with(params=params))
         expected = dict(params)
-        records: list[JsonValue] = []
         seen: set[str] = set()
         for page in range(1, self.budget.limits.max_pages + 1):
             if url in seen:
@@ -266,10 +280,10 @@ class GitHubHTTP:
                 items = items[list_field]
             if not isinstance(items, list) or len(items) > 100:
                 raise PaginationError("Invalid paginated list")
-            records.extend(items)
+            yield value
             following = next_link(value.link)
             if following is None:
-                return records
+                return
             url = self._safe_url(following)
             following_parts = urlsplit(url)
             expected["page"] = str(page + 1)

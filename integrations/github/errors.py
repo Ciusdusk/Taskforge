@@ -39,3 +39,11 @@ class BudgetError(HTTPError):
 
 class PaginationError(HTTPError):
     pass
+
+
+class CollectionError(GitHubError):
+    """The response cannot prove complete business coverage."""
+
+
+class RebaselineRequired(CollectionError):
+    """Repository identity or history no longer extends the saved baseline."""

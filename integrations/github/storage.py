@@ -257,6 +257,21 @@ class BusinessStore:
         # Always uses a new connection, including the uncertain-commit path.
         return await self._read(read)
 
+    async def completed_input(self, data: RefreshInput) -> bool:
+        """Check replay identity before any network work, even for an old generation."""
+
+        async def read(connection: aiosqlite.Connection) -> bool:
+            row = await self._one(
+                connection, "SELECT input FROM batches WHERE refresh_id=?", (str(data.refresh_id),)
+            )
+            if row is None:
+                return False
+            if row[0] != data.model_dump_json():
+                raise StateError("Completed refresh_id belongs to another input")
+            return True
+
+        return await self._read(read)
+
     async def apply(self, batch: BatchWrite) -> bool:
         """True if committed, False if already complete; uncertainty is checked once."""
         batch = BatchWrite.model_validate_json(batch.model_dump_json())

@@ -1254,3 +1254,140 @@ Obsidian/RSS 的独立需求及 Obsidian 交接文档保留在工作区，不纳
 
 提交准备仅同步文档状态，源码与通过 612 项测试的验收版本一致；核心与历史收据保持。
 文档更新后重新构建，核对 sdist/wheel 内容与 git diff --check；不继续实现 G02。
+
+## G02：项目与技能采集
+
+验证日期：2026-10-14。**状态：G02 已验收；G03—G05 待实现、待验收，整体真实 GitHub 接入待验收。**
+环境沿用 G01：WSL2/Linux、CPython 3.12.13、uv 0.10.9、httpx 0.28.1。
+完成范围仅为项目与技能采集及 [G03 交接](prompts/G03.md)；未创建 Git Commit。
+
+### 前置证据与外部契约
+
+读取项目 AGENTS.md、karpathy-guidelines、writing-for-agents、G02 prompt、架构、实施与接入计划、
+验证记录、T01/T10 历史收据、README、依赖声明与锁文件、业务源码/默认配置/测试、
+核心公开接口及 local_tasks 示例。开始时仅有三个无关未跟踪文件：
+obsidian-sync-requirements.md、rss-requirements.md、prompts/obsidian-sync-plan.md，均保留原样。
+
+当前核心与示例的 18 个 SHA-256 匹配 T10 历史收据；pyproject.toml、uv.lock、T01/T10 收据
+逐字节匹配 HEAD。历史 T01 依赖指纹仅作为历史，不覆盖 G01 的 github extra 声明。
+本次修改前完整回归为 612 passed，119.31 秒，退出码 0；分页、缓存、预算、代次、业务事务、
+跨进程互斥、取消清理与持久冷却均由当前实际测试复核，没有以历史计数代替前置证据。
+
+重新读取 API 版本 2026-03-10 的官方文档，没有读取个人凭据或执行真实七来源采集：
+
+- [Commit 与 Compare](https://docs.github.com/en/rest/commits/commits?apiVersion=2026-03-10)：
+  Commit 列表可固定 sha；Compare 必须分页，文件列表最多 300 个，不能替代完整技能树。
+- [Release](https://docs.github.com/en/rest/releases/releases?apiVersion=2026-03-10)：
+  完整列表用于核对已发布身份；draft 可因权限可见，须主动排除；普通 tag 不在 Release 范围。
+- [Git tree](https://docs.github.com/en/rest/git/trees?apiVersion=2026-03-10)：
+  truncated=true 必须非递归逐子树读取；完整性无法证明时不能推断删除。
+
+### 实现与实际接口
+
+新增 project.py、skills.py、remote.py 及 tests/test_github_project.py。
+业务 schema 仍为 v1；核心源码、公开接口、驱动、事务、依赖版本和历史收据原样保留。
+HTTP 新增 iter_pages，paginate 仍只返回完整合并列表，原 G01 行为复验通过。
+BusinessStore 新增 completed_input(data)，在网络前核对批次完成标记与完整输入。
+
+refresh_project(data, credential, ExecutionIdentity(execution_id, attempt_number), *,
+transport=None, trust_env=True) -> bool 是独立于 TaskForge 包装的入口。
+调用方先 initialize/register_source；来源锁覆盖完成核对、最新代次/检查点读取、
+HTTP 客户端、网络、诊断及 apply。已完成相同输入返回 False，不发网络、不重复 apply；
+冲突输入拒绝。rebaseline 指向入口已经创建的新代次，采集重试不重置代次。
+collect_project 仅构造完整 BatchWrite，要求调用方持来源锁；后续 direct 可复用同一入口。
+
+项目检查点保存 repository_id、规范化 repository、default_branch、sha。
+每次读取默认分支后固定 commit 与其 tree SHA；末尾再次核对配置路径和规范路径的仓库 ID。
+Compare 逐页核对 status/ahead_by/behind_by/total_commits/base/merge-base，核对页间一致性、
+完整数量、SHA 唯一性与目标身份。初始 Commit 最多 20 条，全标 initial，覆盖明确有限历史。
+分叉、回退、404/422 不可比较或增量超预算抛 RebaselineRequired，保留旧检查点。
+
+Release 初始登记全部可见已发布 ID，只保存按 UTC published_at、数值 ID 降序最近最多 10 条内容。
+后续保存新观察 ID，持续核对已存内容，初始窗口外旧 ID 不监测编辑；draft 排除，prerelease 包含。
+内容含 id、tag_name、name、body、created_at、published_at、prerelease、html_url，时间规范化 UTC，
+指纹忽略无关 API 扩展和 updated_at。已存 ID 消失保留实体/版本/身份，覆盖保存 missing_saved_ids
+及诊断。“首次观察到”单独统计其中发布时间位于观察时刻前 7 天的数量，发现旧发布不计为近期发布。
+
+技能仅扫描固定 commit 原生树中的普通 SKILL.md（100644/100755）；symlink/submodule 不展开，
+覆盖记录排除数量与定义变化边界。recursive 截断结果整份丢弃，以完整 root/subtree 重建；
+任一子树截断、身份不符、响应异常或预算中断均失败。重复路径、类型不符、异常祖先亦拒绝。
+完整快照差分产生 added/modified/deleted；重命名为删除加新增，变化唯一身份沿用仓库 ID、
+前后 SHA、路径，固定提交的 before_url/after_url 保存在覆盖记录。同 SHA 快照变化明确拒绝。
+
+三部分共同通过才一次 apply。覆盖还含前检查点、执行身份、观察 UTC、请求数与固定目标；
+网络在业务事务外，每次尝试只有一个 AttemptBudget。缓存、冷却及失败诊断可单独持久化，
+不代表业务批次完成。remote.parse 的载荷校验错误不保留远端 ValidationError 异常链。
+
+### 行为证据
+
+新增 87 项行为测试全部使用 MockTransport、假凭据、trust_env=False 与真实临时业务 SQLite。
+失败测试逐表核对 sources/generations、batches、entities/versions/changes、技能快照/变化及
+Release 身份，证明确实未发生部分业务提交，而非只检查单个 SHA。
+
+| G02 要求 | 当前实际证据（tests/test_github_project.py） |
+| --- | --- |
+| 有限 Commit 基线、前进、无变化 | finite_baseline_forward_and_unchanged；invalid_commit_baseline；small_baseline：20 条/短窗口、全部 initial、完整增量、同 SHA 不调用 Compare、非法基线无提交 |
+| Compare 分页与完整数量 | compare_complete_pagination_and_target_fixed；compare_rejects_unproven_history；compare_later_page_incomplete：3 页、重复/缺失 SHA、目标身份、计数与页间元数据不一致、后页故障和页预算 |
+| 分叉、回退、不可比较与上限 | compare_rejects_unproven_history；old_sha_not_comparable；increment_commit_limit_boundary：status、base/merge-base、404/422、500 成功/501 失败及更小配置上限，超限第一页即诊断 |
+| 重定向及远端身份 | repository_redirect_keeps_remote_identity；remote_id_replacement：同 ID 更名继续，开始/采集中/旧路径 ID 换仓库均拒绝 |
+| Release 身份与初始窗口 | release_all_ids_initial_window；release_full_pagination：105 个 ID 完整分页、只存 10 条、UTC 时间及 ID 排序、draft 排除/prerelease 包含、空列表和可空字段 |
+| 旧 Release 编辑与发现统计 | release_all_ids_initial_window；release_fingerprint_tracks_each_content_field；release_fingerprint_normalizes_time：已存旧内容继续编辑、窗口外旧 ID 不监测、全部字段指纹、等价时区不误报、首次观察旧/近期发布区分 |
+| 消失及分页失败 | release_disappearance；release_uncertain_coverage：实体/版本/身份保留并诊断，后页失败、重复 ID、缺字段/非法时间不提交 Commit |
+| 完整技能清单与截断补齐 | skill_complete_native_tree；truncated_recursive_tree：普通可执行文件、symlink/submodule 边界、共享子树在不同前缀完整展开、partial phantom 丢弃 |
+| 子树失败与错误删除防止 | failed_subtree；invalid_recursive_tree：子树 HTTP/截断/身份/预算、异常类型/路径/循环；逐表保留旧记录和快照；只有 empty_complete_tree 能证明删除 |
+| 稳定变化及固定链接 | skill_complete_native_tree_changes_rename_and_fixed_links；same_commit_snapshot：新增、修改、删除、重命名；重复目标保留同一变化身份，链接固定前后 SHA |
+| 幂等、代次与重试 | complete_replay；generations_rebaseline；generation_changed_during_network；failed_old_job_retry；failed_initial_attempt_retry：完成输入冲突、旧代次拒绝与已完成确认、旧历史保留、新基线、旧 Job 重试从最新成功 SHA 开始 |
+| 固定目标、共用预算与原子回滚 | branch_moving_mid_attempt；all_collectors_share_one_actual_request_budget；sql_failure_rolls_back：分支途中前进仍读取既定树/历史、请求总预算、真实 checkpoint trigger 故障整批回滚 |
+| 锁及取消清理 | same_source_refreshes_serialize_checkpoint_read；project_cancellation_keeps_source_lock：事件屏障证明第二刷新只在第一提交后读取检查点；重复取消直到 transport 清理结束才释放来源锁 |
+
+全量同时复验 G01 的真实进程锁、持久冷却、缓存分页、事务回滚/不确定提交与客户端关闭，
+以及现有核心 SQLite、CLI、Worker、停机与崩溃测试；G02 没有启动新的真实 Worker 故障实验。
+
+### 实际命令、结果与分发核验
+
+首次直接 uv sync --locked --extra github 退出码 2，因为默认用户缓存目录只读。
+改用既有工作区缓存后成功；没有新增/升级依赖，也没有用 --no-sync 绕过锁文件。
+下表 uv 命令均设置 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"。
+真实 SQLite、CLI 和子进程测试通过自动审批允许的沙箱外环境执行；未改驱动或降低验证范围。
+
+| 检查 | 实际命令或方法 | 结果 |
+| --- | --- | --- |
+| 同步 | uv sync --locked --extra github | 退出码 0；33 个包解析、32 个安装包审核 |
+| 修改前全量 | uv run --locked --extra github pytest -q | 退出码 0；612 passed，119.31 秒 |
+| 采集及 G01 分页/存储首轮 | uv run --locked --extra github pytest tests/test_github_project.py tests/test_github_http.py tests/test_github_storage.py -q --basetemp=/tmp/taskforge-g02-targeted | 退出码 0；123 passed，14.08 秒 |
+| 扩展后的 G02 行为 | uv run --locked --extra github pytest tests/test_github_project.py -q --basetemp=/tmp/taskforge-g02-project | 退出码 0；87 passed，14.19 秒；随后微调共享预算中断位置，最终全量复验 |
+| 最终全量 | uv run --locked --extra github pytest -q --basetemp=/tmp/taskforge-g02-full | 退出码 0；699 passed，133.35 秒，无告警；612 既有 + 87 新增 |
+| Ruff | uv run --locked --extra github ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked --extra github ruff format --check . | 退出码 0；71 files already formatted |
+| 核心及业务 strict | uv run --locked --extra github mypy --strict src/taskforge integrations | 退出码 0；27 个源码文件通过 |
+| 构建 | uv build | 退出码 0；sdist 及从 sdist 构建的 wheel；交接文档落盘后再次构建 |
+| 实际分发内容 | uv run --locked --extra github python，标准库 tarfile/zipfile 核对实际归档与当前文件 | 退出码 0；首次 21 个业务/配置/测试/G02 文件逐字节匹配；最终含 G03 与更新文档，wheel 仅核心、py.typed、CLI 和包元数据 |
+| 保护文件与差异 | 核心/示例 T10 指纹；git diff HEAD --exit-code -- src/taskforge examples pyproject.toml uv.lock docs/verification-t01.json docs/verification-t10.json；git diff --check | 退出码 0；保护文件不变，无空白错误 |
+
+实现初期 Ruff 行长/导入与 mypy 的 JsonValue 容器、Literal、元组类型诊断已修复；
+最终检查保持 strict，未跳过业务模块或删减测试。pytest 的 pythonpath=["."] 与已有进程
+显式 PYTHONPATH 设置沿用 G01；没有改变核心或测试配置。
+
+### 限制、清理与交接
+
+REST 分页不提供跨请求冻结快照；固定 Commit/tree SHA 与完整身份分页不声称还原所有中间事件。
+初始化只有 20 条 Commit、10 条 Release 内容；技能只记录定义文件变化，不下载或执行技能。
+已发布 Release 的近期计数采用观察时刻前 7 天窗口；丢失已关注 ID 只诊断，不删除历史。
+其他平台、真实远端权限与七来源兼容性仍未验收。
+
+G03 Issue、G04 注册/业务 CLI/提交关联与 reconcile/导出/Worker 故障、G05 真实接入和对照仍待完成。
+采集本身不调用核心提交，不提供正式收据文件或导出；业务数据库中的批次覆盖是当前结果依据。
+[架构](architecture.md)、[实施计划](implementation-plan.md)、[接入细则](github-integration-plan.md)
+及 README 已同步，G03 prompt 列明实际接口、覆盖边界、检查证据与 Issue 范围。
+
+本次测试的协程与真实资源由 finally 等待清理；任务创建的 pytest 临时根与交接草稿已删除，
+保留正常 dist 产物和工具缓存。无关用户文件未改，未实现 G03，也未创建 Git Commit。
+
+### G02 Git 提交
+
+G02 验收后，用户追加要求创建 Git Commit。提交包含项目/技能采集、必要分页与完成输入核对、
+87 项新增行为测试、接口说明、验收记录和 G03 交接 prompt；此前未创建提交的记录保留为验收阶段历史。
+Obsidian/RSS 的三个独立文档保留在工作区，不纳入本次提交；未继续实现 G03。
+
+提交准备仅同步文档提交状态，实现与通过 699 项测试的版本一致；核心、依赖与历史收据保留。
+文档更新后重新构建并核对实际归档内容，git diff --check 与暂存差异检查通过。
