@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: <project>
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collected 856 items
+
+tests/test_attempts.py ................................................. [  5%]
+....................                                                     [  8%]
+tests/test_cli.py .....................................................  [ 14%]
+tests/test_executor.py ........................................          [ 18%]
+tests/test_github_acceptance.py .                                        [ 19%]
+tests/test_github_auth.py .....                                          [ 19%]
+tests/test_github_config.py ............................................ [ 24%]
+.............................                                            [ 28%]
+tests/test_github_entry_processes.py .........                           [ 29%]
+tests/test_github_http.py ..........................................     [ 34%]
+tests/test_github_issues.py ............................................ [ 39%]
+....................................................                     [ 45%]
+tests/test_github_processes.py ......                                    [ 46%]
+tests/test_github_project.py ........................................... [ 51%]
+............................................                             [ 56%]
+tests/test_github_storage.py .................                           [ 58%]
+tests/test_github_tasks.py ...........................................   [ 63%]
+tests/test_loading.py ............                                       [ 64%]
+tests/test_policy.py .........................                           [ 67%]
+tests/test_recovery.py ................................................. [ 73%]
+.                                                                        [ 73%]
+tests/test_registry.py .........................................         [ 78%]
+tests/test_retries.py .................................................  [ 83%]
+tests/test_retry_policy.py ............................                  [ 87%]
+tests/test_scenarios.py .                                                [ 87%]
+tests/test_storage.py .................................................. [ 93%]
+........................                                                 [ 95%]
+tests/test_worker.py ...................................                 [100%]
+
+======================= 856 passed in 179.15s (0:02:59) ========================

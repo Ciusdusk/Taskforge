@@ -1,0 +1,713 @@
+{
+  "source": {
+    "source_id": "addyosmani-agent-skills",
+    "kind": "project",
+    "repository": "addyosmani/agent-skills",
+    "scan_skills": true,
+    "issue_filter": null,
+    "budgets": {
+      "connect_seconds": 5.0,
+      "write_seconds": 5.0,
+      "pool_seconds": 5.0,
+      "read_seconds": 20.0,
+      "request_seconds": 30.0,
+      "max_pages": 10,
+      "max_requests": 100,
+      "max_commits": 500,
+      "max_wait_seconds": 30.0
+    }
+  },
+  "stages": [
+    {
+      "sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+      "tree_sha": "84d7f26c6d3ad04162198096b8616e8d70a9420b",
+      "commit_url": "https://github.com/addyosmani/agent-skills/commit/62fcdcd8ab07866e0a895234cf13505fb18c5419",
+      "parents": [
+        "cbb3585aeff8bb5fb88c3aa97fda120df31e13a5"
+      ],
+      "files": {
+        "skills/idea-refine/SKILL.md": "c912e2826ef0bdff0cca8eab99d60981b7da47ef"
+      },
+      "changes": [
+        {
+          "repository_id": 1158722119,
+          "before_sha": "",
+          "after_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "path": "skills/idea-refine/SKILL.md",
+          "kind": "added",
+          "blob_sha": "c912e2826ef0bdff0cca8eab99d60981b7da47ef"
+        }
+      ],
+      "coverage": {
+        "complete": true,
+        "method": "recursive",
+        "tree_sha": "84d7f26c6d3ad04162198096b8616e8d70a9420b",
+        "files": 1,
+        "scope": "ordinary SKILL.md in the fixed commit's native tree; definitions only",
+        "excluded": {
+          "symlinks": 0,
+          "submodules": 0
+        },
+        "changes": [
+          {
+            "path": "skills/idea-refine/SKILL.md",
+            "kind": "added",
+            "initial": true,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/62fcdcd8ab07866e0a895234cf13505fb18c5419/skills/idea-refine/SKILL.md"
+          }
+        ]
+      },
+      "receipt": "receipts/12f834bf-720c-4d81-a46c-08e8d66d3583.json"
+    },
+    {
+      "sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "tree_sha": "5bc66e613cfdd8f368919cd7348c16feddb09ec4",
+      "commit_url": "https://github.com/addyosmani/agent-skills/commit/3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "parents": [
+        "1401c8b8030e023baeebb31781a6653fe8e93026"
+      ],
+      "files": {
+        "skills/api-and-interface-design/SKILL.md": "3e2e37f8f4fba2c66f9f1599eaf01a55ae3f3e33",
+        "skills/browser-testing-with-devtools/SKILL.md": "9864d2724e273e1164d62ab10b73590ae00fd6a8",
+        "skills/ci-cd-and-automation/SKILL.md": "118456fcb10225c030769a4fee7815b9c536b0ce",
+        "skills/code-review-and-quality/SKILL.md": "10d739ff563ac7d875df40138674806d9aff499c",
+        "skills/code-simplification/SKILL.md": "239b2848489511de30d9e63b0bd183adc4b01347",
+        "skills/constraint-driven-development/SKILL.md": "3028719c0bad95b3e439024b2f52255c0c9f1ffe",
+        "skills/context-engineering/SKILL.md": "fb8bb5f85128302b231d301c1201da1e223f6869",
+        "skills/debugging-and-error-recovery/SKILL.md": "356da20365a7cd6825b4ffad14be39280c92cdfc",
+        "skills/deprecation-and-migration/SKILL.md": "7bf884ca5743d63be448725f88041dde8a10cd5d",
+        "skills/documentation-and-adrs/SKILL.md": "e37c38f30d76263c77aacdb7dcbacceb1218bc80",
+        "skills/doubt-driven-development/SKILL.md": "472c35ab9f32e8ec8b592e5cc7d228ad8cdce278",
+        "skills/frontend-ui-engineering/SKILL.md": "eaf0fa163876a5274674f42ea208742c50f27119",
+        "skills/git-workflow-and-versioning/SKILL.md": "0e03a2323ed3f0131626660c3142f69c4a6f8830",
+        "skills/idea-refine/SKILL.md": "38955e8943f2ea68c041f10ef1902d94bdfb1cb9",
+        "skills/incremental-implementation/SKILL.md": "dd040bded2b2060d662cdcb348be6f3569c15574",
+        "skills/interview-me/SKILL.md": "200f9186ffa234708aa5deec1946c6dfcb7a7335",
+        "skills/observability-and-instrumentation/SKILL.md": "84d9cb373467fe0e15236e190833ecc90f840c38",
+        "skills/performance-optimization/SKILL.md": "498735724035f468737bd118f9c60676a013d544",
+        "skills/planning-and-task-breakdown/SKILL.md": "d395d06336ac47be3b679d43fcde97816113bf5f",
+        "skills/requirement-traceability/SKILL.md": "3d09fbd6a0037fc40f87b3f24237e47f9d6e4b99",
+        "skills/security-and-hardening/SKILL.md": "e80e1e9a4f5b2989308c376d4ea0d333fe2c26ef",
+        "skills/shipping-and-launch/SKILL.md": "900ba7f3adc217642c607521edd78609030702ec",
+        "skills/source-driven-development/SKILL.md": "2704f0e130bc4659951aa552373914b2d63d18c9",
+        "skills/spec-driven-development/SKILL.md": "e9677398867523e5a78f067837cebdcd345be838",
+        "skills/test-driven-development/SKILL.md": "00fe95147263efb4f9607e3c042f604a986f8c64",
+        "skills/using-agent-skills/SKILL.md": "a527175024e09f1598e19ad485f1c4eade803acb"
+      },
+      "changes": [
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/api-and-interface-design/SKILL.md",
+          "kind": "added",
+          "blob_sha": "3e2e37f8f4fba2c66f9f1599eaf01a55ae3f3e33"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/browser-testing-with-devtools/SKILL.md",
+          "kind": "added",
+          "blob_sha": "9864d2724e273e1164d62ab10b73590ae00fd6a8"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/ci-cd-and-automation/SKILL.md",
+          "kind": "added",
+          "blob_sha": "118456fcb10225c030769a4fee7815b9c536b0ce"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/code-review-and-quality/SKILL.md",
+          "kind": "added",
+          "blob_sha": "10d739ff563ac7d875df40138674806d9aff499c"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/code-simplification/SKILL.md",
+          "kind": "added",
+          "blob_sha": "239b2848489511de30d9e63b0bd183adc4b01347"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/constraint-driven-development/SKILL.md",
+          "kind": "added",
+          "blob_sha": "3028719c0bad95b3e439024b2f52255c0c9f1ffe"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/context-engineering/SKILL.md",
+          "kind": "added",
+          "blob_sha": "fb8bb5f85128302b231d301c1201da1e223f6869"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/debugging-and-error-recovery/SKILL.md",
+          "kind": "added",
+          "blob_sha": "356da20365a7cd6825b4ffad14be39280c92cdfc"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/deprecation-and-migration/SKILL.md",
+          "kind": "added",
+          "blob_sha": "7bf884ca5743d63be448725f88041dde8a10cd5d"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/documentation-and-adrs/SKILL.md",
+          "kind": "added",
+          "blob_sha": "e37c38f30d76263c77aacdb7dcbacceb1218bc80"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/doubt-driven-development/SKILL.md",
+          "kind": "added",
+          "blob_sha": "472c35ab9f32e8ec8b592e5cc7d228ad8cdce278"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/frontend-ui-engineering/SKILL.md",
+          "kind": "added",
+          "blob_sha": "eaf0fa163876a5274674f42ea208742c50f27119"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/git-workflow-and-versioning/SKILL.md",
+          "kind": "added",
+          "blob_sha": "0e03a2323ed3f0131626660c3142f69c4a6f8830"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/idea-refine/SKILL.md",
+          "kind": "modified",
+          "blob_sha": "38955e8943f2ea68c041f10ef1902d94bdfb1cb9"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/incremental-implementation/SKILL.md",
+          "kind": "added",
+          "blob_sha": "dd040bded2b2060d662cdcb348be6f3569c15574"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/interview-me/SKILL.md",
+          "kind": "added",
+          "blob_sha": "200f9186ffa234708aa5deec1946c6dfcb7a7335"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/observability-and-instrumentation/SKILL.md",
+          "kind": "added",
+          "blob_sha": "84d9cb373467fe0e15236e190833ecc90f840c38"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/performance-optimization/SKILL.md",
+          "kind": "added",
+          "blob_sha": "498735724035f468737bd118f9c60676a013d544"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/planning-and-task-breakdown/SKILL.md",
+          "kind": "added",
+          "blob_sha": "d395d06336ac47be3b679d43fcde97816113bf5f"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/requirement-traceability/SKILL.md",
+          "kind": "added",
+          "blob_sha": "3d09fbd6a0037fc40f87b3f24237e47f9d6e4b99"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/security-and-hardening/SKILL.md",
+          "kind": "added",
+          "blob_sha": "e80e1e9a4f5b2989308c376d4ea0d333fe2c26ef"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/shipping-and-launch/SKILL.md",
+          "kind": "added",
+          "blob_sha": "900ba7f3adc217642c607521edd78609030702ec"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/source-driven-development/SKILL.md",
+          "kind": "added",
+          "blob_sha": "2704f0e130bc4659951aa552373914b2d63d18c9"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/spec-driven-development/SKILL.md",
+          "kind": "added",
+          "blob_sha": "e9677398867523e5a78f067837cebdcd345be838"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/test-driven-development/SKILL.md",
+          "kind": "added",
+          "blob_sha": "00fe95147263efb4f9607e3c042f604a986f8c64"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "after_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "path": "skills/using-agent-skills/SKILL.md",
+          "kind": "added",
+          "blob_sha": "a527175024e09f1598e19ad485f1c4eade803acb"
+        }
+      ],
+      "coverage": {
+        "complete": true,
+        "method": "recursive",
+        "tree_sha": "5bc66e613cfdd8f368919cd7348c16feddb09ec4",
+        "files": 26,
+        "scope": "ordinary SKILL.md in the fixed commit's native tree; definitions only",
+        "excluded": {
+          "symlinks": 1,
+          "submodules": 0
+        },
+        "changes": [
+          {
+            "path": "skills/api-and-interface-design/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/api-and-interface-design/SKILL.md"
+          },
+          {
+            "path": "skills/browser-testing-with-devtools/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/browser-testing-with-devtools/SKILL.md"
+          },
+          {
+            "path": "skills/ci-cd-and-automation/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/ci-cd-and-automation/SKILL.md"
+          },
+          {
+            "path": "skills/code-review-and-quality/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/code-review-and-quality/SKILL.md"
+          },
+          {
+            "path": "skills/code-simplification/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/code-simplification/SKILL.md"
+          },
+          {
+            "path": "skills/constraint-driven-development/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/constraint-driven-development/SKILL.md"
+          },
+          {
+            "path": "skills/context-engineering/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/context-engineering/SKILL.md"
+          },
+          {
+            "path": "skills/debugging-and-error-recovery/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/debugging-and-error-recovery/SKILL.md"
+          },
+          {
+            "path": "skills/deprecation-and-migration/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/deprecation-and-migration/SKILL.md"
+          },
+          {
+            "path": "skills/documentation-and-adrs/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/documentation-and-adrs/SKILL.md"
+          },
+          {
+            "path": "skills/doubt-driven-development/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/doubt-driven-development/SKILL.md"
+          },
+          {
+            "path": "skills/frontend-ui-engineering/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/frontend-ui-engineering/SKILL.md"
+          },
+          {
+            "path": "skills/git-workflow-and-versioning/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/git-workflow-and-versioning/SKILL.md"
+          },
+          {
+            "path": "skills/idea-refine/SKILL.md",
+            "kind": "modified",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/62fcdcd8ab07866e0a895234cf13505fb18c5419/skills/idea-refine/SKILL.md",
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/idea-refine/SKILL.md"
+          },
+          {
+            "path": "skills/incremental-implementation/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/incremental-implementation/SKILL.md"
+          },
+          {
+            "path": "skills/interview-me/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/interview-me/SKILL.md"
+          },
+          {
+            "path": "skills/observability-and-instrumentation/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/observability-and-instrumentation/SKILL.md"
+          },
+          {
+            "path": "skills/performance-optimization/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/performance-optimization/SKILL.md"
+          },
+          {
+            "path": "skills/planning-and-task-breakdown/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/planning-and-task-breakdown/SKILL.md"
+          },
+          {
+            "path": "skills/requirement-traceability/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/requirement-traceability/SKILL.md"
+          },
+          {
+            "path": "skills/security-and-hardening/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/security-and-hardening/SKILL.md"
+          },
+          {
+            "path": "skills/shipping-and-launch/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/shipping-and-launch/SKILL.md"
+          },
+          {
+            "path": "skills/source-driven-development/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/source-driven-development/SKILL.md"
+          },
+          {
+            "path": "skills/spec-driven-development/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/spec-driven-development/SKILL.md"
+          },
+          {
+            "path": "skills/test-driven-development/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/test-driven-development/SKILL.md"
+          },
+          {
+            "path": "skills/using-agent-skills/SKILL.md",
+            "kind": "added",
+            "initial": false,
+            "before_url": null,
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/using-agent-skills/SKILL.md"
+          }
+        ]
+      },
+      "receipt": "receipts/daee79b6-0cec-4c16-ab11-26420236f6b0.json"
+    },
+    {
+      "sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+      "tree_sha": "0eddce006a760850495728c960fd4145d4e1b8c4",
+      "commit_url": "https://github.com/addyosmani/agent-skills/commit/bf0608227afc1303d7cc7506413c651d45d66dab",
+      "parents": [
+        "3b9097e7f56a06c8d32276d7baaa56004523e0c7"
+      ],
+      "files": {
+        "skills/api-and-interface-design/SKILL.md": "3e2e37f8f4fba2c66f9f1599eaf01a55ae3f3e33",
+        "skills/browser-testing-with-devtools/SKILL.md": "9864d2724e273e1164d62ab10b73590ae00fd6a8",
+        "skills/ci-cd-and-automation/SKILL.md": "118456fcb10225c030769a4fee7815b9c536b0ce",
+        "skills/code-review-and-quality/SKILL.md": "08209ff2208d2883d48d945f7754c428b77f8d87",
+        "skills/code-simplification/SKILL.md": "239b2848489511de30d9e63b0bd183adc4b01347",
+        "skills/constraint-driven-development/SKILL.md": "3028719c0bad95b3e439024b2f52255c0c9f1ffe",
+        "skills/context-engineering/SKILL.md": "fb8bb5f85128302b231d301c1201da1e223f6869",
+        "skills/debugging-and-error-recovery/SKILL.md": "356da20365a7cd6825b4ffad14be39280c92cdfc",
+        "skills/deprecation-and-migration/SKILL.md": "7bf884ca5743d63be448725f88041dde8a10cd5d",
+        "skills/documentation-and-adrs/SKILL.md": "e37c38f30d76263c77aacdb7dcbacceb1218bc80",
+        "skills/doubt-driven-development/SKILL.md": "472c35ab9f32e8ec8b592e5cc7d228ad8cdce278",
+        "skills/frontend-ui-engineering/SKILL.md": "eaf0fa163876a5274674f42ea208742c50f27119",
+        "skills/git-workflow-and-versioning/SKILL.md": "0e03a2323ed3f0131626660c3142f69c4a6f8830",
+        "skills/idea-refine/SKILL.md": "38955e8943f2ea68c041f10ef1902d94bdfb1cb9",
+        "skills/incremental-implementation/SKILL.md": "9c4f49bc841adb3c0f98baaa9eabd435a5b64ef9",
+        "skills/interview-me/SKILL.md": "200f9186ffa234708aa5deec1946c6dfcb7a7335",
+        "skills/observability-and-instrumentation/SKILL.md": "84d9cb373467fe0e15236e190833ecc90f840c38",
+        "skills/performance-optimization/SKILL.md": "498735724035f468737bd118f9c60676a013d544",
+        "skills/planning-and-task-breakdown/SKILL.md": "296249b64334bcfd1aeaefd27b9e3e5494e38ec0",
+        "skills/security-and-hardening/SKILL.md": "e80e1e9a4f5b2989308c376d4ea0d333fe2c26ef",
+        "skills/shipping-and-launch/SKILL.md": "900ba7f3adc217642c607521edd78609030702ec",
+        "skills/source-driven-development/SKILL.md": "2704f0e130bc4659951aa552373914b2d63d18c9",
+        "skills/spec-driven-development/SKILL.md": "8989a064e09442b06f2bd2014c29d21b55268958",
+        "skills/test-driven-development/SKILL.md": "8898bcbba4c4f6acca473ece95e82105bd9cfea0",
+        "skills/using-agent-skills/SKILL.md": "d56ac03ab057036c1bdcc9127c88952758ee2f0d"
+      },
+      "changes": [
+        {
+          "repository_id": 1158722119,
+          "before_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "after_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "path": "skills/code-review-and-quality/SKILL.md",
+          "kind": "modified",
+          "blob_sha": "08209ff2208d2883d48d945f7754c428b77f8d87"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "after_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "path": "skills/incremental-implementation/SKILL.md",
+          "kind": "modified",
+          "blob_sha": "9c4f49bc841adb3c0f98baaa9eabd435a5b64ef9"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "after_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "path": "skills/planning-and-task-breakdown/SKILL.md",
+          "kind": "modified",
+          "blob_sha": "296249b64334bcfd1aeaefd27b9e3e5494e38ec0"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "after_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "path": "skills/requirement-traceability/SKILL.md",
+          "kind": "deleted",
+          "blob_sha": null
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "after_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "path": "skills/spec-driven-development/SKILL.md",
+          "kind": "modified",
+          "blob_sha": "8989a064e09442b06f2bd2014c29d21b55268958"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "after_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "path": "skills/test-driven-development/SKILL.md",
+          "kind": "modified",
+          "blob_sha": "8898bcbba4c4f6acca473ece95e82105bd9cfea0"
+        },
+        {
+          "repository_id": 1158722119,
+          "before_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "after_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "path": "skills/using-agent-skills/SKILL.md",
+          "kind": "modified",
+          "blob_sha": "d56ac03ab057036c1bdcc9127c88952758ee2f0d"
+        }
+      ],
+      "coverage": {
+        "complete": true,
+        "method": "recursive",
+        "tree_sha": "0eddce006a760850495728c960fd4145d4e1b8c4",
+        "files": 25,
+        "scope": "ordinary SKILL.md in the fixed commit's native tree; definitions only",
+        "excluded": {
+          "symlinks": 1,
+          "submodules": 0
+        },
+        "changes": [
+          {
+            "path": "skills/code-review-and-quality/SKILL.md",
+            "kind": "modified",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/code-review-and-quality/SKILL.md",
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/bf0608227afc1303d7cc7506413c651d45d66dab/skills/code-review-and-quality/SKILL.md"
+          },
+          {
+            "path": "skills/incremental-implementation/SKILL.md",
+            "kind": "modified",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/incremental-implementation/SKILL.md",
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/bf0608227afc1303d7cc7506413c651d45d66dab/skills/incremental-implementation/SKILL.md"
+          },
+          {
+            "path": "skills/planning-and-task-breakdown/SKILL.md",
+            "kind": "modified",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/planning-and-task-breakdown/SKILL.md",
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/bf0608227afc1303d7cc7506413c651d45d66dab/skills/planning-and-task-breakdown/SKILL.md"
+          },
+          {
+            "path": "skills/requirement-traceability/SKILL.md",
+            "kind": "deleted",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/requirement-traceability/SKILL.md",
+            "after_url": null
+          },
+          {
+            "path": "skills/spec-driven-development/SKILL.md",
+            "kind": "modified",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/spec-driven-development/SKILL.md",
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/bf0608227afc1303d7cc7506413c651d45d66dab/skills/spec-driven-development/SKILL.md"
+          },
+          {
+            "path": "skills/test-driven-development/SKILL.md",
+            "kind": "modified",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/test-driven-development/SKILL.md",
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/bf0608227afc1303d7cc7506413c651d45d66dab/skills/test-driven-development/SKILL.md"
+          },
+          {
+            "path": "skills/using-agent-skills/SKILL.md",
+            "kind": "modified",
+            "initial": false,
+            "before_url": "https://github.com/addyosmani/agent-skills/blob/3b9097e7f56a06c8d32276d7baaa56004523e0c7/skills/using-agent-skills/SKILL.md",
+            "after_url": "https://github.com/addyosmani/agent-skills/blob/bf0608227afc1303d7cc7506413c651d45d66dab/skills/using-agent-skills/SKILL.md"
+          }
+        ]
+      },
+      "receipt": "receipts/aca787ac-d2f3-4476-99e0-ec4c989898df.json"
+    },
+    {
+      "sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+      "tree_sha": "0eddce006a760850495728c960fd4145d4e1b8c4",
+      "commit_url": "https://github.com/addyosmani/agent-skills/commit/bf0608227afc1303d7cc7506413c651d45d66dab",
+      "parents": [
+        "3b9097e7f56a06c8d32276d7baaa56004523e0c7"
+      ],
+      "files": {
+        "skills/api-and-interface-design/SKILL.md": "3e2e37f8f4fba2c66f9f1599eaf01a55ae3f3e33",
+        "skills/browser-testing-with-devtools/SKILL.md": "9864d2724e273e1164d62ab10b73590ae00fd6a8",
+        "skills/ci-cd-and-automation/SKILL.md": "118456fcb10225c030769a4fee7815b9c536b0ce",
+        "skills/code-review-and-quality/SKILL.md": "08209ff2208d2883d48d945f7754c428b77f8d87",
+        "skills/code-simplification/SKILL.md": "239b2848489511de30d9e63b0bd183adc4b01347",
+        "skills/constraint-driven-development/SKILL.md": "3028719c0bad95b3e439024b2f52255c0c9f1ffe",
+        "skills/context-engineering/SKILL.md": "fb8bb5f85128302b231d301c1201da1e223f6869",
+        "skills/debugging-and-error-recovery/SKILL.md": "356da20365a7cd6825b4ffad14be39280c92cdfc",
+        "skills/deprecation-and-migration/SKILL.md": "7bf884ca5743d63be448725f88041dde8a10cd5d",
+        "skills/documentation-and-adrs/SKILL.md": "e37c38f30d76263c77aacdb7dcbacceb1218bc80",
+        "skills/doubt-driven-development/SKILL.md": "472c35ab9f32e8ec8b592e5cc7d228ad8cdce278",
+        "skills/frontend-ui-engineering/SKILL.md": "eaf0fa163876a5274674f42ea208742c50f27119",
+        "skills/git-workflow-and-versioning/SKILL.md": "0e03a2323ed3f0131626660c3142f69c4a6f8830",
+        "skills/idea-refine/SKILL.md": "38955e8943f2ea68c041f10ef1902d94bdfb1cb9",
+        "skills/incremental-implementation/SKILL.md": "9c4f49bc841adb3c0f98baaa9eabd435a5b64ef9",
+        "skills/interview-me/SKILL.md": "200f9186ffa234708aa5deec1946c6dfcb7a7335",
+        "skills/observability-and-instrumentation/SKILL.md": "84d9cb373467fe0e15236e190833ecc90f840c38",
+        "skills/performance-optimization/SKILL.md": "498735724035f468737bd118f9c60676a013d544",
+        "skills/planning-and-task-breakdown/SKILL.md": "296249b64334bcfd1aeaefd27b9e3e5494e38ec0",
+        "skills/security-and-hardening/SKILL.md": "e80e1e9a4f5b2989308c376d4ea0d333fe2c26ef",
+        "skills/shipping-and-launch/SKILL.md": "900ba7f3adc217642c607521edd78609030702ec",
+        "skills/source-driven-development/SKILL.md": "2704f0e130bc4659951aa552373914b2d63d18c9",
+        "skills/spec-driven-development/SKILL.md": "8989a064e09442b06f2bd2014c29d21b55268958",
+        "skills/test-driven-development/SKILL.md": "8898bcbba4c4f6acca473ece95e82105bd9cfea0",
+        "skills/using-agent-skills/SKILL.md": "d56ac03ab057036c1bdcc9127c88952758ee2f0d"
+      },
+      "changes": [],
+      "coverage": {
+        "complete": true,
+        "method": "recursive",
+        "tree_sha": "0eddce006a760850495728c960fd4145d4e1b8c4",
+        "files": 25,
+        "scope": "ordinary SKILL.md in the fixed commit's native tree; definitions only",
+        "excluded": {
+          "symlinks": 1,
+          "submodules": 0
+        },
+        "changes": []
+      },
+      "receipt": "receipts/357f2e2e-5886-465c-948d-5f37093f8ffd.json"
+    }
+  ],
+  "utc": "2026-10-14T10:53:57.099823+00:00",
+  "selection": "fixed real native Commit/tree identities; explicit repeated SHA proves unchanged path"
+}

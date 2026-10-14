@@ -1,0 +1,976 @@
+{
+  "schema_version": 1,
+  "exported_at": "2026-10-14T10:50:24.792533+00:00",
+  "scenario": "initialization",
+  "collection_scenario": "initialization",
+  "configuration_sha256": "a084d1f7bcb7125ff1fc2bb0cce5a887a20572d0b198489027d457d48d802e8d",
+  "input": {
+    "refresh_id": "1dd4f07c-0d92-4898-994e-a027c8306850",
+    "source": {
+      "source_id": "mattpocock-skills",
+      "kind": "project",
+      "repository": "mattpocock/skills",
+      "scan_skills": true,
+      "issue_filter": null,
+      "budgets": {
+        "connect_seconds": 5.0,
+        "write_seconds": 5.0,
+        "pool_seconds": 5.0,
+        "read_seconds": 20.0,
+        "request_seconds": 30.0,
+        "max_pages": 10,
+        "max_requests": 100,
+        "max_commits": 500,
+        "max_wait_seconds": 30.0
+      }
+    },
+    "source_generation": 1,
+    "operation": "refresh"
+  },
+  "batch": {
+    "refresh_id": "1dd4f07c-0d92-4898-994e-a027c8306850",
+    "checkpoint": {
+      "default_branch": "main",
+      "repository": "mattpocock/skills",
+      "repository_id": 1148788086,
+      "sha": "49dd158d1076134a641b33efb035946536778336"
+    },
+    "coverage": {
+      "batch_counts": {
+        "changes": 29,
+        "entities": 29,
+        "skill_changes": 38,
+        "versions": 29
+      },
+      "before_checkpoint": null,
+      "commits": {
+        "baseline_limit": 20,
+        "before_sha": null,
+        "complete": true,
+        "count": 20,
+        "history_scope": "finite baseline, then complete forward increments",
+        "mode": "finite_initial_window",
+        "target_sha": "49dd158d1076134a641b33efb035946536778336"
+      },
+      "complete": true,
+      "elapsed_seconds": 0.06482051599959959,
+      "execution": {
+        "attempt_number": 1,
+        "execution_id": "direct-c6055aee-2b6b-4b88-a285-fa714cfdd9c5"
+      },
+      "observed_at": "2026-10-14T10:50:24.630464+00:00",
+      "releases": {
+        "complete": true,
+        "diagnostics": [],
+        "first_observed": 0,
+        "first_observed_published_in_last_7_days": 0,
+        "initial_content_limit": 10,
+        "missing_saved_ids": [],
+        "publication_window_end": "2026-10-14T10:50:24.630464+00:00",
+        "publication_window_start": "2026-10-07T10:50:24.630464+00:00",
+        "saved_content_checked": 9,
+        "scope": "published IDs including prereleases; initial window and subsequent new IDs",
+        "visible_ids": 9
+      },
+      "requests": 6,
+      "skills": {
+        "changes": [
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/ask-matt/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/ask-matt/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/code-review/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/code-review/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/codebase-design/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/codebase-design/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/diagnosing-bugs/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/diagnosing-bugs/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/domain-modeling/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/domain-modeling/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/grill-with-docs/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/grill-with-docs/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/implement-spec/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/implement-spec/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/implement/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/implement/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/improve-codebase-architecture/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/improve-codebase-architecture/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/pr/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/pr/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/prototype/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/prototype/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/research/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/research/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/retro/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/retro/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/setup-matt-pocock-skills/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/setup-matt-pocock-skills/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/tdd/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/tdd/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/to-spec/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/to-spec/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/to-tickets/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/to-tickets/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/triage/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/triage/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/wayfinder/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/wayfinder/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/wizard/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/engineering/wizard/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/in-progress/chief-of-staff/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/in-progress/chief-of-staff/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/in-progress/claude-handoff/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/in-progress/claude-handoff/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/in-progress/loop-me/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/in-progress/loop-me/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/in-progress/setup-ts-deep-modules/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/in-progress/setup-ts-deep-modules/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/in-progress/writing-beats/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/in-progress/writing-beats/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/in-progress/writing-fragments/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/in-progress/writing-fragments/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/in-progress/writing-shape/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/in-progress/writing-shape/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/misc/git-guardrails-claude-code/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/misc/git-guardrails-claude-code/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/misc/migrate-to-shoehorn/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/misc/migrate-to-shoehorn/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/misc/scaffold-exercises/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/misc/scaffold-exercises/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/misc/setup-pre-commit/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/misc/setup-pre-commit/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/grill-me/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/productivity/grill-me/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/grilling/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/productivity/grilling/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/handoff/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/productivity/handoff/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/teach/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/productivity/teach/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/to-questionnaire/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/productivity/to-questionnaire/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/wait-what/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/productivity/wait-what/SKILL.md"
+          },
+          {
+            "after_url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/writing-for-agents/SKILL.md",
+            "before_url": null,
+            "initial": true,
+            "kind": "added",
+            "path": "skills/productivity/writing-for-agents/SKILL.md"
+          }
+        ],
+        "complete": true,
+        "enabled": true,
+        "excluded": {
+          "submodules": 0,
+          "symlinks": 1
+        },
+        "files": 38,
+        "method": "recursive",
+        "scope": "ordinary SKILL.md in the fixed commit's native tree; definitions only",
+        "tree_sha": "3ce485319972aae46dec0c2ac34cf4a7f28f7414"
+      },
+      "source": {
+        "files": {
+          "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+          "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+          "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+          "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+          "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+          "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+          "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+          "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+          "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+          "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+          "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+          "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+          "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+          "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+          "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+          "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+          "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+          "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+          "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+          "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+          "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+          "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+          "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+          "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+          "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+          "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+          "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+          "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+          "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+          "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+          "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+          "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+          "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+          "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+          "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+          "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+          "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+        },
+        "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+        "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02"
+      },
+      "target_sha": "49dd158d1076134a641b33efb035946536778336"
+    },
+    "changes": [
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "49dd158d1076134a641b33efb035946536778336",
+        "fingerprint": "253fd47721c35a8a57681f95d282dba32b6f82900757666a6d8ecf3a048e022a",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "82672251ee9d9a0b823202c94a613f5038dd28c9",
+        "fingerprint": "c270353ae7ea4d4d901f31b2ead77588bbb70fec31e5467dcbe26cbeeb6e9d56",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "b0618bc436ad893b3c5e84e55fba86586d34a404",
+        "fingerprint": "91ec9a75ba87fc9f9f5944871ac06561a756607a95e8f3620227d1301a56b25c",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "f3fc5632f401156837ee3872f14fe33ccf1024ea",
+        "fingerprint": "b17a295c17c8ec817519954c614533d6abe4161e49f09862eff93b5438904871",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "3da8c01116264675eeefbd6e9d59c734de9095cc",
+        "fingerprint": "ee455330608ef423a2e9d842e39906798b22e2308a08276dd3e8d144f8dc647b",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "5b7cade4d68947f34dae71326a0ce89f09e22c9c",
+        "fingerprint": "a6e4974b23828a53452eec243db97053c893498272d339016a75101c8c19a4b4",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "6d6a5b9072f47ee7ba1d972d8ce0ee98b7ed4394",
+        "fingerprint": "4d13c8a600a5ec07eb4ee8d951fc1912dbc5a5a40fc7eb844720056b783a73e9",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "95249b0b49782349740fd9b8c6ce32b4e59e497a",
+        "fingerprint": "f3732b3b4cf2ef8bc5af1004436df6ad659649180ae95d06afa5092348bacac6",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "3f599139104dfceabc7754eeb91319802f85e042",
+        "fingerprint": "23e89f8c4736893cd9befc5b3a32b27667603b094947775a626e9c4746472b3a",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "ad5400b930b297b0c0cb231ff1ffe42a7da666aa",
+        "fingerprint": "486fb5c4f018662b4a6db83d25904931c253c05826354146dd59be32367e1534",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "8295b8e10d4cdb6cce772a56dda7b7c37075074d",
+        "fingerprint": "1ff5a74fa3af843af6ef1a7b4aeb7e6e1d120ab60556f1417f5265becd57f34c",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "5da500e727a5878bcd4d3278dfec741e01917652",
+        "fingerprint": "b29ac53adfc158a1bbe60f41f8a071bd394674f7a8a6ee126ecf37baa80ce3cf",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "0e1b345683aa137d8e9c343e3573f31cfc185c43",
+        "fingerprint": "f9ca2f752376af606bcda5d5a9c95907a3c76b66c297cef5b547f757b028dac3",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "dd400c3ad65e57c06f05e832e0aac92c7992f34d",
+        "fingerprint": "bec1cdf7ad96b4414cc0f86d0439cbf407c814ea5ee71348ab988cab2688ed59",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "b645f47de3e17ed3bf60586c9bebb8092e0f79fd",
+        "fingerprint": "575f9b88d424f80fd2945390c2a6f4482657e8dc77b3007bfee566fed0ec9b8d",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "868c4cf20cb7e08bc805c388ff1f305dbedd261a",
+        "fingerprint": "400f22f4b7218d11949326cfeaf3f3d27b1dcfcf562f71aba8b2616b23dc4c49",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "954ee7fd7f1911b79bfa82589b4d35ab6c4b13b8",
+        "fingerprint": "5a81c5bf35c20908ed14d1a90ca3547de6cbf1eee52383090fc5887e234ef0f1",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "542543a5dae33434aa68afdc25b5fb9437a53cc7",
+        "fingerprint": "1ced00c2189830c8f4e9ffc6c281da72d1bda83c29baf6a8f46f06cf0bbf7965",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "6fd947921b935b7e1e69293a200400f0fdd5c15f",
+        "fingerprint": "175c6561bf83348cac3a65aff66910ce4d02256a512382aaca1af96548a1645e",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "commit",
+        "remote_id": "2b47ffcf2385995a536e43ddc9226e32cf9793d9",
+        "fingerprint": "02f64519c3591b36469529834faff9cb6e783168c368b3b092bceed38445a588",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "340850294",
+        "fingerprint": "e901b724e6dab98c6e9cf41138464e71f54b79c2b803ac07b1b7ee5e6c0e2020",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "340850933",
+        "fingerprint": "3e2a049a3c06be41b4d685495b16b8fc5b635d2ad6364de42422257bcd634aa6",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "341069977",
+        "fingerprint": "d10299657c6db674d687c8bb2b5e48407abea1171652f1a2f17bc7aec94f4783",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "350942193",
+        "fingerprint": "ecd7343f04059c3d4d705d1801292d7bfc6ffb326dad7455d6ca04e995dbfa0a",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "365515660",
+        "fingerprint": "e0862fe318ff29cf1229471fd767afa921cf63cc47cacd3e85fb78bc65677be8",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "365723949",
+        "fingerprint": "bc39a08641d60985ed042c0c11b806d608d87079b85e9dbc6864989d6d1cfedf",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "366267815",
+        "fingerprint": "058b4a7276ff09dcff14ca5ac9dc679ea7e873a2a1c767288d62b9251dc05ac6",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "403018356",
+        "fingerprint": "d30e92d5ac39ddc96f8122b1b7a5a641106be4b56c21cc9d914b3cf90c7f1610",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1148788086,
+        "kind": "release",
+        "remote_id": "403018723",
+        "fingerprint": "478509e6152df59d11ccc0d077a9bd4f3ad334ed7bf46fa6e21d4967bb287bec",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      }
+    ],
+    "skill_changes": [
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/ask-matt/SKILL.md",
+        "kind": "added",
+        "blob_sha": "4bfeeb61dae548b8b7754c4fba7bd40ab3926099"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/code-review/SKILL.md",
+        "kind": "added",
+        "blob_sha": "373a4f26e6cfa3617778397945bb069d9cb184bc"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/codebase-design/SKILL.md",
+        "kind": "added",
+        "blob_sha": "3f63c8146dd2604b419c929e9876b90c30d410e9"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/diagnosing-bugs/SKILL.md",
+        "kind": "added",
+        "blob_sha": "d039541ddd1c46e6ddbd662fe99d49b686fc5e12"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/domain-modeling/SKILL.md",
+        "kind": "added",
+        "blob_sha": "a4438c6879c517d1a08e2b5fbca049b632688dfe"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/grill-with-docs/SKILL.md",
+        "kind": "added",
+        "blob_sha": "62b9efb6f991d1b229adee7506962f13ced0c499"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/implement-spec/SKILL.md",
+        "kind": "added",
+        "blob_sha": "183923797ab58f1b3ef09e03bc1f1f203c309f37"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/implement/SKILL.md",
+        "kind": "added",
+        "blob_sha": "bd49e472984c7b99aac40286fdae749bb955a842"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/improve-codebase-architecture/SKILL.md",
+        "kind": "added",
+        "blob_sha": "44cc7d3136c44534d68ac523fa6cd37e759d2846"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/pr/SKILL.md",
+        "kind": "added",
+        "blob_sha": "84dd4fb2f068e9f6282690235d20dd505b418119"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/prototype/SKILL.md",
+        "kind": "added",
+        "blob_sha": "a0044501fe0d385b4d8575b610188ede9b236ccf"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/research/SKILL.md",
+        "kind": "added",
+        "blob_sha": "fecee97e9457ba039678d2fcf1b1bc9fca78307d"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/retro/SKILL.md",
+        "kind": "added",
+        "blob_sha": "12149acf2dd23b4514dec57b04a6293eaa1352fa"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+        "kind": "added",
+        "blob_sha": "293c25b75590119794af03b037ba4288054a32b3"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/tdd/SKILL.md",
+        "kind": "added",
+        "blob_sha": "01eadaa34e7c9a63a67d6dc3cce1cc81b0e49985"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/to-spec/SKILL.md",
+        "kind": "added",
+        "blob_sha": "3f52599ae2a4347aee5a07432c2707518e691a7f"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/to-tickets/SKILL.md",
+        "kind": "added",
+        "blob_sha": "9b77a01db9460c99c22d03c910c349f890f12c0e"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/triage/SKILL.md",
+        "kind": "added",
+        "blob_sha": "3fd5617e906cf9b71a6b17424791adb905fc248b"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/wayfinder/SKILL.md",
+        "kind": "added",
+        "blob_sha": "e28cf3018906d6d60fc5b25390b4eeea035dd290"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/engineering/wizard/SKILL.md",
+        "kind": "added",
+        "blob_sha": "c4294ad8298b9b95fc727496b1b802b1f7363fba"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/in-progress/chief-of-staff/SKILL.md",
+        "kind": "added",
+        "blob_sha": "97da622d09acaaacebbb4482663c907e241f4594"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/in-progress/claude-handoff/SKILL.md",
+        "kind": "added",
+        "blob_sha": "77f82fc59c89c3a83ed5a92521dc2869f0533724"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/in-progress/loop-me/SKILL.md",
+        "kind": "added",
+        "blob_sha": "e58a474ca80feffdeb28842bc3bdee37da6510e7"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/in-progress/setup-ts-deep-modules/SKILL.md",
+        "kind": "added",
+        "blob_sha": "7e30047eaeda175de5d93886596a37baf365bb90"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/in-progress/writing-beats/SKILL.md",
+        "kind": "added",
+        "blob_sha": "3d3b25b605491adc5c62ae5423127717a94b9632"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/in-progress/writing-fragments/SKILL.md",
+        "kind": "added",
+        "blob_sha": "c7c889b880cf9c8d289119dea5ff240641b615ca"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/in-progress/writing-shape/SKILL.md",
+        "kind": "added",
+        "blob_sha": "02f2866d13e72504e010f2ad3458eb9b36b876db"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/misc/git-guardrails-claude-code/SKILL.md",
+        "kind": "added",
+        "blob_sha": "58bcdd875b164093b95f436fa32a65c6cb5eb572"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/misc/migrate-to-shoehorn/SKILL.md",
+        "kind": "added",
+        "blob_sha": "ae4f965e204fc93cedbc4e2c306e92829d93f800"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/misc/scaffold-exercises/SKILL.md",
+        "kind": "added",
+        "blob_sha": "d87df28e7d8abb4e57ecc6e47d71c274d16054c7"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/misc/setup-pre-commit/SKILL.md",
+        "kind": "added",
+        "blob_sha": "1b9708168263067adb4684d06ebb8f4ccfe9682c"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/productivity/grill-me/SKILL.md",
+        "kind": "added",
+        "blob_sha": "3947ff9c4ad980d14fc07fccbf659d47c114e81d"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/productivity/grilling/SKILL.md",
+        "kind": "added",
+        "blob_sha": "df69d9936880cd3314c28858c6c52f48db23b856"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/productivity/handoff/SKILL.md",
+        "kind": "added",
+        "blob_sha": "a224edc643a20ddb989f9bca1547440169159810"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/productivity/teach/SKILL.md",
+        "kind": "added",
+        "blob_sha": "493fa3bae0dada971c4dfb965790e56920b1dced"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/productivity/to-questionnaire/SKILL.md",
+        "kind": "added",
+        "blob_sha": "dadd0c00d6a350acaa15bb9ca1b96b20ead684ca"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/productivity/wait-what/SKILL.md",
+        "kind": "added",
+        "blob_sha": "9b15cd1a7dda0854ca093e29e3e0de57e241b2ac"
+      },
+      {
+        "repository_id": 1148788086,
+        "before_sha": "",
+        "after_sha": "49dd158d1076134a641b33efb035946536778336",
+        "path": "skills/productivity/writing-for-agents/SKILL.md",
+        "kind": "added",
+        "blob_sha": "a37608daf6e835e767deecfb498facecaaba82ba"
+      }
+    ],
+    "attempts": [
+      {
+        "execution_id": "direct-c6055aee-2b6b-4b88-a285-fa714cfdd9c5",
+        "number": 1,
+        "diagnostic": null
+      }
+    ],
+    "repository_counts": {
+      "entities": 29,
+      "versions": 29
+    }
+  },
+  "core": null,
+  "verification": {
+    "business_complete": true,
+    "core_status_at_export": null
+  }
+}

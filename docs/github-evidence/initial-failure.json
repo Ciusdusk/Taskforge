@@ -1,0 +1,125 @@
+{
+  "utc": "2026-10-14T10:42:14.661098+00:00",
+  "source": "openai-codex",
+  "refresh_id": "b1e289ca-ecc4-407f-bddc-6369e8662f52",
+  "job_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+  "checkpoint": null,
+  "business_complete": false,
+  "business_attempts": [
+    {
+      "execution_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+      "number": 1,
+      "diagnostic": "PaginationError"
+    },
+    {
+      "execution_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+      "number": 2,
+      "diagnostic": "PaginationError"
+    },
+    {
+      "execution_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+      "number": 3,
+      "diagnostic": "PaginationError"
+    }
+  ],
+  "core": {
+    "job": {
+      "attempt_count": 3,
+      "created_at": "2026-10-14T10:42:14.644601+00:00",
+      "finished_at": "2026-10-14T10:42:55.216507+00:00",
+      "id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+      "last_error_kind": "TASK_ERROR",
+      "max_retries": 2,
+      "next_run_at": null,
+      "retry_base_seconds": 5.0,
+      "retry_cap_seconds": 60.0,
+      "started_at": "2026-10-14T10:42:29.277974+00:00",
+      "status": "FAILED",
+      "task_name": "github.refresh",
+      "timeout_seconds": 300.0
+    },
+    "attempts": [
+      {
+        "job_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+        "number": 1,
+        "status": "FAILED",
+        "started_at": "2026-10-14T10:42:29.277974+00:00",
+        "finished_at": "2026-10-14T10:42:36.053920+00:00",
+        "error_kind": "TASK_ERROR",
+        "exception_type": "StateError"
+      },
+      {
+        "job_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+        "number": 2,
+        "status": "FAILED",
+        "started_at": "2026-10-14T10:42:41.082711+00:00",
+        "finished_at": "2026-10-14T10:42:42.867814+00:00",
+        "error_kind": "TASK_ERROR",
+        "exception_type": "StateError"
+      },
+      {
+        "job_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+        "number": 3,
+        "status": "FAILED",
+        "started_at": "2026-10-14T10:42:52.917641+00:00",
+        "finished_at": "2026-10-14T10:42:55.216507+00:00",
+        "error_kind": "TASK_ERROR",
+        "exception_type": "StateError"
+      }
+    ]
+  },
+  "diagnosed_exception": "PaginationError",
+  "diagnosed_message": "Pagination changed endpoint, filters or page sequence",
+  "root_cause": "real Link uses /repositories/965415649/issues with an after cursor; old endpoint/query equality rejected it",
+  "worker_exit_code": 0,
+  "failed_job_status": "FAILED",
+  "production_budget_changed": false,
+  "submissions": {
+    "utc": "2026-10-14T10:42:14.661098+00:00",
+    "command": "python -m integrations.github submit --state-directory .taskforge/g05/live",
+    "results": [
+      {
+        "source": "mattpocock-skills",
+        "refresh_id": "8e2d7905-efd6-476a-b982-1eddddd29b0d",
+        "job_id": "62f27685-309d-4a72-b578-90d25d62204b",
+        "status": "associated"
+      },
+      {
+        "source": "addyosmani-agent-skills",
+        "refresh_id": "ea9710f3-0860-4b0c-854d-f2e0d523dab6",
+        "job_id": "b8246aa1-48f3-4774-9451-c2cabde48297",
+        "status": "associated"
+      },
+      {
+        "source": "yetone-magpie",
+        "refresh_id": "ab1fb3c2-e95d-45e7-9c7a-500e4d1e2ff7",
+        "job_id": "8b7cec29-ecc3-4b3e-b5ea-63ab41d5e6a4",
+        "status": "associated"
+      },
+      {
+        "source": "tt-a1i-archify",
+        "refresh_id": "9cdb1e3b-46f6-4bb0-acc2-c98d9804e021",
+        "job_id": "0021becf-607f-41eb-be04-fb8360d220e8",
+        "status": "associated"
+      },
+      {
+        "source": "deepseek-ai-deepseek-harness",
+        "refresh_id": "05bc6555-06cc-41ec-bdb5-1eefa3b34f55",
+        "job_id": "8f135c75-8204-4ee0-a8e0-dd6b7ec1486a",
+        "status": "associated"
+      },
+      {
+        "source": "morluto-rea",
+        "refresh_id": "d58666f2-f34c-48fb-8862-039292d8c9df",
+        "job_id": "70ebd63d-55d2-4b58-8123-827a9a55a36a",
+        "status": "associated"
+      },
+      {
+        "source": "openai-codex",
+        "refresh_id": "b1e289ca-ecc4-407f-bddc-6369e8662f52",
+        "job_id": "e8430ef3-3e0f-4271-a850-743b7ac31d02",
+        "status": "associated"
+      }
+    ]
+  }
+}

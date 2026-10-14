@@ -1,0 +1,58 @@
+[
+  {
+    "command": "uv sync --locked --extra github",
+    "started_at": "2026-10-14T11:07:21.546874+00:00",
+    "finished_at": "2026-10-14T11:07:21.563301+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.016426370002591284,
+    "output": "quality/sync.txt"
+  },
+  {
+    "command": "uv run --locked --extra github pytest --basetemp=/tmp/taskforge-g05-final",
+    "started_at": "2026-10-14T11:12:00.498864+00:00",
+    "finished_at": "2026-10-14T11:15:00.069056+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 179.57019537299857,
+    "output": "quality/pytest.txt"
+  },
+  {
+    "command": "uv run --locked --extra github ruff check .",
+    "started_at": "2026-10-14T11:15:00.069289+00:00",
+    "finished_at": "2026-10-14T11:15:00.119855+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.050571454001328675,
+    "output": "quality/ruff.txt"
+  },
+  {
+    "command": "uv run --locked --extra github ruff format --check .",
+    "started_at": "2026-10-14T11:15:00.120030+00:00",
+    "finished_at": "2026-10-14T11:15:00.149116+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.02909179099879111,
+    "output": "quality/format.txt"
+  },
+  {
+    "command": "uv run --locked --extra github mypy --strict src/taskforge integrations",
+    "started_at": "2026-10-14T11:15:00.149286+00:00",
+    "finished_at": "2026-10-14T11:15:00.309595+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.1603163849977136,
+    "output": "quality/mypy.txt"
+  },
+  {
+    "command": "git diff --check",
+    "started_at": "2026-10-14T11:15:00.309766+00:00",
+    "finished_at": "2026-10-14T11:15:00.314093+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.004331279000325594,
+    "output": "quality/diff.txt"
+  },
+  {
+    "command": "uv build",
+    "started_at": "2026-10-14T11:15:14.562870+00:00",
+    "finished_at": "2026-10-14T11:15:15.384657+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.8217529499997909,
+    "output": "quality/build.txt"
+  }
+]

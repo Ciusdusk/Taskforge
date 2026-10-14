@@ -1,0 +1,935 @@
+{
+  "task": "G05",
+  "status": "passed",
+  "verified_at": "2026-10-14T11:19:07.519300+00:00",
+  "environment": {
+    "platform": "WSL2/Linux x86_64",
+    "python": "3.12.13",
+    "uv": "0.10.9",
+    "httpx": "0.28.1",
+    "database_driver": "real aiosqlite; unchanged",
+    "sandbox": "approved outside sandbox for real database/subprocess/network"
+  },
+  "api": {
+    "root": "https://api.github.com",
+    "version": "2026-03-10",
+    "credential_available": true,
+    "verified_permissions": "authenticated repository reads; no write test",
+    "default_production_request_budget": 100,
+    "independent_issue_audit_request_budget": 200,
+    "reason": "100 individual Issue reads plus repository metadata; not a collection budget increase"
+  },
+  "requirements": [
+    {
+      "id": "preconditions",
+      "status": "passed",
+      "evidence": [
+        "github-evidence/quality/pytest.txt",
+        "github-evidence/quality/commands.json"
+      ],
+      "finding": "847 initial tests passed; final 856 pass; production core, dependencies and historical receipts unchanged"
+    },
+    {
+      "id": "seven_live_sources_baseline_and_repeat",
+      "status": "passed",
+      "evidence": [
+        "github-evidence/initialization/run.json",
+        "github-evidence/natural_update/run.json",
+        "github-evidence/remote-audit.json"
+      ],
+      "finding": "14 successful Jobs; distinct UUIDs; independent remote identities and saved content/window/manifest verification"
+    },
+    {
+      "id": "two_fixed_real_skill_histories",
+      "status": "passed",
+      "evidence": [
+        "github-evidence/historical_replay/mattpocock-skills/history.json",
+        "github-evidence/historical_replay/addyosmani-agent-skills-pr665/history.json",
+        "github-evidence/historical_replay/ancestry.json",
+        "github-evidence/historical_replay/addyosmani-agent-skills-pr665/selection.json"
+      ],
+      "finding": "actual forward ancestral SHA sequences, complete native manifests, additions/modifications/deletions and same-SHA no-change for both; second deletion is a public unmerged PR parent/child"
+    },
+    {
+      "id": "three_normal_and_three_fault_pairs",
+      "status": "passed",
+      "evidence": [
+        "github-evidence/comparison/protocol.json",
+        "github-evidence/comparison/comparison.json"
+      ],
+      "finding": "six equivalent pairs, fixed input/production business boundary/gate/budgets; genuine SIGKILL after commit before export; TaskForge same Job INTERRUPTED/SUCCESS; no repeat HTTP"
+    },
+    {
+      "id": "handoff_and_quantitative_evidence",
+      "status": "passed",
+      "evidence": [
+        "github-scenarios.md",
+        "verification-g05.json"
+      ],
+      "finding": "actual current commands, UTC/exit codes, raw receipts and original source fingerprints, explicit excluded capabilities; no Git Commit"
+    },
+    {
+      "id": "quality_and_distribution",
+      "status": "passed",
+      "evidence": [
+        "github-evidence/quality/commands.json"
+      ],
+      "finding": "sync/856 pytest/Ruff/format/strict mypy/build/diff all exit 0; final docs and this receipt must match actual sdist; wheel core/py.typed/CLI only"
+    }
+  ],
+  "live": [
+    {
+      "scenario": "initialization",
+      "source_id": "openai-codex",
+      "repository": "openai/codex",
+      "repository_id": 965415649,
+      "refresh_id": "b9780caa-f160-4faf-a841-7eb15fbeb059",
+      "job_id": "fbf48bc3-5cf7-43cf-94ab-e06c31c73514",
+      "core_status": "SUCCESS",
+      "requests": 5,
+      "entities": 100,
+      "versions": 100,
+      "changes": 100,
+      "skill_changes": 0,
+      "checkpoint": {
+        "repository": "openai/codex",
+        "repository_id": 965415649,
+        "upper_bound": "2026-10-14T10:46:41.363307+00:00"
+      },
+      "receipt": "github-evidence/initialization/b9780caa-f160-4faf-a841-7eb15fbeb059.json"
+    },
+    {
+      "scenario": "initialization",
+      "source_id": "deepseek-ai-deepseek-harness",
+      "repository": "deepseek-ai/deepseek-harness",
+      "repository_id": 1333065091,
+      "refresh_id": "dc8f4567-1dab-4545-b088-a5e476c4f7e2",
+      "job_id": "cadee807-087f-4be5-bf05-70cf7dc884e6",
+      "core_status": "SUCCESS",
+      "requests": 5,
+      "entities": 30,
+      "versions": 30,
+      "changes": 30,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "master",
+        "repository": "deepseek-ai/deepseek-harness",
+        "repository_id": 1333065091,
+        "sha": "d743267388641bc76f17c45ce8b4c231aed1d32c"
+      },
+      "receipt": "github-evidence/initialization/dc8f4567-1dab-4545-b088-a5e476c4f7e2.json"
+    },
+    {
+      "scenario": "initialization",
+      "source_id": "tt-a1i-archify",
+      "repository": "tt-a1i/archify",
+      "repository_id": 1211139949,
+      "refresh_id": "4f9af29b-6b91-4ccc-beca-8d0bbe003525",
+      "job_id": "2b142fcb-0ba3-41dd-8b2a-dfb203a53e7f",
+      "core_status": "SUCCESS",
+      "requests": 5,
+      "entities": 30,
+      "versions": 30,
+      "changes": 30,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "tt-a1i/archify",
+        "repository_id": 1211139949,
+        "sha": "c21c31ffb879668900c5487ea24993bf45d89b15"
+      },
+      "receipt": "github-evidence/initialization/4f9af29b-6b91-4ccc-beca-8d0bbe003525.json"
+    },
+    {
+      "scenario": "initialization",
+      "source_id": "addyosmani-agent-skills",
+      "repository": "addyosmani/agent-skills",
+      "repository_id": 1158722119,
+      "refresh_id": "13eb5c70-e514-402c-8926-47bef2b11fdb",
+      "job_id": "50d9e7a4-6176-43b9-983d-a71508199198",
+      "core_status": "SUCCESS",
+      "requests": 6,
+      "entities": 30,
+      "versions": 30,
+      "changes": 30,
+      "skill_changes": 25,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "addyosmani/agent-skills",
+        "repository_id": 1158722119,
+        "sha": "aeac41d4d005999432bb7312f7ff06383a91d59d"
+      },
+      "receipt": "github-evidence/initialization/13eb5c70-e514-402c-8926-47bef2b11fdb.json"
+    },
+    {
+      "scenario": "initialization",
+      "source_id": "morluto-rea",
+      "repository": "morluto/rea",
+      "repository_id": 1209966933,
+      "refresh_id": "12f6ef27-b30e-49a3-9efb-01009dc8ab88",
+      "job_id": "f55fe419-8582-4010-8c47-816166987236",
+      "core_status": "SUCCESS",
+      "requests": 5,
+      "entities": 30,
+      "versions": 30,
+      "changes": 30,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "morluto/rea",
+        "repository_id": 1209966933,
+        "sha": "a32b4b6ac54a02a8fe9a7cb62861e54473ba5eb0"
+      },
+      "receipt": "github-evidence/initialization/12f6ef27-b30e-49a3-9efb-01009dc8ab88.json"
+    },
+    {
+      "scenario": "initialization",
+      "source_id": "mattpocock-skills",
+      "repository": "mattpocock/skills",
+      "repository_id": 1148788086,
+      "refresh_id": "e93bff97-ca73-4efa-a6c3-a47ed9d6d279",
+      "job_id": "73b88078-9b47-4d21-8174-732a71c46ded",
+      "core_status": "SUCCESS",
+      "requests": 6,
+      "entities": 29,
+      "versions": 29,
+      "changes": 29,
+      "skill_changes": 38,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "mattpocock/skills",
+        "repository_id": 1148788086,
+        "sha": "49dd158d1076134a641b33efb035946536778336"
+      },
+      "receipt": "github-evidence/initialization/e93bff97-ca73-4efa-a6c3-a47ed9d6d279.json"
+    },
+    {
+      "scenario": "initialization",
+      "source_id": "yetone-magpie",
+      "repository": "yetone/magpie",
+      "repository_id": 1383809012,
+      "refresh_id": "81cba9c3-e37c-4012-9e34-4cbb65c4725a",
+      "job_id": "185d1171-8b6d-4fc8-bf98-ea0d8ec1917e",
+      "core_status": "SUCCESS",
+      "requests": 5,
+      "entities": 30,
+      "versions": 30,
+      "changes": 30,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "yetone/magpie",
+        "repository_id": 1383809012,
+        "sha": "0506f011d75ef7d6f052eb5f7748716fd5796985"
+      },
+      "receipt": "github-evidence/initialization/81cba9c3-e37c-4012-9e34-4cbb65c4725a.json"
+    },
+    {
+      "scenario": "natural_update",
+      "source_id": "addyosmani-agent-skills",
+      "repository": "addyosmani/agent-skills",
+      "repository_id": 1158722119,
+      "refresh_id": "01cb12ca-f55c-429f-bfa9-06d40c40b28c",
+      "job_id": "b161918b-2eff-4991-98cc-63fda8260b84",
+      "core_status": "SUCCESS",
+      "requests": 5,
+      "entities": 30,
+      "versions": 30,
+      "changes": 0,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "addyosmani/agent-skills",
+        "repository_id": 1158722119,
+        "sha": "aeac41d4d005999432bb7312f7ff06383a91d59d"
+      },
+      "receipt": "github-evidence/natural_update/01cb12ca-f55c-429f-bfa9-06d40c40b28c.json"
+    },
+    {
+      "scenario": "natural_update",
+      "source_id": "yetone-magpie",
+      "repository": "yetone/magpie",
+      "repository_id": 1383809012,
+      "refresh_id": "b7d126ea-4271-471c-baba-a503e2723cd8",
+      "job_id": "13b78a41-a1a3-46f4-bfc5-37028e22282b",
+      "core_status": "SUCCESS",
+      "requests": 4,
+      "entities": 30,
+      "versions": 30,
+      "changes": 0,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "yetone/magpie",
+        "repository_id": 1383809012,
+        "sha": "0506f011d75ef7d6f052eb5f7748716fd5796985"
+      },
+      "receipt": "github-evidence/natural_update/b7d126ea-4271-471c-baba-a503e2723cd8.json"
+    },
+    {
+      "scenario": "natural_update",
+      "source_id": "morluto-rea",
+      "repository": "morluto/rea",
+      "repository_id": 1209966933,
+      "refresh_id": "dcfbfc48-e35d-45d5-b74b-d5b1fa2cc9fa",
+      "job_id": "4baa8a50-ce11-40e8-9c76-1e10124702fb",
+      "core_status": "SUCCESS",
+      "requests": 4,
+      "entities": 30,
+      "versions": 30,
+      "changes": 0,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "morluto/rea",
+        "repository_id": 1209966933,
+        "sha": "a32b4b6ac54a02a8fe9a7cb62861e54473ba5eb0"
+      },
+      "receipt": "github-evidence/natural_update/dcfbfc48-e35d-45d5-b74b-d5b1fa2cc9fa.json"
+    },
+    {
+      "scenario": "natural_update",
+      "source_id": "tt-a1i-archify",
+      "repository": "tt-a1i/archify",
+      "repository_id": 1211139949,
+      "refresh_id": "68161477-3fb1-4a4c-8880-d9642ba19d8d",
+      "job_id": "79933722-13b6-4fe4-8e03-396db0fb2e5e",
+      "core_status": "SUCCESS",
+      "requests": 4,
+      "entities": 30,
+      "versions": 30,
+      "changes": 0,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "tt-a1i/archify",
+        "repository_id": 1211139949,
+        "sha": "c21c31ffb879668900c5487ea24993bf45d89b15"
+      },
+      "receipt": "github-evidence/natural_update/68161477-3fb1-4a4c-8880-d9642ba19d8d.json"
+    },
+    {
+      "scenario": "natural_update",
+      "source_id": "mattpocock-skills",
+      "repository": "mattpocock/skills",
+      "repository_id": 1148788086,
+      "refresh_id": "418bc606-5a78-4255-a982-3ceddf24684f",
+      "job_id": "9bf3897e-4b49-492b-9834-4f35a505cda7",
+      "core_status": "SUCCESS",
+      "requests": 5,
+      "entities": 29,
+      "versions": 29,
+      "changes": 0,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "main",
+        "repository": "mattpocock/skills",
+        "repository_id": 1148788086,
+        "sha": "49dd158d1076134a641b33efb035946536778336"
+      },
+      "receipt": "github-evidence/natural_update/418bc606-5a78-4255-a982-3ceddf24684f.json"
+    },
+    {
+      "scenario": "natural_update",
+      "source_id": "openai-codex",
+      "repository": "openai/codex",
+      "repository_id": 965415649,
+      "refresh_id": "a10a73ec-0835-4870-835b-b3cc8196e30f",
+      "job_id": "e9be9126-ef08-4d10-abe2-d691163893a0",
+      "core_status": "SUCCESS",
+      "requests": 3,
+      "entities": 100,
+      "versions": 101,
+      "changes": 1,
+      "skill_changes": 0,
+      "checkpoint": {
+        "repository": "openai/codex",
+        "repository_id": 965415649,
+        "upper_bound": "2026-10-14T10:49:34.928909+00:00"
+      },
+      "receipt": "github-evidence/natural_update/a10a73ec-0835-4870-835b-b3cc8196e30f.json"
+    },
+    {
+      "scenario": "natural_update",
+      "source_id": "deepseek-ai-deepseek-harness",
+      "repository": "deepseek-ai/deepseek-harness",
+      "repository_id": 1333065091,
+      "refresh_id": "9ef2b116-6ddd-4a55-adde-07d1f32df757",
+      "job_id": "c7b4f2ce-2401-4a8c-8889-0510eb099594",
+      "core_status": "SUCCESS",
+      "requests": 4,
+      "entities": 30,
+      "versions": 30,
+      "changes": 0,
+      "skill_changes": 0,
+      "checkpoint": {
+        "default_branch": "master",
+        "repository": "deepseek-ai/deepseek-harness",
+        "repository_id": 1333065091,
+        "sha": "d743267388641bc76f17c45ce8b4c231aed1d32c"
+      },
+      "receipt": "github-evidence/natural_update/9ef2b116-6ddd-4a55-adde-07d1f32df757.json"
+    }
+  ],
+  "remote_audit": {
+    "evidence": "github-evidence/remote-audit.json",
+    "sources": [
+      {
+        "source_id": "mattpocock-skills",
+        "repository_id": 1148788086,
+        "default_branch": "main",
+        "records": 29,
+        "equal_at_remote_audit": 29,
+        "updated_after_collection": 0,
+        "ordinary_skill_files": 38,
+        "complete_release_ids": 9
+      },
+      {
+        "source_id": "addyosmani-agent-skills",
+        "repository_id": 1158722119,
+        "default_branch": "main",
+        "records": 30,
+        "equal_at_remote_audit": 30,
+        "updated_after_collection": 0,
+        "ordinary_skill_files": 25,
+        "complete_release_ids": 15
+      },
+      {
+        "source_id": "yetone-magpie",
+        "repository_id": 1383809012,
+        "default_branch": "main",
+        "records": 30,
+        "equal_at_remote_audit": 30,
+        "updated_after_collection": 0,
+        "ordinary_skill_files": null,
+        "complete_release_ids": 38
+      },
+      {
+        "source_id": "tt-a1i-archify",
+        "repository_id": 1211139949,
+        "default_branch": "main",
+        "records": 30,
+        "equal_at_remote_audit": 30,
+        "updated_after_collection": 0,
+        "ordinary_skill_files": null,
+        "complete_release_ids": 22
+      },
+      {
+        "source_id": "deepseek-ai-deepseek-harness",
+        "repository_id": 1333065091,
+        "default_branch": "master",
+        "records": 30,
+        "equal_at_remote_audit": 30,
+        "updated_after_collection": 0,
+        "ordinary_skill_files": null,
+        "complete_release_ids": 26
+      },
+      {
+        "source_id": "morluto-rea",
+        "repository_id": 1209966933,
+        "default_branch": "main",
+        "records": 30,
+        "equal_at_remote_audit": 30,
+        "updated_after_collection": 0,
+        "ordinary_skill_files": null,
+        "complete_release_ids": 35
+      },
+      {
+        "source_id": "openai-codex",
+        "repository_id": 965415649,
+        "default_branch": "main",
+        "records": 100,
+        "equal_at_remote_audit": 98,
+        "updated_after_collection": 2,
+        "ordinary_skill_files": null,
+        "complete_release_ids": null
+      }
+    ],
+    "saved_issue_payloads_verified": 100,
+    "updated_issue_payload_proof": "all saved fingerprints equal actual collection payload and satisfy UTC upper bound"
+  },
+  "histories": [
+    {
+      "source_id": "mattpocock-skills",
+      "stages": [
+        {
+          "sha": "1bb95954ef0d06ba4d64a9c267fb75f57c614a1f",
+          "tree_sha": "72c39bc18a7bb6b557c39d6c85f68a52c8175c67",
+          "definitions": 35,
+          "changes": {
+            "added": 35,
+            "modified": 0,
+            "deleted": 0
+          },
+          "receipt": "github-evidence/historical_replay/mattpocock-skills/receipts/19359ccd-5152-43f1-a5c3-106fc2025f13.json"
+        },
+        {
+          "sha": "49dd158d1076134a641b33efb035946536778336",
+          "tree_sha": "3ce485319972aae46dec0c2ac34cf4a7f28f7414",
+          "definitions": 38,
+          "changes": {
+            "added": 4,
+            "modified": 19,
+            "deleted": 1
+          },
+          "receipt": "github-evidence/historical_replay/mattpocock-skills/receipts/7dbab2cb-535f-48ed-a6d2-c43eab46d9ea.json"
+        },
+        {
+          "sha": "49dd158d1076134a641b33efb035946536778336",
+          "tree_sha": "3ce485319972aae46dec0c2ac34cf4a7f28f7414",
+          "definitions": 38,
+          "changes": {
+            "added": 0,
+            "modified": 0,
+            "deleted": 0
+          },
+          "receipt": "github-evidence/historical_replay/mattpocock-skills/receipts/108091c2-9fe5-45ef-a353-55da6bd09b48.json"
+        }
+      ],
+      "history": "github-evidence/historical_replay/mattpocock-skills/history.json"
+    },
+    {
+      "source_id": "addyosmani-agent-skills",
+      "stages": [
+        {
+          "sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+          "tree_sha": "84d7f26c6d3ad04162198096b8616e8d70a9420b",
+          "definitions": 1,
+          "changes": {
+            "added": 1,
+            "modified": 0,
+            "deleted": 0
+          },
+          "receipt": "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/12f834bf-720c-4d81-a46c-08e8d66d3583.json"
+        },
+        {
+          "sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+          "tree_sha": "5bc66e613cfdd8f368919cd7348c16feddb09ec4",
+          "definitions": 26,
+          "changes": {
+            "added": 25,
+            "modified": 1,
+            "deleted": 0
+          },
+          "receipt": "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/daee79b6-0cec-4c16-ab11-26420236f6b0.json"
+        },
+        {
+          "sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "tree_sha": "0eddce006a760850495728c960fd4145d4e1b8c4",
+          "definitions": 25,
+          "changes": {
+            "added": 0,
+            "modified": 6,
+            "deleted": 1
+          },
+          "receipt": "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/aca787ac-d2f3-4476-99e0-ec4c989898df.json"
+        },
+        {
+          "sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+          "tree_sha": "0eddce006a760850495728c960fd4145d4e1b8c4",
+          "definitions": 25,
+          "changes": {
+            "added": 0,
+            "modified": 0,
+            "deleted": 0
+          },
+          "receipt": "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/357f2e2e-5886-465c-948d-5f37093f8ffd.json"
+        }
+      ],
+      "history": "github-evidence/historical_replay/addyosmani-agent-skills-pr665/history.json"
+    }
+  ],
+  "comparison": {
+    "pairs": 6,
+    "normal_pairs": 3,
+    "fault_pairs": 3,
+    "metrics": [
+      {
+        "fault": false,
+        "framework": true,
+        "n": 3,
+        "median": {
+          "total_seconds": 0.698255686002085,
+          "collection_seconds": 0.0702597119998245,
+          "queue_seconds": 0.3408799171447754
+        },
+        "recovery_seconds_median": null,
+        "actual_requests_per_run": 6,
+        "recovery_attempts_per_run": 0,
+        "human_operations_per_run": 0
+      },
+      {
+        "fault": false,
+        "framework": false,
+        "n": 3,
+        "median": {
+          "total_seconds": 0.4874962090034387,
+          "collection_seconds": 0.07255181999789784,
+          "queue_seconds": 0.0
+        },
+        "recovery_seconds_median": null,
+        "actual_requests_per_run": 6,
+        "recovery_attempts_per_run": 0,
+        "human_operations_per_run": 0
+      },
+      {
+        "fault": true,
+        "framework": true,
+        "n": 3,
+        "median": {
+          "total_seconds": 6.035426493999694,
+          "collection_seconds": 0.06692474000010407,
+          "queue_seconds": 0.31206297874450684
+        },
+        "recovery_seconds_median": 5.545133662999433,
+        "actual_requests_per_run": 6,
+        "recovery_attempts_per_run": 1,
+        "human_operations_per_run": 0
+      },
+      {
+        "fault": true,
+        "framework": false,
+        "n": 3,
+        "median": {
+          "total_seconds": 0.7549765910007409,
+          "collection_seconds": 0.0682301409979118,
+          "queue_seconds": 0.0
+        },
+        "recovery_seconds_median": 0.3562374249995628,
+        "actual_requests_per_run": 6,
+        "recovery_attempts_per_run": 1,
+        "human_operations_per_run": 0
+      }
+    ],
+    "fixed_input": "github-evidence/comparison-input.json",
+    "raw": "github-evidence/comparison/comparison.json",
+    "fault_stage": "business commit completed; before first export atomic replacement",
+    "recovery_equivalence": "restart same existing Worker Job or same direct refresh UUID; both verify completed input and rebuild files",
+    "interpretation": "TaskForge retains default 5-second retry backoff; direct immediately restarts; measured default recovery cost, not a claim the framework is faster"
+  },
+  "checks": [
+    {
+      "command": "uv sync --locked --extra github",
+      "started_at": "2026-10-14T11:07:21.546874+00:00",
+      "finished_at": "2026-10-14T11:07:21.563301+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.016426370002591284,
+      "output": "quality/sync.txt"
+    },
+    {
+      "command": "uv run --locked --extra github pytest --basetemp=/tmp/taskforge-g05-final",
+      "started_at": "2026-10-14T11:12:00.498864+00:00",
+      "finished_at": "2026-10-14T11:15:00.069056+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 179.57019537299857,
+      "output": "quality/pytest.txt"
+    },
+    {
+      "command": "uv run --locked --extra github ruff check .",
+      "started_at": "2026-10-14T11:15:00.069289+00:00",
+      "finished_at": "2026-10-14T11:15:00.119855+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.050571454001328675,
+      "output": "quality/ruff.txt"
+    },
+    {
+      "command": "uv run --locked --extra github ruff format --check .",
+      "started_at": "2026-10-14T11:15:00.120030+00:00",
+      "finished_at": "2026-10-14T11:15:00.149116+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.02909179099879111,
+      "output": "quality/format.txt"
+    },
+    {
+      "command": "uv run --locked --extra github mypy --strict src/taskforge integrations",
+      "started_at": "2026-10-14T11:15:00.149286+00:00",
+      "finished_at": "2026-10-14T11:15:00.309595+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1603163849977136,
+      "output": "quality/mypy.txt"
+    },
+    {
+      "command": "git diff --check",
+      "started_at": "2026-10-14T11:15:00.309766+00:00",
+      "finished_at": "2026-10-14T11:15:00.314093+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.004331279000325594,
+      "output": "quality/diff.txt"
+    },
+    {
+      "command": "uv build",
+      "started_at": "2026-10-14T11:15:14.562870+00:00",
+      "finished_at": "2026-10-14T11:15:15.384657+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.8217529499997909,
+      "output": "quality/build.txt"
+    }
+  ],
+  "distribution": {
+    "sdist": "dist/taskforge-0.1.0.tar.gz",
+    "expected_current_files": 211,
+    "previous_byte_match_count": 210,
+    "public_evidence_files": 117,
+    "wheel": "dist/taskforge-0.1.0-py3-none-any.whl",
+    "wheel_files": 19,
+    "wheel_boundary": "core/py.typed/CLI and dist-info only",
+    "sdist_files_byte_matched": 211,
+    "byte_match_exit_code": 0,
+    "archive_verified_at": "2026-10-14T11:18:14.992491+00:00",
+    "verification_scope": "every current src/integrations/tests/docs/examples file plus README/pyproject/lock/python-version, byte for byte; final receipt included"
+  },
+  "protected": {
+    "source_files": [
+      "examples/local_service.py",
+      "examples/local_tasks.py",
+      "examples/python_cycle.py",
+      "examples/verify_scenarios.py",
+      "src/taskforge/__init__.py",
+      "src/taskforge/api.py",
+      "src/taskforge/cli.py",
+      "src/taskforge/config.py",
+      "src/taskforge/db.py",
+      "src/taskforge/errors.py",
+      "src/taskforge/executor.py",
+      "src/taskforge/locking.py",
+      "src/taskforge/logging.py",
+      "src/taskforge/models.py",
+      "src/taskforge/policy.py",
+      "src/taskforge/registry.py",
+      "src/taskforge/storage.py",
+      "src/taskforge/worker.py"
+    ],
+    "head_files": [
+      "pyproject.toml",
+      "uv.lock",
+      "docs/verification-t01.json",
+      "docs/verification-t10.json"
+    ],
+    "exit_code": 0
+  },
+  "current_source": {
+    "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+    "sha256": "754f787f30fca7a69fc6b47bdc2cff46adbd7489536b59e759f33b1772bbe0f3",
+    "files": {
+      "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+      "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+      "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+      "integrations/github/acceptance.py": "a2c3ac560570a70f1be5060cb8d3fa5115aa67638ede8bf226a3f621fe5a1fb3",
+      "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+      "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+      "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+      "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+      "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+      "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+      "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+      "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+      "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+      "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+      "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+      "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+      "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+      "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+      "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+      "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+      "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+      "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+      "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+      "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+      "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+      "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+      "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+      "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+      "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+      "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+      "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+      "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+      "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+      "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+      "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+      "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+      "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+    }
+  },
+  "evidence_sha256": {
+    "github-evidence/comparison/comparison.json": "23c60e77a53fb8ff50ac6a726e5cf387ecb2c0e1b02beb921246214f5acea387",
+    "github-evidence/comparison/fault-1-direct/indexes/mattpocock-skills.md": "1dfe9244f65ad13dfde3110331e964e32f8f7e2debe46e697d1f8e36034b51b7",
+    "github-evidence/comparison/fault-1-direct/receipts/38e0ecb5-8f45-448f-a1fc-bd7d8346ad2c.json": "9b3e4c05e5bf24ae9c18ca178fe19ca9da71ece12efb58ac03ed6ab1b1df3d1f",
+    "github-evidence/comparison/fault-1-direct/run.json": "4a8eeb6648e3c40fcf22e074a3ceca1977b74e0661f8e7cac907112f055331e1",
+    "github-evidence/comparison/fault-1-direct/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/fault-1-taskforge/indexes/mattpocock-skills.md": "c38c8f522cc7d50e4d4258ef76cf33d52d442bc384869e0ee74ad77474085538",
+    "github-evidence/comparison/fault-1-taskforge/receipts/8147d15a-c89c-4724-845c-a867ca2a3b62.json": "17464005df38431192ccdcfbe28e06a72e70e536b61ba972f6bf3e43e73c0f64",
+    "github-evidence/comparison/fault-1-taskforge/run.json": "53fe31448f13bd58164b2caf5f31a37cbe2929e9ce959c058010f52a90ea961e",
+    "github-evidence/comparison/fault-1-taskforge/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/fault-2-direct/indexes/mattpocock-skills.md": "e8e87f3a07bfddc762120de62151b33ab7dfa01dd1172a4a63b902be0dd01341",
+    "github-evidence/comparison/fault-2-direct/receipts/6efa4480-4e82-462e-bda2-4a71bfd1e904.json": "56cf3a69f4614461bf8770e9e9ce65cfbc945ecad8ea06b005758b09cc70376e",
+    "github-evidence/comparison/fault-2-direct/run.json": "d49c8cd8d634bc292a1a76124c20fc7ae7b55841c58db605f3da972026b9c70a",
+    "github-evidence/comparison/fault-2-direct/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/fault-2-taskforge/indexes/mattpocock-skills.md": "53f938ee90150a36814e9098a432d923690f7f1766f165c22c2277ea5e9d9dba",
+    "github-evidence/comparison/fault-2-taskforge/receipts/86f7db63-8f4a-4ebb-87ba-22179d2cc57a.json": "335d969ce9d0110299cd147b604316899e5c4c44c823932847dddec079938991",
+    "github-evidence/comparison/fault-2-taskforge/run.json": "1f60989f17cf00498a136ccd22cac83d66e428133e878c8d04725212d2bbae7e",
+    "github-evidence/comparison/fault-2-taskforge/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/fault-3-direct/indexes/mattpocock-skills.md": "db3ade9df669996dff4bf6ca4a2d81100ecd7bbfdaef44e59099c3a2082a3831",
+    "github-evidence/comparison/fault-3-direct/receipts/ed070b27-8398-43d5-8d02-0c2ff280e04a.json": "3f515ee13b8eb1de568232c770ab441f88aac9dcc8f9a2e7b93744566b276cb9",
+    "github-evidence/comparison/fault-3-direct/run.json": "eab219c4e972c1e73ffc6bdc821fb623ee376a3669d57162798d5d2c765632e8",
+    "github-evidence/comparison/fault-3-direct/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/fault-3-taskforge/indexes/mattpocock-skills.md": "aa16a4443b180fca3d5b6059bce3d45ab3a9bce64baabcac0b2968e776169f7e",
+    "github-evidence/comparison/fault-3-taskforge/receipts/ee94e285-1a66-4122-8248-aca3dcb078fa.json": "b6453444326af87263543f2bd80a0f3536a92e1471dc90d0be0aca93c15b3629",
+    "github-evidence/comparison/fault-3-taskforge/run.json": "54ccb0b9356f041f60b912b76aa15058a7221fb519bdb732b7420d36d41408d7",
+    "github-evidence/comparison/fault-3-taskforge/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/normal-1-direct/indexes/mattpocock-skills.md": "462c9be2b6e8453e87da3cef716ef3de6252bda095fd1b8e4cb2d438a4b052cb",
+    "github-evidence/comparison/normal-1-direct/receipts/1dd4f07c-0d92-4898-994e-a027c8306850.json": "c35504c21653157aaa653107fc1b58dd8028e8b5394e31de233745f0531bf230",
+    "github-evidence/comparison/normal-1-direct/run.json": "c745e3d866e13ec49bb4e106756145daa391ef65089b441d13b6db5a37343792",
+    "github-evidence/comparison/normal-1-direct/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/normal-1-taskforge/indexes/mattpocock-skills.md": "89b6b4da0d1aa3ad3b3ec1079b145dd0331024f27a928bd6fdfcd175c98459f6",
+    "github-evidence/comparison/normal-1-taskforge/receipts/849f48a9-035a-4d7c-8d35-91433744c313.json": "471e45c800dec7ff5bfabf856ad0b58e26c51624d3e5bf032f611310ba3f7477",
+    "github-evidence/comparison/normal-1-taskforge/run.json": "01eb37103a274c86ecb453dbcb36598ea379ba72552ccee46ba053ebf29d9711",
+    "github-evidence/comparison/normal-1-taskforge/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/normal-2-direct/indexes/mattpocock-skills.md": "5c5f8fa9f99e499a41fd586a4911918994d895ca65199c8f86b86bf6b699e5ca",
+    "github-evidence/comparison/normal-2-direct/receipts/49a615da-02c5-49ed-8293-7adf6d3b5b3d.json": "8af613aa296fcbe5e1fe4a327fb961a2325ec52fe26eb007028467495a86fa87",
+    "github-evidence/comparison/normal-2-direct/run.json": "58fa5192a60af8c98192b19bd0d0a96d6e616cf1635e74de92a3688e459fed5f",
+    "github-evidence/comparison/normal-2-direct/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/normal-2-taskforge/indexes/mattpocock-skills.md": "475f1b3e644c5590a72ba1810d162b044419cd4abd2406155761b790af157995",
+    "github-evidence/comparison/normal-2-taskforge/receipts/7463447c-5e13-43af-9c25-37eeb9ac6c09.json": "b5385c485ed0c01a24847a0cc4729a1a25d06edf8b79a08c28c0fc94155db9b5",
+    "github-evidence/comparison/normal-2-taskforge/run.json": "149a115ded2da5978b63cc06037b0159930e7bc447c3d15ef310710e7f86c4dd",
+    "github-evidence/comparison/normal-2-taskforge/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/normal-3-direct/indexes/mattpocock-skills.md": "b7971060754fb586dc88fdc1b40f0cfb2d4b102ffca0c0343971f68082646aa9",
+    "github-evidence/comparison/normal-3-direct/receipts/91530ad7-c454-4480-8c96-c8d197a0bb02.json": "bf2b28e58d4641e757b52a907b8e20d4ce6423561d8a1aeabf8c2981d0f33d13",
+    "github-evidence/comparison/normal-3-direct/run.json": "1ac0b8602539654e5a1601a6ea13cfba874512fa4ca8fb7a98ffaf97cd4c1f40",
+    "github-evidence/comparison/normal-3-direct/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/normal-3-taskforge/indexes/mattpocock-skills.md": "224833ae80d15675c0afb78373a4b24820d1d4508bbe8690ebda68ad432d57b9",
+    "github-evidence/comparison/normal-3-taskforge/receipts/6356edfc-9801-4a3c-81b8-f076dd86a41d.json": "5de97214fda64180cb8f8c01a4f3e4394d4f33f6dbdf7c2dc2ca6b07656f7242",
+    "github-evidence/comparison/normal-3-taskforge/run.json": "54ad1f87257b29fbf1ca11129cf9ac679de757d9a209fadd08159bd4ec367e72",
+    "github-evidence/comparison/normal-3-taskforge/semantic.json": "4993d8e067d4fb020dd4eefc0d62162cbfce9928787e79a2902e49278e710560",
+    "github-evidence/comparison/protocol.json": "4c86705b7cee60ad200f69a1f44529c42ad4106c69d65b5b3e452e18c10f742b",
+    "github-evidence/comparison-input.json": "6f37a8c8bd6ddf241418ea52005e4f324c0db85f5ddfbc52956285fc4a44e64c",
+    "github-evidence/historical_replay/addyosmani-agent-skills/history.json": "9288fb74ae1b6a261ad1574ddd2a8cda414e4c8681ea02e677df6b6cf99ac555",
+    "github-evidence/historical_replay/addyosmani-agent-skills/indexes/addyosmani-agent-skills.md": "a27601d77cf82ea93704c6f64cb85e5dc19512b7a97e98a74efa8fde16198ca8",
+    "github-evidence/historical_replay/addyosmani-agent-skills/receipts/a1d6f4f5-84bf-47dc-a45d-0b63ce8973b3.json": "a5f5a4b409da91e8e946eceb011ae04b94b7db638c93846b6644d77cddde8836",
+    "github-evidence/historical_replay/addyosmani-agent-skills/receipts/b46e6336-c88c-4bed-8a5a-9a4a2a975a59.json": "22b7aa344399f7700fb71cb30c8a0fd311c91dcce891b17e6ea1d01f43edc389",
+    "github-evidence/historical_replay/addyosmani-agent-skills/receipts/d17eb6d0-dcff-4f10-83aa-e7683d81192a.json": "be0769efe4e60043850185925dad34cbc979fa70048d33e8fc46638717a0697e",
+    "github-evidence/historical_replay/addyosmani-agent-skills-pr665/history.json": "c31f9fd37060d09fff3472fafb0a11797f5aaf53a504e58c9839e33f5182f043",
+    "github-evidence/historical_replay/addyosmani-agent-skills-pr665/indexes/addyosmani-agent-skills.md": "e568e64185d1ce96dd81b4d32fd55744e999e347098d4869d0b3d3ac35602440",
+    "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/12f834bf-720c-4d81-a46c-08e8d66d3583.json": "1a01402bb03608f33fa4165d050cb2fd20734e65af2658bde8f9560898f3c59f",
+    "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/357f2e2e-5886-465c-948d-5f37093f8ffd.json": "1aeaea95d90099a821d241de84de7609ffb7ee80bb02309a67bcb54698af653c",
+    "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/aca787ac-d2f3-4476-99e0-ec4c989898df.json": "7587d437efc2b89c0e8d3b9a2d5f6101c91357222120c90ade325710292fc1dd",
+    "github-evidence/historical_replay/addyosmani-agent-skills-pr665/receipts/daee79b6-0cec-4c16-ab11-26420236f6b0.json": "1c5f79507fd0b1e46bb0911b9bdc3da236dc80a9a4f09a51191142a566fdf165",
+    "github-evidence/historical_replay/addyosmani-agent-skills-pr665/selection.json": "f987be42d72eb27361bf5fbe46f4e6c56fc811c703d58c99e07be65240a02dec",
+    "github-evidence/historical_replay/addyosmani-agent-skills-selection.json": "0f15482f1ee8ccd809294db3b5f019c5b40a230c012b1951aaafb6581a339127",
+    "github-evidence/historical_replay/ancestry.json": "94d1d7f89f00e9636b7f859c38bb73b9b35fec18a694771ca6d363c944f9bef2",
+    "github-evidence/historical_replay/mattpocock-skills/history.json": "8f1e09af6971d485927a86b0b0223509ae6084d4e38d072b9e70b08067a99ff6",
+    "github-evidence/historical_replay/mattpocock-skills/indexes/mattpocock-skills.md": "c92ae5acc7aa0a26c41d643635e09eae7ad541bc1fe116e2ae0ab1ec628238ef",
+    "github-evidence/historical_replay/mattpocock-skills/receipts/108091c2-9fe5-45ef-a353-55da6bd09b48.json": "216a0956df3915a02fd1ae6c8866aeec7ff878541afe668548e1c811a9e6f51b",
+    "github-evidence/historical_replay/mattpocock-skills/receipts/19359ccd-5152-43f1-a5c3-106fc2025f13.json": "95f0bf3c66ddf5cbdf777d91bcdbfc414be6ece252ccd51b40368db98ad5f03d",
+    "github-evidence/historical_replay/mattpocock-skills/receipts/7dbab2cb-535f-48ed-a6d2-c43eab46d9ea.json": "ed3ed435b40713550c5070b8705807b4ebd7d8d03d8f89d5ef74049b355739d7",
+    "github-evidence/historical_replay/mattpocock-skills-selection.json": "58123bc056b0676fe3b080e4b808ff7dcafb3c8346a347b26a6cf4e8c46a6d75",
+    "github-evidence/initial-failure.json": "6cec14a91dc07e0c1a83cc2cc82ad4a6b0256dbdd5effd660496d05047b06cda",
+    "github-evidence/initialization/12f6ef27-b30e-49a3-9efb-01009dc8ab88.json": "321da311df94d01c8267e0c34cd90c8da84163d06a2008b0cdb40eb1665d6cc1",
+    "github-evidence/initialization/13eb5c70-e514-402c-8926-47bef2b11fdb.json": "b2aeb5492c82a8deb733984ec7e322ba513e00b2b811d06ad9a32fc2c1344803",
+    "github-evidence/initialization/4f9af29b-6b91-4ccc-beca-8d0bbe003525.json": "9e0464cfd18476b48e957a25ef6c894d7f62483147587ac542e07700a79620e0",
+    "github-evidence/initialization/81cba9c3-e37c-4012-9e34-4cbb65c4725a.json": "e7b2543a5a16412854301156f573fa31192af6e0013214cb8f9dfa60a043a2ee",
+    "github-evidence/initialization/b9780caa-f160-4faf-a841-7eb15fbeb059.json": "cac23fb3dc3d7a4fa9ef9559c4835bb1f05291069c2c5e2aedaaa56e60e0c16c",
+    "github-evidence/initialization/dc8f4567-1dab-4545-b088-a5e476c4f7e2.json": "2fbe42b38679ef9f71d8a6efc3f82426f03e72954c6d309a24428230616c54c7",
+    "github-evidence/initialization/e93bff97-ca73-4efa-a6c3-a47ed9d6d279.json": "58b9dd31e56456f5cd95c6dc07c86153003794e4795bff4afd7e69fc8847f5f6",
+    "github-evidence/initialization/indexes/addyosmani-agent-skills.md": "86115433ae0f83da0b6d2504194a80c1ef5ecbca39a41b182f9bb34c1b16a720",
+    "github-evidence/initialization/indexes/deepseek-ai-deepseek-harness.md": "69cd7c190bc1dd09c14c66bf28a585d0e9260f2d201a9e2e9c41c8649fed4146",
+    "github-evidence/initialization/indexes/mattpocock-skills.md": "1e30afd0087221f62858004260594d51fe2c21731941617ebb79faae6f726393",
+    "github-evidence/initialization/indexes/morluto-rea.md": "1d336a77142c89a73a3aca30da1748dde94581bdb1de8ebdab56d6ff9a8bac63",
+    "github-evidence/initialization/indexes/openai-codex.md": "cdcaa8dcc57a2eea13da466bb9f4dcadf46a5d4a6f95e3d064e1e7b906e439fa",
+    "github-evidence/initialization/indexes/tt-a1i-archify.md": "072fd63b71a31d23c506d7b9faa2850101e023e673e6fc68fa77ab43cf558589",
+    "github-evidence/initialization/indexes/yetone-magpie.md": "7f2a1bee0a77e2a8fffc0934b364525991dc46140ba016d33df563de61a3b374",
+    "github-evidence/initialization/run.json": "f7edc53cf154e4d65bb1d6f90fecafc8a6a35f403078fa1d3698962502ca90c5",
+    "github-evidence/initialization/submissions.json": "1370b5bb85fe7669cf881ebc68c6d6832e9cc09a777811b0ba005a42dfb833f2",
+    "github-evidence/natural_update/01cb12ca-f55c-429f-bfa9-06d40c40b28c.json": "ac8970de3a08b775fe4800a15b3c6be4374bb55d91c4f1e3fab80068f5ae538a",
+    "github-evidence/natural_update/418bc606-5a78-4255-a982-3ceddf24684f.json": "024b3fe2a5ff29d2a3feff2bdf66321f9db0d9bcc0bac149b68ac52fa47a26a6",
+    "github-evidence/natural_update/68161477-3fb1-4a4c-8880-d9642ba19d8d.json": "a086c37c728c9e6f3d573cc9e716e68433abd8908c5423567d12e5a9627293d9",
+    "github-evidence/natural_update/9ef2b116-6ddd-4a55-adde-07d1f32df757.json": "cbbe8b2b0f568718772ef77612f71e7a3123ee3c6c004735d5976d5cdb0b918c",
+    "github-evidence/natural_update/a10a73ec-0835-4870-835b-b3cc8196e30f.json": "3ec5c419bf349182da083e0e995e301ee70705cc77c47565ac86320ea50517d6",
+    "github-evidence/natural_update/b7d126ea-4271-471c-baba-a503e2723cd8.json": "fbe97a13046774f7000125557d34c219e73b7ce5a3020b5f647502b0aa4014ac",
+    "github-evidence/natural_update/dcfbfc48-e35d-45d5-b74b-d5b1fa2cc9fa.json": "9b77d42763d6dc41a023b48d7ebdbd1f63a8b7ec4690c4651c06f524669e0c1e",
+    "github-evidence/natural_update/indexes/addyosmani-agent-skills.md": "e1f308f63201816d5fb54d2af0ce3c104fa5e4629f180435a22df23972972b05",
+    "github-evidence/natural_update/indexes/deepseek-ai-deepseek-harness.md": "76d451106fffc24f599950dddb8cc3edb2ea274cc7a92eb55155f5ac48c659b0",
+    "github-evidence/natural_update/indexes/mattpocock-skills.md": "a292330df44192d5eab8121d320bc58019e129527cd0b0c75a7f3ef31b446ba2",
+    "github-evidence/natural_update/indexes/morluto-rea.md": "cb15a7ede76c3bd8a218930a18b2493bfba777545275bcc55720d3461d4ad8e8",
+    "github-evidence/natural_update/indexes/openai-codex.md": "a4bdca0249086f89ac4391d1ef0cf8d51b3eb015dbdd1116c55d0276ee916a9a",
+    "github-evidence/natural_update/indexes/tt-a1i-archify.md": "18bbf4acc26dff8864779e3a4b1e04e2811219ad5f00d566f2fd28be066f60dd",
+    "github-evidence/natural_update/indexes/yetone-magpie.md": "d1cff58787a5ec39e267842d6112107995c15b6031b373114b59481d313ed20a",
+    "github-evidence/natural_update/run.json": "b98ab8d495161c99874ac0f2171851a4eae13375a3d786cebac85726785d0cce",
+    "github-evidence/natural_update/submissions.json": "64d915044f66bc9efb76f9dec38104d3f1cb8716759e9150ea95a101543e52c0",
+    "github-evidence/quality/build.txt": "72922787a5e4f5c66a480ceb3e4c40a36721838ecb3a4a535aa70563447a59d0",
+    "github-evidence/quality/commands.json": "317a8ad71139d6c011f134b5264c0d656fc74ea80d22c4d8516fb136c6433c6b",
+    "github-evidence/quality/diff.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "github-evidence/quality/format.txt": "2fcba2071ad461b6c9a1655f5f7af639c36f5ea07efd65ca7e56a9a0fa53b912",
+    "github-evidence/quality/initial-commands.json": "c0cf5e431a7a3c5dafb40ce52a07bde3a1bdf8de0dca360f10bb52290c5c4004",
+    "github-evidence/quality/interrupted-commands.json": "6ef42020106806a61243c249e55f5a56c68f62ddaeea9a040c52c31f368ab49e",
+    "github-evidence/quality/mypy.txt": "2964f4e84ac77897e510c8d7fa5b664a688c51c01f2c3733e4c2fa20c1f6c174",
+    "github-evidence/quality/pytest-in-project-basetemp.txt": "2c9d6b8f6c4cb62bc98aee9d0a47494a44a5d98711be4562dc874c4b026fec09",
+    "github-evidence/quality/pytest-interrupted-basetemp.txt": "5c00af93d2b850f10b716b64c2e9d1bcb12835a8441e3fcce04bbecf4a868823",
+    "github-evidence/quality/pytest.txt": "0e018912c3766f5783ecdc69ed094113342ff0e1bb79bc405bf88b189e7be1fa",
+    "github-evidence/quality/ruff.txt": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "github-evidence/quality/sync.txt": "4ae3e3e3d359fc561d5321bdbe2205ddabaeee8e1e515f4642d4e33acf7aad05",
+    "github-evidence/remote-audit.json": "33cbcc281b65c65ae62938e4264bcc3915c45633f41b4058543f2dc9bae4242a"
+  },
+  "limitations": [
+    "Linux/CPython 3.12 only; macOS/newer Python/fresh network install unverified",
+    "finite initial windows: 20 Commit, 10 Release contents, 100 matching Issues; not full history",
+    "nonempty Issue filters verified by controlled G03 tests, not a new live filtered collection",
+    "real trees nontruncated; no observed submodule; symlink excluded; fallback/incomplete-tree paths covered by controlled G02 tests",
+    "addyosmani deletion history uses public unmerged PR #665, production still default branch",
+    "no write permissions, full comment threads, intermediate events, skill installation/execution, scheduling, Obsidian/RSS or Web UI",
+    "paired local input timings are not network throughput or statistical guarantees",
+    "future remote fixed-SHA availability depends on GitHub"
+  ],
+  "git_commit_created": false,
+  "cleanup": {
+    "pytest_temporary_directories_removed": true,
+    "acceptance_children_reaped": true,
+    "preserved": "formal state databases, receipts/indexes, tool caches and unrelated user documents"
+  },
+  "scenario_commands": [
+    {
+      "command": "PYTHONPATH=\"$PWD\" .venv/bin/python -m integrations.github.acceptance live --state-directory .taskforge/g05/verified-live --output docs/github-evidence/initialization --scenario initialization",
+      "utc": "2026-10-14T10:46:24.875559+00:00",
+      "finished_at": "2026-10-14T10:46:52.720886+00:00",
+      "exit_code": 0,
+      "evidence": "github-evidence/initialization/run.json"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD\" .venv/bin/python -m integrations.github.acceptance live --state-directory .taskforge/g05/verified-live --output docs/github-evidence/natural_update --scenario natural_update",
+      "utc": "2026-10-14T10:49:24.236486+00:00",
+      "finished_at": "2026-10-14T10:49:41.615151+00:00",
+      "exit_code": 0,
+      "evidence": "github-evidence/natural_update/run.json"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD\" .venv/bin/python -m integrations.github.acceptance history --state-directory .taskforge/g05/history-matt --output docs/github-evidence/historical_replay/mattpocock-skills --source mattpocock-skills --sha 1bb95954ef0d06ba4d64a9c267fb75f57c614a1f --sha 49dd158d1076134a641b33efb035946536778336 --sha 49dd158d1076134a641b33efb035946536778336",
+      "utc": "2026-10-14T10:50:06.069476+00:00",
+      "exit_code": 0,
+      "evidence": "github-evidence/historical_replay/mattpocock-skills/history.json"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD\" .venv/bin/python -m integrations.github.acceptance history --state-directory .taskforge/g05/history-addy-pr --output docs/github-evidence/historical_replay/addyosmani-agent-skills-pr665 --source addyosmani-agent-skills --sha 62fcdcd8ab07866e0a895234cf13505fb18c5419 --sha 3b9097e7f56a06c8d32276d7baaa56004523e0c7 --sha bf0608227afc1303d7cc7506413c651d45d66dab --sha bf0608227afc1303d7cc7506413c651d45d66dab",
+      "utc": "2026-10-14T10:53:57.099823+00:00",
+      "exit_code": 0,
+      "evidence": "github-evidence/historical_replay/addyosmani-agent-skills-pr665/history.json"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD\" .venv/bin/python -m integrations.github.acceptance audit --state-directory .taskforge/g05/verified-live --output docs/github-evidence/remote-audit.json",
+      "utc": "2026-10-14T10:55:36.828570+00:00",
+      "exit_code": 0,
+      "evidence": "github-evidence/remote-audit.json",
+      "resume": "first audit exhausted the independent 100-request limit after six sources; second audit reused completed matching checkpoints and verified all 100 Issues with the documented 200-request audit budget"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD\" .venv/bin/python -m integrations.github.comparison compare --state-directory .taskforge/g05/compare --fixture docs/github-evidence/comparison-input.json --output docs/github-evidence/comparison",
+      "utc": "2026-10-14T10:50:23.154425+00:00",
+      "exit_code": 0,
+      "evidence": "github-evidence/comparison/comparison.json"
+    },
+    {
+      "command": "PYTHONPATH=\"$PWD\" .venv/bin/python -m integrations.github.comparison capture --state-directory .taskforge/g05/capture --fixture docs/github-evidence/comparison-input.json",
+      "utc": "2026-10-14T10:49:31.100915+00:00",
+      "exit_code": 0,
+      "evidence": "github-evidence/comparison-input.json"
+    }
+  ]
+}

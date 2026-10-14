@@ -371,3 +371,65 @@ async def test_ordinary_forbidden_is_not_a_rate_limit(tmp_path):
         with pytest.raises(HTTPError, match="HTTP 403"):
             await http.get("/forbidden")
     assert await store.cooldown() == (0, 0)
+
+
+@pytest.mark.parametrize("cursor_only", [False, True])
+async def test_canonical_repository_and_cursor_pagination_with_cached_links(tmp_path, cursor_only):
+    store = await ready(tmp_path)
+    calls = []
+    cached = False
+
+    def handler(request):
+        calls.append(str(request.url))
+        if request.url.path == "/repos/a/b":
+            return httpx.Response(200, json={"id": 42})
+        if cached:
+            return httpx.Response(304)
+        if request.url.path == "/repos/a/b/issues":
+            params = {"per_page": "100", "state": "all", "after": "opaque=="}
+            if not cursor_only:
+                params["page"] = "2"
+            following = httpx.URL("https://api.github.com/repositories/42/issues").copy_with(
+                params=params
+            )
+            return httpx.Response(
+                200, json=[1], headers={"etag": '"one"', "link": f'<{following}>; rel="next"'}
+            )
+        assert request.url.path == "/repositories/42/issues"
+        assert request.url.params["after"] == "opaque=="
+        return httpx.Response(200, json=[2], headers={"etag": '"two"'})
+
+    async with client(store, handler) as http:
+        assert await http.paginate("/repos/a/b/issues?state=all") == [1, 2]
+        cached = True
+        assert await http.paginate("/repos/a/b/issues?state=all") == [1, 2]
+        assert http.budget.requests == 6
+    assert len(calls) == 6
+
+
+@pytest.mark.parametrize(
+    "failure", ["identity", "suffix", "filter", "duplicate", "cursor", "budget"]
+)
+async def test_canonical_cursor_pages_reject_unproven_coverage(tmp_path, failure):
+    store = await ready(tmp_path)
+
+    def handler(request):
+        if request.url.path == "/repos/a/b":
+            return httpx.Response(200, json={"id": 43 if failure == "identity" else 42})
+        page = int(request.url.params["page"])
+        path = "/repositories/42/releases" if failure == "suffix" else "/repositories/42/issues"
+        state = "open" if failure == "filter" else "all"
+        query = f"per_page=100&page={page + 1}&state={state}&after=fixed"
+        if failure == "duplicate":
+            query += "&state=all"
+        return httpx.Response(
+            200,
+            json=[page],
+            headers={"link": f'<https://api.github.com{path}?{query}>; rel="next"'},
+        )
+
+    limits = {"max_requests": 1} if failure == "budget" else {}
+    async with client(store, handler, **limits) as http:
+        with pytest.raises(BudgetError if failure == "budget" else PaginationError):
+            await http.paginate("/repos/a/b/issues?state=all")
+    assert (await store.source_state(GitHubConfig.load().sources[0].source_id)).checkpoint is None

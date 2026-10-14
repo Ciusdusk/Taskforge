@@ -71,7 +71,10 @@ T02—T10 已加入实际行为测试，包括真实 SQLite、事务故障、单
 
 G01 提供 `integrations/github/` 中的严格配置、认证、HTTP、独立业务存储和锁基础。
 G02 已提供项目 Commit、Release 与技能采集，G03 已提供 Issue 增量采集；
-G04 已验收 `github.refresh` 注册表、业务命令、提交核对和可重建导出。七来源真实验收留给 G05。
+G04 已验收 `github.refresh` 注册表、业务命令、提交核对和可重建导出；
+G05 已完成七来源真实基线/重复刷新、两技能来源固定历史重放及正常/故障各三次 direct 对照。
+复现命令、原始收据、量化结果和边界见 [GitHub 场景](docs/github-scenarios.md) 与
+[G05 验收](docs/verification-g05.json)。
 默认七来源见 `integrations/github/default-sources.json`，配置与输入不保存凭据。
 
 在项目根目录同步可选依赖：
@@ -122,6 +125,8 @@ uv sync --locked --extra github
 边界和诊断；技能链接保存在 `coverage.skills.changes`。失败可以保存 HTTP 缓存、冷却及
 尝试诊断，但不推进业务记录或检查点。`GitHubHTTP.iter_pages` 保留分页元数据，调用方
 须穷尽迭代器才算完整列表；`paginate` 继续只返回完整列表。
+真实 Link 可将 `/repos/owner/repo` 改为 `/repositories/id` 并附带 `after` 游标；
+HTTP 层先核对仓库 ID，再保持 endpoint、筛选、per_page、页序和游标推进约束。
 
 `issues.refresh_issues(data, credential, execution, *, transport=None, trust_env=True) -> bool`
 是独立 Issue 入口，初始化、来源登记、执行身份、完成输入核对及锁生命周期与项目入口相同。
@@ -147,13 +152,14 @@ uv sync --locked --extra github
 
 Issue 覆盖保存前检查点、执行身份、观察上界、实际请求数、筛选快照、分页与排除/延后/旧快照计数。
 达到 100 个匹配对象的初始窗口会显式关闭迭代器，`complete` 只表示有限基线契约通过。
-当前 847 项全量回归及质量/分发检查通过，下一独立会话见 [G05 prompt](docs/prompts/G05.md)。
+当前 856 项全量回归及质量/分发检查通过，最终真实证据见
+[验证记录](docs/verification.md#g05真实接入与最终交接)。
 
 ### GitHub 业务命令与恢复
 
 在项目根目录执行业务命令。`init` 不需要凭据；`submit` 和 `direct` 在提交前读取凭据，
 Worker 执行时重新读取，凭据不进入任务输入或数据库。以下命令会采集真实 GitHub，
-G04 验收使用受控 HTTP；七来源远端兼容性和真实对照留给 G05。
+G04 使用受控 HTTP；G05 已通过独立命令完成七来源远端兼容性、固定历史重放与隔离对照。
 
 ```bash
 uv run --locked --extra github python -m integrations.github init
@@ -182,7 +188,7 @@ uv run --locked --extra github python -m integrations.github export --source mat
 | `reconcile` | 用核心公开 `get/list` 核对完整输入；支持 `--refresh-id UUID`，可加 `--job-id ID`；零匹配保持待核对 |
 | `show` | 来源代次/检查点、批次覆盖/变化/诊断、关联及核心 Job/Attempt；支持 `--source`、`--refresh-id`，未知身份报错 |
 | `export` | 持来源锁重建 JSON 收据和 Markdown 索引；返回相对路径；支持 `--source`、`--scenario` |
-| `direct` | 使用独立 `direct-UUID` 执行身份复用采集、门控、锁和导出；返回来源/批次/是否新提交，供 G05 隔离对照 |
+| `direct` | 使用独立 `direct-UUID` 执行身份复用采集、门控、锁和导出；返回来源/批次/是否新提交；已用于 G05 隔离对照 |
 
 业务命令成功退出码 0；失败或待核对退出码 1，输入语法错误由 Typer 返回 2。
 输出使用 JSON，错误只报告异常类型；`show` 的成功查询可包含明确的 FAILED Job 状态。
@@ -208,7 +214,7 @@ uv run --locked --extra github python -m integrations.github export --source mat
 收据保存 UTC、采集时源码 Git HEAD（可空）和相对文件/聚合 SHA-256、配置指纹、执行身份、
 前后检查点、请求数、完整覆盖、变化及耗时。`batch_counts` 是本次载荷计数，
 `repository_counts` 是导出时该仓库/来源类型的持久实体与版本总数；一实体可有多个版本。
-`coverage.elapsed_seconds` 截止业务提交前，包含采集与源码指纹计算；完整实验计时留给 G05。
+`coverage.elapsed_seconds` 截止业务提交前，包含采集与源码指纹计算；完整实验计时独立记录在 [G05 对照](docs/github-scenarios.md#4-正常故障各三次-direct-成对对照)。
 公开输出省略完整目录、核心输入 JSON 和异常文本/traceback；源码文件路径均为相对路径。
 
 默认 `scenario` 为 `initialization/natural_update`；隔离实验可用

@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "repository": "mattpocock/skills",
+      "before": "1bb95954ef0d06ba4d64a9c267fb75f57c614a1f",
+      "after": "49dd158d1076134a641b33efb035946536778336",
+      "url": "https://github.com/mattpocock/skills/compare/1bb95954ef0d06ba4d64a9c267fb75f57c614a1f...49dd158d1076134a641b33efb035946536778336",
+      "status": "ahead",
+      "base_sha": "1bb95954ef0d06ba4d64a9c267fb75f57c614a1f",
+      "merge_base_sha": "1bb95954ef0d06ba4d64a9c267fb75f57c614a1f",
+      "ahead_by": 99,
+      "behind_by": 0,
+      "utc": "2026-10-14T10:56:42.865566+00:00"
+    },
+    {
+      "repository": "addyosmani/agent-skills",
+      "before": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+      "after": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "url": "https://github.com/addyosmani/agent-skills/compare/62fcdcd8ab07866e0a895234cf13505fb18c5419...3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "status": "ahead",
+      "base_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+      "merge_base_sha": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+      "ahead_by": 636,
+      "behind_by": 0,
+      "utc": "2026-10-14T10:56:44.660466+00:00"
+    },
+    {
+      "repository": "addyosmani/agent-skills",
+      "before": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "after": "bf0608227afc1303d7cc7506413c651d45d66dab",
+      "url": "https://github.com/addyosmani/agent-skills/compare/3b9097e7f56a06c8d32276d7baaa56004523e0c7...bf0608227afc1303d7cc7506413c651d45d66dab",
+      "status": "ahead",
+      "base_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "merge_base_sha": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "ahead_by": 1,
+      "behind_by": 0,
+      "utc": "2026-10-14T10:56:45.411989+00:00"
+    }
+  ],
+  "exit_code": 0,
+  "scope": "Compare metadata establishes ancestry; replay coverage is complete native skill trees, not the full Commit increment."
+}

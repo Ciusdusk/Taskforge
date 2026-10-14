@@ -268,6 +268,8 @@ class GitHubHTTP:
         url = str(httpx.URL(url).copy_with(params=params))
         expected = dict(params)
         seen: set[str] = set()
+        cursors: set[str] = set()
+        endpoint = parts.path
         for page in range(1, self.budget.limits.max_pages + 1):
             if url in seen:
                 raise PaginationError("Pagination cycle")
@@ -286,10 +288,32 @@ class GitHubHTTP:
                 return
             url = self._safe_url(following)
             following_parts = urlsplit(url)
-            expected["page"] = str(page + 1)
-            if (
-                following_parts.path != parts.path
-                or dict(parse_qsl(following_parts.query, keep_blank_values=True)) != expected
+            if following_parts.path != endpoint:
+                alias = re.fullmatch(r"/repos/([^/]+/[^/]+)(/.*)", endpoint)
+                canonical = re.fullmatch(r"/repositories/([1-9][0-9]*)(/.*)", following_parts.path)
+                if page != 1 or alias is None or canonical is None or alias[2] != canonical[2]:
+                    raise PaginationError("Pagination changed endpoint")
+                repository = (await self.get("/repos/" + alias[1])).body
+                if (
+                    not isinstance(repository, dict)
+                    or type(repository.get("id")) is not int
+                    or repository["id"] != int(canonical[1])
+                ):
+                    raise PaginationError("Pagination changed repository identity")
+                endpoint = following_parts.path
+            pairs = parse_qsl(following_parts.query, keep_blank_values=True)
+            query = dict(pairs)
+            if len(query) != len(pairs):
+                raise PaginationError("Pagination has duplicate parameters")
+            cursor = query.pop("after", None)
+            if cursor is not None:
+                if not cursor or cursor in cursors:
+                    raise PaginationError("Pagination cursor did not advance")
+                cursors.add(cursor)
+            next_page = query.pop("page", None)
+            filters = {key: value for key, value in expected.items() if key != "page"}
+            if query != filters or (
+                next_page != str(page + 1) and not (cursor is not None and next_page is None)
             ):
                 raise PaginationError("Pagination changed endpoint, filters or page sequence")
         raise BudgetError("List page budget exhausted; collection is incomplete")

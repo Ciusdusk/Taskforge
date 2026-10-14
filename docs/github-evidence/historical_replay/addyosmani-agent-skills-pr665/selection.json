@@ -1,0 +1,24 @@
+{
+  "number": 665,
+  "html_url": "https://github.com/addyosmani/agent-skills/pull/665",
+  "state": "open",
+  "merged": false,
+  "merged_at": null,
+  "head_sha": "bf0608227afc1303d7cc7506413c651d45d66dab",
+  "base_sha": "1401c8b8030e023baeebb31781a6653fe8e93026",
+  "utc": "2026-10-14T10:54:55.551612+00:00",
+  "requests": 1,
+  "ancestry_checks": [
+    {
+      "before": "62fcdcd8ab07866e0a895234cf13505fb18c5419",
+      "after": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "exit_code": 0
+    },
+    {
+      "before": "3b9097e7f56a06c8d32276d7baaa56004523e0c7",
+      "after": "bf0608227afc1303d7cc7506413c651d45d66dab",
+      "exit_code": 0
+    }
+  ],
+  "selection": "All 704 initially reachable default/public-branch commits had no SKILL.md deletion. Public PR ref 665 supplies a genuine parent/child deletion of skills/requirement-traceability/SKILL.md; histories replayed in ancestor order, without altering production branch selection."
+}

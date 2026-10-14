@@ -1,0 +1,1486 @@
+{
+  "protocol": {
+    "utc": "2026-10-14T10:50:23.154425+00:00",
+    "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d",
+    "repetitions": 3,
+    "normal_and_fault": true,
+    "fault_stage": "business committed; before first atomic export replacement",
+    "recovery": "same UUID; restart existing Worker Job or rerun direct command",
+    "timing": "from submit/direct spawn through success and process shutdown; setup and terminal re-export excluded",
+    "policy": "production defaults: 2 retries, 5/60 second backoff, 300 second timeout",
+    "gate": "production GitHubHTTP, per-instance API flock, default budgets; fixed local transport",
+    "order": "alternate TaskForge/direct ordering by repetition; compare semantics before timings"
+  },
+  "pairs": [
+    {
+      "fault": false,
+      "repetition": 1,
+      "equivalent": true,
+      "runs": [
+        {
+          "framework": true,
+          "fault": false,
+          "utc": "2026-10-14T10:50:23.193743+00:00",
+          "finished_at": "2026-10-14T10:50:24.258499+00:00",
+          "refresh_id": "849f48a9-035a-4d7c-8d35-91433744c313",
+          "job_id": "0bd8c9ed-365a-4fd1-9ccc-8886fdc38726",
+          "total_seconds": 0.698255686002085,
+          "collection_seconds": 0.0702597119998245,
+          "queue_seconds": 0.3429889678955078,
+          "recovery_seconds": null,
+          "recovery_attempts": 0,
+          "process_exit_codes": [
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:23.581483+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:23.591347+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:23.600865+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:23.611005+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:23.625270+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:23.637483+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [],
+          "fault_stage": null,
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/849f48a9-035a-4d7c-8d35-91433744c313.json",
+          "core": {
+            "job": {
+              "attempt_count": 1,
+              "created_at": "2026-10-14T10:50:23.200934+00:00",
+              "finished_at": "2026-10-14T10:50:23.715658+00:00",
+              "id": "0bd8c9ed-365a-4fd1-9ccc-8886fdc38726",
+              "last_error_kind": null,
+              "max_retries": 2,
+              "next_run_at": null,
+              "retry_base_seconds": 5.0,
+              "retry_cap_seconds": 60.0,
+              "started_at": "2026-10-14T10:50:23.543923+00:00",
+              "status": "SUCCESS",
+              "task_name": "github.refresh",
+              "timeout_seconds": 300.0
+            },
+            "attempts": [
+              {
+                "job_id": "0bd8c9ed-365a-4fd1-9ccc-8886fdc38726",
+                "number": 1,
+                "status": "SUCCESS",
+                "started_at": "2026-10-14T10:50:23.543923+00:00",
+                "finished_at": "2026-10-14T10:50:23.715658+00:00",
+                "error_kind": null,
+                "exception_type": null
+              }
+            ]
+          },
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        },
+        {
+          "framework": false,
+          "fault": false,
+          "utc": "2026-10-14T10:50:24.298587+00:00",
+          "finished_at": "2026-10-14T10:50:24.812566+00:00",
+          "refresh_id": "1dd4f07c-0d92-4898-994e-a027c8306850",
+          "job_id": null,
+          "total_seconds": 0.4874962090034387,
+          "collection_seconds": 0.06482051599959959,
+          "queue_seconds": 0.0,
+          "recovery_seconds": null,
+          "recovery_attempts": 0,
+          "process_exit_codes": [
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:24.633098+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:24.642253+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:24.650412+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:24.659487+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:24.672213+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:24.684360+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [],
+          "fault_stage": null,
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/1dd4f07c-0d92-4898-994e-a027c8306850.json",
+          "core": null,
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        }
+      ]
+    },
+    {
+      "fault": false,
+      "repetition": 2,
+      "equivalent": true,
+      "runs": [
+        {
+          "framework": false,
+          "fault": false,
+          "utc": "2026-10-14T10:50:24.851296+00:00",
+          "finished_at": "2026-10-14T10:50:25.391133+00:00",
+          "refresh_id": "49a615da-02c5-49ed-8293-7adf6d3b5b3d",
+          "job_id": null,
+          "total_seconds": 0.5109175100005814,
+          "collection_seconds": 0.07255181999789784,
+          "queue_seconds": 0.0,
+          "recovery_seconds": null,
+          "recovery_attempts": 0,
+          "process_exit_codes": [
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:25.182350+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.192498+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.202089+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.212737+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.225285+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.241330+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [],
+          "fault_stage": null,
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/49a615da-02c5-49ed-8293-7adf6d3b5b3d.json",
+          "core": null,
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        },
+        {
+          "framework": true,
+          "fault": false,
+          "utc": "2026-10-14T10:50:25.436217+00:00",
+          "finished_at": "2026-10-14T10:50:26.177084+00:00",
+          "refresh_id": "7463447c-5e13-43af-9c25-37eeb9ac6c09",
+          "job_id": "87c940ff-acc6-4a03-90fb-ef25843c404c",
+          "total_seconds": 0.6984627769998042,
+          "collection_seconds": 0.06955154100069194,
+          "queue_seconds": 0.3408799171447754,
+          "recovery_seconds": null,
+          "recovery_attempts": 0,
+          "process_exit_codes": [
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:25.821661+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.831206+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.839391+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.849314+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.864216+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:25.876628+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [],
+          "fault_stage": null,
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/7463447c-5e13-43af-9c25-37eeb9ac6c09.json",
+          "core": {
+            "job": {
+              "attempt_count": 1,
+              "created_at": "2026-10-14T10:50:25.446641+00:00",
+              "finished_at": "2026-10-14T10:50:25.955161+00:00",
+              "id": "87c940ff-acc6-4a03-90fb-ef25843c404c",
+              "last_error_kind": null,
+              "max_retries": 2,
+              "next_run_at": null,
+              "retry_base_seconds": 5.0,
+              "retry_cap_seconds": 60.0,
+              "started_at": "2026-10-14T10:50:25.787521+00:00",
+              "status": "SUCCESS",
+              "task_name": "github.refresh",
+              "timeout_seconds": 300.0
+            },
+            "attempts": [
+              {
+                "job_id": "87c940ff-acc6-4a03-90fb-ef25843c404c",
+                "number": 1,
+                "status": "SUCCESS",
+                "started_at": "2026-10-14T10:50:25.787521+00:00",
+                "finished_at": "2026-10-14T10:50:25.955161+00:00",
+                "error_kind": null,
+                "exception_type": null
+              }
+            ]
+          },
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        }
+      ]
+    },
+    {
+      "fault": false,
+      "repetition": 3,
+      "equivalent": true,
+      "runs": [
+        {
+          "framework": true,
+          "fault": false,
+          "utc": "2026-10-14T10:50:26.212104+00:00",
+          "finished_at": "2026-10-14T10:50:26.944445+00:00",
+          "refresh_id": "6356edfc-9801-4a3c-81b8-f076dd86a41d",
+          "job_id": "303deae4-bd34-48c6-8a3d-0874e426905d",
+          "total_seconds": 0.6897630290004599,
+          "collection_seconds": 0.07054778200108558,
+          "queue_seconds": 0.3093380928039551,
+          "recovery_seconds": null,
+          "recovery_attempts": 0,
+          "process_exit_codes": [
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:26.564253+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:26.573997+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:26.583008+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:26.593510+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:26.606928+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:26.618870+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [],
+          "fault_stage": null,
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/6356edfc-9801-4a3c-81b8-f076dd86a41d.json",
+          "core": {
+            "job": {
+              "attempt_count": 1,
+              "created_at": "2026-10-14T10:50:26.219303+00:00",
+              "finished_at": "2026-10-14T10:50:26.691622+00:00",
+              "id": "303deae4-bd34-48c6-8a3d-0874e426905d",
+              "last_error_kind": null,
+              "max_retries": 2,
+              "next_run_at": null,
+              "retry_base_seconds": 5.0,
+              "retry_cap_seconds": 60.0,
+              "started_at": "2026-10-14T10:50:26.528641+00:00",
+              "status": "SUCCESS",
+              "task_name": "github.refresh",
+              "timeout_seconds": 300.0
+            },
+            "attempts": [
+              {
+                "job_id": "303deae4-bd34-48c6-8a3d-0874e426905d",
+                "number": 1,
+                "status": "SUCCESS",
+                "started_at": "2026-10-14T10:50:26.528641+00:00",
+                "finished_at": "2026-10-14T10:50:26.691622+00:00",
+                "error_kind": null,
+                "exception_type": null
+              }
+            ]
+          },
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        },
+        {
+          "framework": false,
+          "fault": false,
+          "utc": "2026-10-14T10:50:26.982359+00:00",
+          "finished_at": "2026-10-14T10:50:27.500021+00:00",
+          "refresh_id": "91530ad7-c454-4480-8c96-c8d197a0bb02",
+          "job_id": null,
+          "total_seconds": 0.48736619199917186,
+          "collection_seconds": 0.07403180800247355,
+          "queue_seconds": 0.0,
+          "recovery_seconds": null,
+          "recovery_attempts": 0,
+          "process_exit_codes": [
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:27.306248+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.316850+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.326113+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.336060+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.349223+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.365899+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [],
+          "fault_stage": null,
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/91530ad7-c454-4480-8c96-c8d197a0bb02.json",
+          "core": null,
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        }
+      ]
+    },
+    {
+      "fault": true,
+      "repetition": 1,
+      "equivalent": true,
+      "runs": [
+        {
+          "framework": true,
+          "fault": true,
+          "utc": "2026-10-14T10:50:27.539947+00:00",
+          "finished_at": "2026-10-14T10:50:33.616548+00:00",
+          "refresh_id": "8147d15a-c89c-4724-845c-a867ca2a3b62",
+          "job_id": "a30c90f3-5741-4a8d-91b3-d1b5730fa699",
+          "total_seconds": 6.035426493999694,
+          "collection_seconds": 0.06998495199877652,
+          "queue_seconds": 0.3138408660888672,
+          "recovery_seconds": 5.5483743580007285,
+          "recovery_attempts": 1,
+          "process_exit_codes": [
+            -9,
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:27.901539+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.911037+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.920694+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.931535+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.945197+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:27.957567+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [
+            "SIGKILL at barrier",
+            "restart same command"
+          ],
+          "fault_stage": {
+            "stage": "business_committed_before_export_replace",
+            "business_complete": true,
+            "requests": 6,
+            "core_status": "RUNNING"
+          },
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/8147d15a-c89c-4724-845c-a867ca2a3b62.json",
+          "core": {
+            "job": {
+              "attempt_count": 2,
+              "created_at": "2026-10-14T10:50:27.551325+00:00",
+              "finished_at": "2026-10-14T10:50:33.455316+00:00",
+              "id": "a30c90f3-5741-4a8d-91b3-d1b5730fa699",
+              "last_error_kind": null,
+              "max_retries": 2,
+              "next_run_at": null,
+              "retry_base_seconds": 5.0,
+              "retry_cap_seconds": 60.0,
+              "started_at": "2026-10-14T10:50:27.865166+00:00",
+              "status": "SUCCESS",
+              "task_name": "github.refresh",
+              "timeout_seconds": 300.0
+            },
+            "attempts": [
+              {
+                "job_id": "a30c90f3-5741-4a8d-91b3-d1b5730fa699",
+                "number": 1,
+                "status": "INTERRUPTED",
+                "started_at": "2026-10-14T10:50:27.865166+00:00",
+                "finished_at": "2026-10-14T10:50:28.354647+00:00",
+                "error_kind": "INTERRUPTED",
+                "exception_type": null
+              },
+              {
+                "job_id": "a30c90f3-5741-4a8d-91b3-d1b5730fa699",
+                "number": 2,
+                "status": "SUCCESS",
+                "started_at": "2026-10-14T10:50:33.393399+00:00",
+                "finished_at": "2026-10-14T10:50:33.455316+00:00",
+                "error_kind": null,
+                "exception_type": null
+              }
+            ]
+          },
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        },
+        {
+          "framework": false,
+          "fault": true,
+          "utc": "2026-10-14T10:50:33.650968+00:00",
+          "finished_at": "2026-10-14T10:50:34.432745+00:00",
+          "refresh_id": "38e0ecb5-8f45-448f-a1fc-bd7d8346ad2c",
+          "job_id": null,
+          "total_seconds": 0.7514034840023669,
+          "collection_seconds": 0.06793416100117611,
+          "queue_seconds": 0.0,
+          "recovery_seconds": 0.3562374249995628,
+          "recovery_attempts": 1,
+          "process_exit_codes": [
+            -9,
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:33.946873+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:33.956112+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:33.966961+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:33.977450+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:33.990547+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:34.001568+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [
+            "SIGKILL at barrier",
+            "restart same command"
+          ],
+          "fault_stage": {
+            "stage": "business_committed_before_export_replace",
+            "business_complete": true,
+            "requests": 6
+          },
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/38e0ecb5-8f45-448f-a1fc-bd7d8346ad2c.json",
+          "core": null,
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        }
+      ]
+    },
+    {
+      "fault": true,
+      "repetition": 2,
+      "equivalent": true,
+      "runs": [
+        {
+          "framework": false,
+          "fault": true,
+          "utc": "2026-10-14T10:50:34.470196+00:00",
+          "finished_at": "2026-10-14T10:50:35.263469+00:00",
+          "refresh_id": "6efa4480-4e82-462e-bda2-4a71bfd1e904",
+          "job_id": null,
+          "total_seconds": 0.7623023019987158,
+          "collection_seconds": 0.0682301409979118,
+          "queue_seconds": 0.0,
+          "recovery_seconds": 0.36037376999956905,
+          "recovery_attempts": 1,
+          "process_exit_codes": [
+            -9,
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:34.772216+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:34.781670+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:34.790832+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:34.800099+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:34.811627+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:34.826929+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [
+            "SIGKILL at barrier",
+            "restart same command"
+          ],
+          "fault_stage": {
+            "stage": "business_committed_before_export_replace",
+            "business_complete": true,
+            "requests": 6
+          },
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/6efa4480-4e82-462e-bda2-4a71bfd1e904.json",
+          "core": null,
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        },
+        {
+          "framework": true,
+          "fault": true,
+          "utc": "2026-10-14T10:50:35.299995+00:00",
+          "finished_at": "2026-10-14T10:50:41.364025+00:00",
+          "refresh_id": "86f7db63-8f4a-4ebb-87ba-22179d2cc57a",
+          "job_id": "a8476fb0-bfbb-45e4-871d-e7956583c2f6",
+          "total_seconds": 6.019262320998678,
+          "collection_seconds": 0.06594090499856975,
+          "queue_seconds": 0.31206297874450684,
+          "recovery_seconds": 5.545133662999433,
+          "recovery_attempts": 1,
+          "process_exit_codes": [
+            -9,
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:35.654116+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:35.664072+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:35.673518+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:35.683268+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:35.695590+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:35.706811+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [
+            "SIGKILL at barrier",
+            "restart same command"
+          ],
+          "fault_stage": {
+            "stage": "business_committed_before_export_replace",
+            "business_complete": true,
+            "requests": 6,
+            "core_status": "RUNNING"
+          },
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/86f7db63-8f4a-4ebb-87ba-22179d2cc57a.json",
+          "core": {
+            "job": {
+              "attempt_count": 2,
+              "created_at": "2026-10-14T10:50:35.308000+00:00",
+              "finished_at": "2026-10-14T10:50:41.159110+00:00",
+              "id": "a8476fb0-bfbb-45e4-871d-e7956583c2f6",
+              "last_error_kind": null,
+              "max_retries": 2,
+              "next_run_at": null,
+              "retry_base_seconds": 5.0,
+              "retry_cap_seconds": 60.0,
+              "started_at": "2026-10-14T10:50:35.620063+00:00",
+              "status": "SUCCESS",
+              "task_name": "github.refresh",
+              "timeout_seconds": 300.0
+            },
+            "attempts": [
+              {
+                "job_id": "a8476fb0-bfbb-45e4-871d-e7956583c2f6",
+                "number": 1,
+                "status": "INTERRUPTED",
+                "started_at": "2026-10-14T10:50:35.620063+00:00",
+                "finished_at": "2026-10-14T10:50:36.058410+00:00",
+                "error_kind": "INTERRUPTED",
+                "exception_type": null
+              },
+              {
+                "job_id": "a8476fb0-bfbb-45e4-871d-e7956583c2f6",
+                "number": 2,
+                "status": "SUCCESS",
+                "started_at": "2026-10-14T10:50:41.096323+00:00",
+                "finished_at": "2026-10-14T10:50:41.159110+00:00",
+                "error_kind": null,
+                "exception_type": null
+              }
+            ]
+          },
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        }
+      ]
+    },
+    {
+      "fault": true,
+      "repetition": 3,
+      "equivalent": true,
+      "runs": [
+        {
+          "framework": true,
+          "fault": true,
+          "utc": "2026-10-14T10:50:41.402651+00:00",
+          "finished_at": "2026-10-14T10:50:47.739169+00:00",
+          "refresh_id": "ee94e285-1a66-4122-8248-aca3dcb078fa",
+          "job_id": "6119fa35-06c7-4465-862c-8079040ca5df",
+          "total_seconds": 6.292030092001369,
+          "collection_seconds": 0.06692474000010407,
+          "queue_seconds": 0.3020009994506836,
+          "recovery_seconds": 5.539187549002236,
+          "recovery_attempts": 1,
+          "process_exit_codes": [
+            -9,
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:42.031474+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:42.040915+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:42.049340+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:42.059305+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:42.072522+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:42.085082+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [
+            "SIGKILL at barrier",
+            "restart same command"
+          ],
+          "fault_stage": {
+            "stage": "business_committed_before_export_replace",
+            "business_complete": true,
+            "requests": 6,
+            "core_status": "RUNNING"
+          },
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/ee94e285-1a66-4122-8248-aca3dcb078fa.json",
+          "core": {
+            "job": {
+              "attempt_count": 2,
+              "created_at": "2026-10-14T10:50:41.694702+00:00",
+              "finished_at": "2026-10-14T10:50:47.554907+00:00",
+              "id": "6119fa35-06c7-4465-862c-8079040ca5df",
+              "last_error_kind": null,
+              "max_retries": 2,
+              "next_run_at": null,
+              "retry_base_seconds": 5.0,
+              "retry_cap_seconds": 60.0,
+              "started_at": "2026-10-14T10:50:41.996703+00:00",
+              "status": "SUCCESS",
+              "task_name": "github.refresh",
+              "timeout_seconds": 300.0
+            },
+            "attempts": [
+              {
+                "job_id": "6119fa35-06c7-4465-862c-8079040ca5df",
+                "number": 1,
+                "status": "INTERRUPTED",
+                "started_at": "2026-10-14T10:50:41.996703+00:00",
+                "finished_at": "2026-10-14T10:50:42.452882+00:00",
+                "error_kind": "INTERRUPTED",
+                "exception_type": null
+              },
+              {
+                "job_id": "6119fa35-06c7-4465-862c-8079040ca5df",
+                "number": 2,
+                "status": "SUCCESS",
+                "started_at": "2026-10-14T10:50:47.491720+00:00",
+                "finished_at": "2026-10-14T10:50:47.554907+00:00",
+                "error_kind": null,
+                "exception_type": null
+              }
+            ]
+          },
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        },
+        {
+          "framework": false,
+          "fault": true,
+          "utc": "2026-10-14T10:50:47.776516+00:00",
+          "finished_at": "2026-10-14T10:50:48.560809+00:00",
+          "refresh_id": "ed070b27-8398-43d5-8d02-0c2ff280e04a",
+          "job_id": null,
+          "total_seconds": 0.7549765910007409,
+          "collection_seconds": 0.06960753000021214,
+          "queue_seconds": 0.0,
+          "recovery_seconds": 0.35369596000236925,
+          "recovery_attempts": 1,
+          "process_exit_codes": [
+            -9,
+            0
+          ],
+          "requests": [
+            {
+              "utc": "2026-10-14T10:50:48.073823+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:48.082837+00:00",
+              "path": "/repos/mattpocock/skills/commits/main",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:48.091288+00:00",
+              "path": "/repos/mattpocock/skills/commits?sha=49dd158d1076134a641b33efb035946536778336&per_page=20&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:48.101055+00:00",
+              "path": "/repos/mattpocock/skills/releases?per_page=100&page=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:48.112760+00:00",
+              "path": "/repos/mattpocock/skills/git/trees/3ce485319972aae46dec0c2ac34cf4a7f28f7414?recursive=1",
+              "status": 200
+            },
+            {
+              "utc": "2026-10-14T10:50:48.128366+00:00",
+              "path": "/repos/mattpocock/skills",
+              "status": 200
+            }
+          ],
+          "actual_requests": 6,
+          "human_operations": [],
+          "orchestrator_operations": [
+            "SIGKILL at barrier",
+            "restart same command"
+          ],
+          "fault_stage": {
+            "stage": "business_committed_before_export_replace",
+            "business_complete": true,
+            "requests": 6
+          },
+          "semantic_sha256": "bdbc0ed0de872fe29ef44ad2c8151888db1b7bf288fc63e86f37557aa97caad8",
+          "receipt": "receipts/ed070b27-8398-43d5-8d02-0c2ff280e04a.json",
+          "core": null,
+          "source": {
+            "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+            "sha256": "aad4e5c9e1ab46088b64abca89dc90e662159446afbec43692cd28178e708f02",
+            "files": {
+              "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+              "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+              "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+              "integrations/github/acceptance.py": "5a423eb80541397c76632a9b80ec1fc86a2f7ca57cbec310783086c331157855",
+              "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+              "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+              "integrations/github/comparison.py": "c71c616e78723a2fce0fc3e37d14298e0d3c5826f63b9540552944af602c2eda",
+              "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+              "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+              "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+              "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+              "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+              "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+              "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+              "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+              "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+              "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+              "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+              "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+              "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+              "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+              "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+              "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+              "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+              "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+              "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+              "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+              "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+              "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+              "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+              "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+              "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+              "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+              "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+              "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+              "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+              "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+            }
+          },
+          "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d"
+        }
+      ]
+    }
+  ]
+}

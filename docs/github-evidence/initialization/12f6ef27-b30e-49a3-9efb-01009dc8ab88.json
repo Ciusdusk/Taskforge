@@ -1,0 +1,430 @@
+{
+  "schema_version": 1,
+  "exported_at": "2026-10-14T10:46:52.629293+00:00",
+  "scenario": "initialization",
+  "collection_scenario": "initialization",
+  "configuration_sha256": "53374c8175d5fbc4784e6d41cfd9b7fbee928d0afe222436ca8855484dfc74ae",
+  "input": {
+    "refresh_id": "12f6ef27-b30e-49a3-9efb-01009dc8ab88",
+    "source": {
+      "source_id": "morluto-rea",
+      "kind": "project",
+      "repository": "morluto/rea",
+      "scan_skills": false,
+      "issue_filter": null,
+      "budgets": {
+        "connect_seconds": 5.0,
+        "write_seconds": 5.0,
+        "pool_seconds": 5.0,
+        "read_seconds": 20.0,
+        "request_seconds": 30.0,
+        "max_pages": 10,
+        "max_requests": 100,
+        "max_commits": 500,
+        "max_wait_seconds": 30.0
+      }
+    },
+    "source_generation": 1,
+    "operation": "refresh"
+  },
+  "batch": {
+    "refresh_id": "12f6ef27-b30e-49a3-9efb-01009dc8ab88",
+    "checkpoint": {
+      "default_branch": "main",
+      "repository": "morluto/rea",
+      "repository_id": 1209966933,
+      "sha": "a32b4b6ac54a02a8fe9a7cb62861e54473ba5eb0"
+    },
+    "coverage": {
+      "batch_counts": {
+        "changes": 30,
+        "entities": 30,
+        "skill_changes": 0,
+        "versions": 30
+      },
+      "before_checkpoint": null,
+      "commits": {
+        "baseline_limit": 20,
+        "before_sha": null,
+        "complete": true,
+        "count": 20,
+        "history_scope": "finite baseline, then complete forward increments",
+        "mode": "finite_initial_window",
+        "target_sha": "a32b4b6ac54a02a8fe9a7cb62861e54473ba5eb0"
+      },
+      "complete": true,
+      "elapsed_seconds": 10.905798758998571,
+      "execution": {
+        "attempt_number": 1,
+        "execution_id": "f55fe419-8582-4010-8c47-816166987236"
+      },
+      "observed_at": "2026-10-14T10:46:40.935505+00:00",
+      "releases": {
+        "complete": true,
+        "diagnostics": [],
+        "first_observed": 0,
+        "first_observed_published_in_last_7_days": 0,
+        "initial_content_limit": 10,
+        "missing_saved_ids": [],
+        "publication_window_end": "2026-10-14T10:46:40.935505+00:00",
+        "publication_window_start": "2026-10-07T10:46:40.935505+00:00",
+        "saved_content_checked": 10,
+        "scope": "published IDs including prereleases; initial window and subsequent new IDs",
+        "visible_ids": 35
+      },
+      "requests": 5,
+      "skills": {
+        "enabled": false
+      },
+      "source": {
+        "files": {
+          "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+          "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+          "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+          "integrations/github/acceptance.py": "dca29e7fea5735133a387f75a13ac51033d2acebd5dfa5ffa9b99313c5df271c",
+          "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+          "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+          "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+          "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+          "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+          "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+          "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+          "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+          "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+          "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+          "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+          "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+          "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+          "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+          "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+          "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+          "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+          "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+          "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+          "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+          "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+          "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+          "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+          "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+          "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+          "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+          "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+          "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+          "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+          "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+          "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+          "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+        },
+        "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+        "sha256": "e457b2cec03b8a22e5a806ff2723aaeb9eb700daf2a7e458a716b8c75f5cb9f0"
+      },
+      "target_sha": "a32b4b6ac54a02a8fe9a7cb62861e54473ba5eb0"
+    },
+    "changes": [
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "a32b4b6ac54a02a8fe9a7cb62861e54473ba5eb0",
+        "fingerprint": "551ffb2301b1c2bcc98a9319ac1929b59f2986ec8631ec9503b86ead47bdfa3c",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "60c08802a7b6d2195121114a9e4224492f138185",
+        "fingerprint": "918480f5b4d525616c1690f775a5e7e358c0efc03cd96be1596bd32e1e1c84b1",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "7435e79d6524e81fc17e49469d8d284e0b569707",
+        "fingerprint": "4fc72b4b48b8a75a9d816b40bf4afc18d9b740ae6c30d2e0a075748cac729405",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "44d98de2367b99808d78db732ec7d72533266233",
+        "fingerprint": "01f4c38ed72619fae44bf1bfe4d58043f367af6a735434bf5173ebbcab076d63",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "ba33c706d26b63e43308be50c0249c72cff62cc6",
+        "fingerprint": "249c0f1902aa70f8cf27295885cb1d1155bb54fcc055956ad8c214fb47b28836",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "aade9bbcb79aa8504ab6921b25f8ab082aba78e7",
+        "fingerprint": "72d7f705301f5c3042112ed08de194f5c3111bbd731f936ae329636aa406121e",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "0930e94e077ab7fb4d695f62785919a8a25c2e21",
+        "fingerprint": "216752750b248535c4d7080ee86e5ec6d8bba32d465e1d74c25dfd090d22cfe2",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "3f6b5755b3e699bd9373641acffe0f2c5d2ab094",
+        "fingerprint": "de7fca3824f6e0600d701c338bac2d9c8145cdad996db52baf261906b0fcb8f6",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "45b6a7fe8f51a89951aaa823ffa627f6f5453a33",
+        "fingerprint": "d2bc34ad70fc1af841eae3057b8d625867ec66fa02a0ecb04652712b32356dca",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "2daeff4b243e1cd137c591ca394e18a1c05c8bbc",
+        "fingerprint": "cbba4e4bc663d0bc15147e545ed6f9421620b767fcc49fce6ac4feadcfcd6338",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "e67c3642c8920a2a9c0e231ee2f16f50b245df31",
+        "fingerprint": "1964a8f5b684a625494d7f5ba54288e75334637046b59c2c0333cbe6e7e3e988",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "030c47732833c9cedcc31db1309eb3a1ca2c62e8",
+        "fingerprint": "0a62fb55b83a7ee11d02418a0c528219a75e8a33bed57c0c52b365e40ea6075b",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "3a34ad37bdb7b8debba0f6515ba85b80141f2716",
+        "fingerprint": "37e067e2b1bf6d6d2ba1b53d214953c97a66883e414afb706f81aac882c97708",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "1250aaedd8b4d1e471d8a382f76418bde65c05d2",
+        "fingerprint": "a89501591596ea10f8baaa44dd59561579c6df85b331b1156617cd6bae9429c0",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "2b60e097f281f7708c69f1f7ba9263694547bcc0",
+        "fingerprint": "8d94d115e86b2bb31205fc754b8b7f46dbcd69c6d1110e4505aef6ca2245b371",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "5e79d468e5864204cbe79a7ca2898541cee5e012",
+        "fingerprint": "1c1d164f642916c543bb733ee00c75af6f9fb03b8e49723cac0f36a7e13a7cd1",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "44c9d2924d5b95d7a86595e8d7b7cf4fd4f0f6ac",
+        "fingerprint": "d74ca40bc5b6dee51eeb9c1710a8e59dcb2e6c6b18166a128283383ccc727e6e",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "503109995f9dcf8a955585d39a344fc846d2f59e",
+        "fingerprint": "71f824d13582401a3c9de30e0cc96d3ec79c9be18dbd2e4915fdb5781688f687",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "28f57619738e41cc5e9c8b8e50692231d238a6bb",
+        "fingerprint": "966f256ea48be2595dbd990aad33a2c72416bfa1a248c6d2dd4764e353c70c8e",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "commit",
+        "remote_id": "dae1e55381f0d6cfee7f2082d5d27b938e55704c",
+        "fingerprint": "2cb3f53d5d17219998eb8afc7939303de65b1eeb7c0dc7840969a1e569f87e55",
+        "change_kind": "initial",
+        "detail": {}
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "402669181",
+        "fingerprint": "9080c39e04b2bb1a789cad2a4fa307fa9e9b25b29fbfa307084af33c2184c245",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "404008217",
+        "fingerprint": "6c21d3bbe50d024fe958104d326f9aa76f99b9bb444cda29a80a236da7e10b71",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "404026890",
+        "fingerprint": "2c9dd405c3ea28a7d887d7dc8cb3ec9167c07b4e9c5326a2d22efe79cc2c4d17",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "405001695",
+        "fingerprint": "e08d8404a2443592a17d5ab345b8f32baba80b6105b48685431dcebfa38afc19",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": false
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "405997755",
+        "fingerprint": "f60fcc15223e8b0bc856f72a0d49a25a74b9f8c5b69d68764a477e4ef052dade",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": true
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "406665797",
+        "fingerprint": "e4d3f012c8f7f8b29175663ba1575b66cfe5116247ca12272f2b4f120b8dcbd5",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": true
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "407394788",
+        "fingerprint": "8685401f5a4f26c0531183350fa73ab6e029b2fca227fae33336d2964e540877",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": true
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "408132282",
+        "fingerprint": "1dc9579bd281664d73212e2af4114401cfb6ca8c9585939256094fc682296f61",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": true
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "408434690",
+        "fingerprint": "fce817f25a5263890ef481f45edf24ae8dd7090c461326766b82ba62fb67912d",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": true
+        }
+      },
+      {
+        "repository_id": 1209966933,
+        "kind": "release",
+        "remote_id": "409397516",
+        "fingerprint": "9d2623a994a8e000b57100b7dc18846e5c4e84d1b45425a8e62cb1f749eaeba7",
+        "change_kind": "initial",
+        "detail": {
+          "published_in_last_7_days": true
+        }
+      }
+    ],
+    "skill_changes": [],
+    "attempts": [
+      {
+        "execution_id": "f55fe419-8582-4010-8c47-816166987236",
+        "number": 1,
+        "diagnostic": null
+      }
+    ],
+    "repository_counts": {
+      "entities": 30,
+      "versions": 30
+    }
+  },
+  "core": {
+    "job": {
+      "attempt_count": 1,
+      "created_at": "2026-10-14T10:46:25.141417+00:00",
+      "finished_at": "2026-10-14T10:46:51.898755+00:00",
+      "id": "f55fe419-8582-4010-8c47-816166987236",
+      "last_error_kind": null,
+      "max_retries": 2,
+      "next_run_at": null,
+      "retry_base_seconds": 5.0,
+      "retry_cap_seconds": 60.0,
+      "started_at": "2026-10-14T10:46:40.867465+00:00",
+      "status": "SUCCESS",
+      "task_name": "github.refresh",
+      "timeout_seconds": 300.0
+    },
+    "attempts": [
+      {
+        "job_id": "f55fe419-8582-4010-8c47-816166987236",
+        "number": 1,
+        "status": "SUCCESS",
+        "started_at": "2026-10-14T10:46:40.867465+00:00",
+        "finished_at": "2026-10-14T10:46:51.898755+00:00",
+        "error_kind": null,
+        "exception_type": null
+      }
+    ]
+  },
+  "verification": {
+    "business_complete": true,
+    "core_status_at_export": "SUCCESS"
+  }
+}

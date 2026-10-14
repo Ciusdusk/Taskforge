@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-14T10:50:23.154425+00:00",
+  "fixture_sha256": "30c0b191d209f34ad77aba21cfb6cd1c1e36723489ce0af6e0f47be00483846d",
+  "repetitions": 3,
+  "normal_and_fault": true,
+  "fault_stage": "business committed; before first atomic export replacement",
+  "recovery": "same UUID; restart existing Worker Job or rerun direct command",
+  "timing": "from submit/direct spawn through success and process shutdown; setup and terminal re-export excluded",
+  "policy": "production defaults: 2 retries, 5/60 second backoff, 300 second timeout",
+  "gate": "production GitHubHTTP, per-instance API flock, default budgets; fixed local transport",
+  "order": "alternate TaskForge/direct ordering by repetition; compare semantics before timings"
+}

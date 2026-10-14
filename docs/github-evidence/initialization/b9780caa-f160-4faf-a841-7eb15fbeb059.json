@@ -1,0 +1,1166 @@
+{
+  "schema_version": 1,
+  "exported_at": "2026-10-14T10:46:52.655359+00:00",
+  "scenario": "initialization",
+  "collection_scenario": "initialization",
+  "configuration_sha256": "9e02724a15ee833237ccc7e0e38cfcb224d4dcb268bcbe44a9ae2fcbfcd2e318",
+  "input": {
+    "refresh_id": "b9780caa-f160-4faf-a841-7eb15fbeb059",
+    "source": {
+      "source_id": "openai-codex",
+      "kind": "issues",
+      "repository": "openai/codex",
+      "scan_skills": false,
+      "issue_filter": null,
+      "budgets": {
+        "connect_seconds": 5.0,
+        "write_seconds": 5.0,
+        "pool_seconds": 5.0,
+        "read_seconds": 20.0,
+        "request_seconds": 30.0,
+        "max_pages": 10,
+        "max_requests": 100,
+        "max_commits": 500,
+        "max_wait_seconds": 30.0
+      }
+    },
+    "source_generation": 1,
+    "operation": "refresh"
+  },
+  "batch": {
+    "refresh_id": "b9780caa-f160-4faf-a841-7eb15fbeb059",
+    "checkpoint": {
+      "repository": "openai/codex",
+      "repository_id": 965415649,
+      "upper_bound": "2026-10-14T10:46:41.363307+00:00"
+    },
+    "coverage": {
+      "batch_counts": {
+        "changes": 100,
+        "entities": 100,
+        "skill_changes": 0,
+        "versions": 100
+      },
+      "before_checkpoint": null,
+      "complete": true,
+      "elapsed_seconds": 10.95476292800231,
+      "execution": {
+        "attempt_number": 1,
+        "execution_id": "fbf48bc3-5cf7-43cf-94ab-e06c31c73514"
+      },
+      "issues": {
+        "baseline_limit": 100,
+        "changes": 100,
+        "complete": true,
+        "deferred_after_upper": 0,
+        "filter": {
+          "keywords": [],
+          "labels": [],
+          "numbers": []
+        },
+        "full_history": false,
+        "list_exhausted": false,
+        "mode": "finite_initial_window",
+        "overlap_seconds": 60,
+        "pages": 2,
+        "pr_excluded": 3,
+        "scanned": 103,
+        "scope": "observed Issue snapshots; no intermediate events or complete comment history",
+        "selected": 100,
+        "since": null,
+        "stale_ignored": 0,
+        "upper_bound": "2026-10-14T10:46:41.363307+00:00"
+      },
+      "observed_at": "2026-10-14T10:46:41.363307+00:00",
+      "requests": 5,
+      "source": {
+        "files": {
+          "integrations/__init__.py": "0c5b0951c0941c30ef2bfb913c3b72cd8c310b3eb95e674dec15acdad186c142",
+          "integrations/github/__init__.py": "fa26d512dcfd0b40117625c64ae2f3e4390be6f0157b2a8f6e28aeaa97d72c73",
+          "integrations/github/__main__.py": "5f0f5775db186af0c0fae712af245a9355fb640cf8f563132d318c3e2779e18b",
+          "integrations/github/acceptance.py": "dca29e7fea5735133a387f75a13ac51033d2acebd5dfa5ffa9b99313c5df271c",
+          "integrations/github/auth.py": "86b76895795c00524c9b0cc51f61256cc7b433c4ea8974d315e9e14717b331e3",
+          "integrations/github/commands.py": "901cb8d03164a4ef42b048fcb809832c631ffa378b81c233c4bcd3ba13ca18fa",
+          "integrations/github/config.py": "5f4d224dc8c676a03b999c59311d08d253f6820f3254392826586af78e61dd1f",
+          "integrations/github/default-sources.json": "d5e4bbd3953021465314fa2ba35f44ef109f8bf44702f04c5c33e9d55ab96132",
+          "integrations/github/errors.py": "ef93e6e32d8ae6dfdd65c5583097567ecbfcf4499ec0465070fd5589a188d4fe",
+          "integrations/github/http.py": "9d86037c3698444137679284378ecc502446d4df20a7391274a5d3ace8d502aa",
+          "integrations/github/issues.py": "7d0005212db790b9fb89f837bc508c6eff0f2b81af9fd13ad18761468d10b298",
+          "integrations/github/lifecycle.py": "a8ba9d335365ec8c2e6799ec2f231dfea3ca40de2e1552ff690a482b6dfb09da",
+          "integrations/github/locking.py": "88835bfb0f9cc6fa282053228467ac313a41eb36d11d6bcb532e2138fdf0cfc6",
+          "integrations/github/models.py": "aff9cd6e73dfc6bbdda5a97cd5939d2060e013fdfacb17f6fca0554b8e355cef",
+          "integrations/github/project.py": "e0941c0bf2cf1163e872cf4b089dbbf5d4fae4899460e7e60e57fa5ea6d3a94f",
+          "integrations/github/receipts.py": "5b35f35114fd9ab822e58fe2ff37658c6ac5c897fb2d46c8253e1c18bac50b79",
+          "integrations/github/remote.py": "2190f55707157ae39ea64ff7345ced487d7c475a16108442b1319d718a08c770",
+          "integrations/github/skills.py": "3ba71c3bdbef60d9975a3b8e051c20d68adaf57c5defdb9cf40937279a113e26",
+          "integrations/github/storage.py": "2d6d37df5e55588cef3a82d6475fec2a7bd737e13013996d95dd3910e3f34188",
+          "integrations/github/tasks.py": "eba45ac149d00cf720fa2968a8e9363fbe21c1fa6d54fa531531f9f6c3a9ad5b",
+          "pyproject.toml": "8c1f42ac103cb1b0efbd7e699f549850673a34f595261c4a9967fd8c1e7a2928",
+          "src/taskforge/__init__.py": "c3d1c103530c6692cd4762e6eb58662efc01fad25e80e8126cf6dc48a4fd4be6",
+          "src/taskforge/api.py": "1c2320f33f940f5b52bbd40a92b29e577f9993b77124d38783ff261d0a6c11f0",
+          "src/taskforge/cli.py": "59242ef136b86a84b8bc4f3ff77796d1b0b1aa35d569fc91927e6a81d5938073",
+          "src/taskforge/config.py": "aaa0289e85c43e3d44195f11fd4df49a42355f059106f58709778c6e7a8db76e",
+          "src/taskforge/db.py": "df1e95a2e8c4d369812cdc0e579318c917c8090d5cd9a60753f20af5a5540087",
+          "src/taskforge/errors.py": "308f6be6b47ad3562f94e7d58cc235ed37b2deadb18e3346b0de32f0ea822491",
+          "src/taskforge/executor.py": "2c130bd70d4c0612443ac3b08337fc5f5c81eb7e010ff83ce98c97531df4aad9",
+          "src/taskforge/locking.py": "9eb1331fdae8bad2478cad52715681057bef753e431c1a5a535baf00a8fc59df",
+          "src/taskforge/logging.py": "698f422e914156f9f5a0ab946c384b5ce6fa120dcad55a580cf342fa35b08136",
+          "src/taskforge/models.py": "a1657438728dfae3e638eb70ee3732b1ad70fb46905594918d19681701155bad",
+          "src/taskforge/policy.py": "707e41b177fd2a2a05d3835056e4ab442fd0912742c40fe829608455aabd3245",
+          "src/taskforge/registry.py": "9b4a4beaff290e90a5d44d6a59d613af10485d361059431019844870fb331c00",
+          "src/taskforge/storage.py": "ea96f72e422e56f96e1a04a9dde6114ac3bdcd3a196ad70960a060d54b216e40",
+          "src/taskforge/worker.py": "785eb5398f43819e09f64f27cc7e3f651aad0f57ce84609c5f8ff7833dc0d057",
+          "uv.lock": "c5ef0da5888bb63ec763dec74e1119a10ac15519e258fc845c57d5d2a5ebdc6c"
+        },
+        "git_commit": "7f4df72f8f45e916fe2eb6ee812205d6bb811971",
+        "sha256": "e457b2cec03b8a22e5a806ff2723aaeb9eb700daf2a7e458a716b8c75f5cb9f0"
+      }
+    },
+    "changes": [
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5842714365",
+        "fingerprint": "56276add9205d36827138d11e0e514454b6007a24fec2ffb4c8795e1b454eacd",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5790823055",
+        "fingerprint": "ed7a5930e78ba657e92d15543fff25443212d5fdc03d23f036ac4c8bd860bd54",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5473111455",
+        "fingerprint": "8c143c59c1e4731450309e47b822ddab6ce1078d9834631a760fa438befab328",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5804155514",
+        "fingerprint": "ae8c455434db1f632a536c1beaef9a14cbaa37dd73853aca48da66932aa1e843",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5547388663",
+        "fingerprint": "7da9d831b82b88560423f2b3933081c44e9d7f31338010a165fda4cb71c66242",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5479715032",
+        "fingerprint": "4fd26ad04b18a8ea49f87e26d8a78eb626fd26693dca01e2af426b57db075678",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5084270161",
+        "fingerprint": "41d8f7ba21d0a011d1ffd8cd88c93464fdab06cc21a520b54a7585d76ba34911",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5836538367",
+        "fingerprint": "c6d99f94569044a0268064c284ef75ab337e38cee593c64649a953f56a2202e7",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5594255256",
+        "fingerprint": "47ec29b488a50867a420372d79fa9fce30b432e958dbd34a2b538262540baebf",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5846271739",
+        "fingerprint": "36561e8dfd5da5d8b1dcf005814fbfe788f78bdada474d02d20f7a1fffed36fe",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5127511261",
+        "fingerprint": "44c3640a606272ab3cdfe3f2d6207b22444f6b3ad78888be052ac936a0446bfd",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5808051764",
+        "fingerprint": "150704c00037f07134abeae493abffda2982bc9596c4071b311a558a59ea7821",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5798259475",
+        "fingerprint": "a53618b2b54854a8c0a80d93bd37887e5e78d76a2ef41bbc085e2c3933e7373b",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5076642612",
+        "fingerprint": "69075e16c0a678a21249c1872a4c3b27102f68d3138502e93416135c434c6bd5",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5846206329",
+        "fingerprint": "99011a1c1f2d89527e07fb4f9ca5f22c2c4ca3fba69c9c8230c243714b486637",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845889726",
+        "fingerprint": "ecfa0db84fb6fd7a1ea30617f7d8a09bb8e4dee05caa5ad5b19eeb5b7f3f78a3",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5791139604",
+        "fingerprint": "bd5e1c8f80c2be35bd63320b294ec195bfb4ce9fcb1f445b43d13f7035ca1dfd",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5827060511",
+        "fingerprint": "78a860ae5f99b8bf2a94a26a060bba4311176ae8fb970bb3eb490a460269f788",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5693775429",
+        "fingerprint": "c033cccbf4ffc55a1c253ade2ae1224f846b7348ebfba9cb7b685acdd040ecdf",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5806607995",
+        "fingerprint": "28bbac47ff8aa5c420b55892fab98121455175a378b8053ae797b79c06cb7787",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5754835770",
+        "fingerprint": "20acf85a15c448562ca771ed5ab40162957ae4154201081be0b2780b0ece8a22",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5677153154",
+        "fingerprint": "bf6916b59447cb5f75b92231c01d4725046437fe3d9b20f1ae1d646be246de85",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5846178118",
+        "fingerprint": "f6cd8b1baf675dc3c4dfc7bafd65de75de30607c9892240f38f098c855954d01",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5846152306",
+        "fingerprint": "38622831c72e99679940346ab719fac69da02bd608ea2da98272cd1ec5ce1c63",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5772784967",
+        "fingerprint": "f0df27388e189cf64f75673812c26728e013d3f6759d96da576343615430ae03",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5846132687",
+        "fingerprint": "250c7157ddab02d2d451044d5472304ca9578ef216a37870769675e12b0652e5",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5596115759",
+        "fingerprint": "59c8e7e4614766abf43c0ddde14cb6b2817d0d6a5a828f753ba9fc7545f784b8",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5846108873",
+        "fingerprint": "813935d93d8ad9771c37cdb5da2d3c42e0a12e898c04ef7facccf4c85d72c5ab",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5811110750",
+        "fingerprint": "68e331a4da77407bb10e7a6c997e2a550585c6f38f49f2ba5f71ddef684ed259",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "4914953469",
+        "fingerprint": "a0c2f394b5da5b51392990a8218f56ea20f0b4a2602f5ed63b75c5ea6e8fca6a",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "4522473740",
+        "fingerprint": "2b5b8d74c6a771f189a4661415fbaf8b4f336facac0643fe37b5ea3f7459ecbf",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5843773643",
+        "fingerprint": "b13c2702616c43dd92a281156f9d334cce2f5ac233bebacc813bdfd8a1785a1a",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5785557319",
+        "fingerprint": "71f8b033587b9dfb135c187ae363000a219121f973f45421e8c529257b78d321",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5148953977",
+        "fingerprint": "d111a1b904ec07a316e31932913faa935c1e6f75a53da122440d1a4e1dbd1960",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5722468879",
+        "fingerprint": "8e1006eabe3b78efe59f3b65ec5aba5376197588a30f725ff18e2c98f9750fdd",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845992379",
+        "fingerprint": "c181af87105503bfc36efd7d631ae8ba0ae6e126c855d22a00d3e0d46389d676",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5605188424",
+        "fingerprint": "859928d3d44d892ee058b6c05816ed7446d42fd1e420491b17690ca9a73daf55",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5822733328",
+        "fingerprint": "3f7937fb748eccfe7de687f482b6ed3a42e059e0866d30b5ece5120dd1fb62c8",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5826705755",
+        "fingerprint": "2855b925e581fadd22f42a7754151b239669d9d39459d73e5d74b6c5b5b21a22",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5758609891",
+        "fingerprint": "f4e63cfef92d9a5b549b4d707daa2fd6863bed7f057e013e52012f2f4c1dedb3",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845927753",
+        "fingerprint": "638aafbc030ced61d48baaaa15fd1beef61076ffbd04c1e7f0e28f9e6f74dc71",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5689059930",
+        "fingerprint": "da71afde43c38abb19fc1387fbea4b8e7ed84a37daef769f209d581f26bac234",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5840172554",
+        "fingerprint": "58bd470fc458fb8464d7db952d2ecf3a12641936f21571acc74128bb2d6c7b7d",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845791403",
+        "fingerprint": "58a9bb00dd38d4b41fab7aff1f83ae61f6aaa8807e85027a6f85caa338f53c5b",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5430005656",
+        "fingerprint": "e61d048b06b86b31a709e5397f68d7c8ff20242233cdcadb46ee5bdcdf358f28",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845693445",
+        "fingerprint": "948547b0d5bf55a0b6ee83d9d23f756d7abe40715a6db76c9e5afa390e0e30b9",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5177140139",
+        "fingerprint": "ad8cb393a7245b8cd48560c56786e860c384d719ed9728070c3ffde25d4ae197",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5737294808",
+        "fingerprint": "f1f28195b7ed742cbd46a3e3a8c2e6650bb002cf321e93522d35105e66637419",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845669261",
+        "fingerprint": "6b8f724d17e2ae72a1fb79d8f38d42e3ece4d9d82cb563e5bb516bb802482699",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845622626",
+        "fingerprint": "71d2e89cd15471f579328e16c60f1a77e0b15346eb33a0ae07749dabfeda4e47",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845472705",
+        "fingerprint": "10d3a06a9fe7a0ede5351365edb9810ed1063b2831823819cc0a755e2bf46c11",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "4403630576",
+        "fingerprint": "89364fe2bd56ffbf914d0b0f3fcc87eddbd94d603db193432492a3a2c586fb89",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845485147",
+        "fingerprint": "07de8c3fc9d9375f2795078a8405cc4082d7407b8f25e19919442470e590cf03",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845467215",
+        "fingerprint": "749121fe8464f989b5620ec7b0b2c2d26d42cc1dcbb42fe3e644c46d5fbd3b66",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5723110224",
+        "fingerprint": "4cfa92b196d3dbcaba6446a6e63bce609e0c7c8698fb0e0024cd73c1fb9fb022",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845352369",
+        "fingerprint": "ad121bc0e3d4532a908f03fc0e6115b0f4587bf57d63b04af738689f0a2cc1ee",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5807789405",
+        "fingerprint": "afa22bae68929e319f818f16def36e72306d9d24181a110211d2f7e5e1df3582",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845301782",
+        "fingerprint": "a7076be27347e3d84a9501256d459562711270c9b853f74c4327c566f9dbdc95",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5835630822",
+        "fingerprint": "d08872078a9eac90febf108839e3e001a6f9fe1c498e619456d2d0872e5c6177",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845269060",
+        "fingerprint": "3c70d0ba5daad5cbcaf03990bcd2f9f27583e0ad8db4df52fb01f02d7207cbf5",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5548654133",
+        "fingerprint": "d445117b74d9126f544b049c969583098185760f6aed620aad4ddcb6a76c1920",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5780327824",
+        "fingerprint": "cae920214bf3d21731dba980d2e46eaa043e1f0c4968710ef47ea860296c0f9e",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845251662",
+        "fingerprint": "ccbff8f0bccea63ff3d0fcb28196837e6d9c1f21d26f67b4ed7edf0100aa0469",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5357783050",
+        "fingerprint": "86587ecbb02ba5ca7e66a5fba5f95e76500982e06e2af5c29cd059d59d21aff0",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5725687729",
+        "fingerprint": "2fb862976e4e88f7cba37dabd114dc676165e75dad18635e89705e575487d50c",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845226877",
+        "fingerprint": "e9479d6853d83c1c5504dfc51ea51843e5e7f31784c0cbd04dc77ecd2fc65fcc",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845215522",
+        "fingerprint": "8f84f21abe58a5c390418b1d6bdaa68cba58fc5da38be01b613019450ecbdaff",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5803727515",
+        "fingerprint": "1f5d793a23c9717c00ced715f14fa558811cf9cf9fde9970155cdc63210ad367",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845145982",
+        "fingerprint": "130ab01a3def699a0e7b436d9afb73aac031c7c7fae3bf0eec445d3932510f3e",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "4864722071",
+        "fingerprint": "884260aec3a6b444d3f98fd0725733dc9ee8cee715da7c12b17013950dbd168d",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845136476",
+        "fingerprint": "2137db93a90dfa7f00a3cb8dfab94dfde028b176324abe88b110f98ba0174dbf",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845143048",
+        "fingerprint": "8f32d40dfd4b4165fbdb6ba41c1e82c0478fd17f9b4cbfa9a25ed2cb09740daa",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5364508163",
+        "fingerprint": "6ea82368c868786bb4d61e3820bd37658fefdb7749a9fc5ce0c328e9dd86d34c",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5843710263",
+        "fingerprint": "ee2bd61bac10bb96a995fd022a05ee0133baaa134f78197b4207a71ef01dbd50",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5845102501",
+        "fingerprint": "d7b17382a516e7c28fbbe4324f52fd4f2bd5ae00d517fc0039dba7bda948033e",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5771317521",
+        "fingerprint": "b3d652bec435d94df083b13838200dee8f01ae1cd88c5fc03a5a25531534ee9a",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5775490635",
+        "fingerprint": "bbe67475b66cf0fe7f24eae472c080c38106516c32f2f099c6d19158ab9562b0",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5790515783",
+        "fingerprint": "5e649a08931405968ee6101c23c51db64e2bd7c2adc0319cbaee0adeeb6dca79",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5273031773",
+        "fingerprint": "8ff3583eae894cd2c7131d6b23d5b35c4b6649d5494bd3104d651213b9bfcc3d",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5829059819",
+        "fingerprint": "5bdcd2dc3d10eb64e445957ab8b06aeda0c8cc0af555f93f7fdc0e4639ca26ee",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5727905123",
+        "fingerprint": "2ffd95c8b19a2cdf69e4a2cb80c3524083340562c111e0729d75fe3274097fac",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5841469784",
+        "fingerprint": "a1ad1915a4ea68a826949081b781e723f7bab4fdc02d827e8036b17b9bb9dc0f",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5515141412",
+        "fingerprint": "047450c66334747247e5e58bf525f6414ad47a746767316426d1dbd96bc7c690",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5844908841",
+        "fingerprint": "fbda4e800db33358786e2a66c3be6356c1a615e2a8815cebeb725db0fb2aa5de",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5844922513",
+        "fingerprint": "7d22ce6453cda36cc7d6c83bd5aaa86d6df263003510e4d52fdb65c962813628",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5695974471",
+        "fingerprint": "18d1bb732216016c48988f764f9bd98917990b64e5e3827b4ca0cfb707e31ed0",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5809905811",
+        "fingerprint": "9592bf04c92c3a1a798ea706c0b552e0d508805e4dc5c9d68c87f5492bb4d12b",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5744597270",
+        "fingerprint": "87e509dca5047aed3c83e910cbc35984e7acc09e207dbc95315731622824a83e",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5658656284",
+        "fingerprint": "a878c6c922cb72ff18cb45724f5e741c64760df60f6b89dd4ea49c661e95e074",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5692599233",
+        "fingerprint": "8036cbf7930ab60b278462b96e63d3e93f66bdd0b8624b6a6e9100e00a2e41b6",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5088804255",
+        "fingerprint": "d6248183c7d69cb2759c0909ab05361b6f27b2858fb0899be23b93086ceb1edd",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5823493399",
+        "fingerprint": "ca16fd5c3eb3817ae02f8b3e6a8ec8635b8526f503fca7af10294af6fbeee938",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "4959576466",
+        "fingerprint": "d342b86b1f302e9effa8f827deec7256f54db6e710fd3fc5c24d923b57804aaa",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5640129238",
+        "fingerprint": "f6952f3729a2c718c325c7457c255836021bae6d079a4e8be512867e326eaa17",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5700989333",
+        "fingerprint": "e4499d68270cf8e158298aca207c4076cc3ba18ee31e3863ef92160fd0dab834",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5844637623",
+        "fingerprint": "66a32fae8cac317baa16d1365f21f9d26cc3ad5073f8e4240b15dc44142441f4",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5755393599",
+        "fingerprint": "4a9678181480b95cb3845ed53959cbe463f1aedda6c6b8be0a4b511f6d08f8fa",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5844599963",
+        "fingerprint": "aff2c94915a4169d061d3edce112db93aed577449173de7c80d32ab9f5ea2191",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5844574369",
+        "fingerprint": "0021100c53321e74fcf644f7d781740aca7119055f6eaa22d3c3421d0b68cfe4",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      },
+      {
+        "repository_id": 965415649,
+        "kind": "issue",
+        "remote_id": "5758106432",
+        "fingerprint": "c0d623809197d2a2f2d1d964d29521928bea08d97749792ff96b5b3ce6db6c79",
+        "change_kind": "initial",
+        "detail": {
+          "matches_filter": true
+        }
+      }
+    ],
+    "skill_changes": [],
+    "attempts": [
+      {
+        "execution_id": "fbf48bc3-5cf7-43cf-94ab-e06c31c73514",
+        "number": 1,
+        "diagnostic": null
+      }
+    ],
+    "repository_counts": {
+      "entities": 100,
+      "versions": 100
+    }
+  },
+  "core": {
+    "job": {
+      "attempt_count": 1,
+      "created_at": "2026-10-14T10:46:25.164321+00:00",
+      "finished_at": "2026-10-14T10:46:52.413563+00:00",
+      "id": "fbf48bc3-5cf7-43cf-94ab-e06c31c73514",
+      "last_error_kind": null,
+      "max_retries": 2,
+      "next_run_at": null,
+      "retry_base_seconds": 5.0,
+      "retry_cap_seconds": 60.0,
+      "started_at": "2026-10-14T10:46:41.299629+00:00",
+      "status": "SUCCESS",
+      "task_name": "github.refresh",
+      "timeout_seconds": 300.0
+    },
+    "attempts": [
+      {
+        "job_id": "fbf48bc3-5cf7-43cf-94ab-e06c31c73514",
+        "number": 1,
+        "status": "SUCCESS",
+        "started_at": "2026-10-14T10:46:41.299629+00:00",
+        "finished_at": "2026-10-14T10:46:52.413563+00:00",
+        "error_kind": null,
+        "exception_type": null
+      }
+    ]
+  },
+  "verification": {
+    "business_complete": true,
+    "core_status_at_export": "SUCCESS"
+  }
+}

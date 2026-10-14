@@ -1,11 +1,11 @@
 # TaskForge GitHub 接入实施计划
 
-登记日期：2026-10-14。状态：G01—G04 已验收；G05 待实现、待验收，整体真实接入待验收。
+登记日期：2026-10-14。状态：G01—G05 及整体真实接入已在当前环境验收。
 
 本文由用户提供的接入草案落盘，作为 GitHub 接入设计细则。架构边界见
 [architecture.md](architecture.md)，任务范围与交接顺序见
 [implementation-plan.md](implementation-plan.md)，实际验收以
-[verification.md](verification.md) 为准；G01—G04 已完成，下一独立会话从 [G05 prompt](prompts/G05.md) 继续。
+[verification.md](verification.md) 为准；G01—G05 已完成，最终复现与原始证据见 [github-scenarios.md](github-scenarios.md)。
 
 ## 1. 目标、依据与边界
 
@@ -18,7 +18,7 @@
 | openai/codex | Issue 基线、新增、更新、关闭与重开；排除 PR |
 
 草案准备阶段记录了核心接口、示例、依赖及官方 API 文档调查。实施准备时核对了项目文档、核心公开接口与配置，未重新执行核心验收或联网核验。
-G01 基础能力、G02 项目/技能、G03 Issue 及 G04 入口/恢复现已验收，具体证据见验证文档；真实 GitHub 接入仍待 G05 验收。
+G01 基础能力、G02 项目/技能、G03 Issue 及 G04 入口/恢复现已验收，具体证据见验证文档；真实 GitHub 接入已完成 G05 验收。
 
 用户已确认采用 httpx.AsyncClient，Release 内容更新覆盖已保存记录与后续新增记录。运行限定 WSL/Linux 本地文件系统，不依赖 Obsidian 接入，不增加周期调度、Web UI、LLM 摘要、技能执行或完整评论线程采集。
 
@@ -79,10 +79,10 @@ G04 已实现上述六命令；稳定意图使用显式 --refresh-id，默认每
 
 ### 认证与 HTTP
 
-认证依次读取 GH_TOKEN、GITHUB_TOKEN，最后尝试已有 gh auth token --hostname github.com。原草案记录 gh 存在且凭据读取命令退出成功；实施准备时未重新读取凭据；G01 已复核读取成功且未输出 token，远端有效性仍待验收。凭据只驻留内存，不写入输入、数据库、异常、日志或收据。无可用凭据时在提交前明确失败。
+认证依次读取 GH_TOKEN、GITHUB_TOKEN，最后尝试已有 gh auth token --hostname github.com。原草案记录 gh 存在且凭据读取命令退出成功；实施准备时未重新读取凭据；G01 已复核读取成功且未输出 token，G05 已验证七来源真实只读访问。凭据只驻留内存，不写入输入、数据库、异常、日志或收据。无可用凭据时在提交前明确失败。
 
-固定使用 https://api.github.com、JSON Accept header 和 X-GitHub-Api-Version: 2026-03-10，不随调用自动切换版本。原草案依据官方支持清单选定此版本 (https://docs.github.com/en/rest/about-the-rest-api/api-versions)；G01 已复核官方支持列表及请求契约，固定版本保持；G05 再做真实兼容性验收，
-文档复核不计作七来源联网验收。
+固定使用 https://api.github.com、JSON Accept header 和 X-GitHub-Api-Version: 2026-03-10，不随调用自动切换版本。原草案依据官方支持清单选定此版本 (https://docs.github.com/en/rest/about-the-rest-api/api-versions)；G01 已复核官方支持列表及请求契约，固定版本保持；G05 已单独完成七来源真实兼容性验收，证据见验证文档；
+官方文档复核与实际联网证据分别记录。
 
 默认执行预算：
 
@@ -183,7 +183,7 @@ G01—G05 已登记到 [implementation-plan.md](implementation-plan.md)，每个
 
 任务 prompt 使用 docs/prompts/ 的 G01—G05 对应文件：G01/G02 保留原任务契约，
 [G03.md](prompts/G03.md)、[G04.md](prompts/G04.md) 保留原任务契约，
-[G05.md](prompts/G05.md) 已在 G04 验收后创建，供下一独立会话使用。
+[G05.md](prompts/G05.md) 保留原任务契约；G05 已完成，复现步骤见 github-scenarios.md。
 每个 prompt 指明输入证据、允许修改范围、必要检查、完成标准和下一任务前置条件，并要求读取项目指定 skills。
 
 实施阶段按实际结果更新验证文档及架构状态；保留 T01/T10 历史证据。未通过真实接入前始终标为待验收，不将提案内容计入成果。
@@ -194,7 +194,7 @@ G01—G05 已登记到 [implementation-plan.md](implementation-plan.md)，每个
 
 - 受控 API 测试：分页与 304 缓存、Release 初始窗口及旧记录编辑、树截断补齐、历史改写、预算耗尽；Issue 的 PR 排除、相同更新时间、上界之外更新、重叠窗口、标签退出、关闭与重开；主/二级限流及重启后的请求抑制。
 - 真实持久化与进程测试：同来源互斥、不同来源业务失败隔离、重复尝试和重复 submit、业务事务中断、业务提交后核心 SUCCESS 前 SIGKILL、提交关联中断，以及 HTTP 等待期间的超时和停机清理。
-- 真实 GitHub 验收：七个来源分别建立基线并重复刷新，核对远端仓库 ID、SHA、Release ID、技能清单和 Issue 字段。没有合适自然更新时，用固定真实历史 SHA 重放两个技能来源；公开仓库 Issue 不为验收而修改。
+- 真实 GitHub 验收：七个来源分别建立基线并重复刷新，核对远端仓库 ID、SHA、Release ID、技能清单和 Issue 字段。两个技能来源均以固定真实历史 SHA 重放，即使观察到自然更新也执行；公开仓库 Issue 不为验收而修改。
 
 正常业务结果保存在业务数据库。JSON 收据按批次重建，Markdown 索引只展示来源状态、覆盖范围、计数、诊断和原文链接；文件采用临时文件加原子替换。导出失败不回滚已提交数据，可由重试或 export 修复。
 
@@ -205,9 +205,12 @@ G01—G05 已登记到 [implementation-plan.md](implementation-plan.md)，每个
 各任务运行新增行为测试和既有必要检查；最终运行全量 pytest、Ruff、格式检查、核心及业务模块的 mypy strict、构建和 sdist 内容核验。联网验收单独显式运行，不让默认测试依赖第三方凭据。
 
 默认假设是单机、单 Worker、同一业务实例共用凭据和请求门控，系统 UTC 时钟正常。
-真实网络、凭据权限、仓库身份和默认分支留待真实接入验证。G01 安装经用户批准，验收后按用户追加要求提交；
+G05 已验证真实网络、仓库只读访问、仓库身份和默认分支；写权限不在验收范围。G01 安装经用户批准，验收后按用户追加要求提交；
 G02 已完成受控项目/技能采集验收，验收后按用户追加要求创建 Git Commit。
 G03 已完成受控 Issue 增量验收，新增 96 项行为测试、全量 795 项通过，验收后按用户追加要求创建 Git Commit。
 G04 已验收注册、六个业务命令、提交核对、可重建原子导出和真实 Worker 故障恢复，
 52 项新增测试及 847 项全量回归通过，验收后按用户追加要求创建 Git Commit。
-实际命令/收据/恢复契约见 README 与验证文档 G04 节，G05 prompt 指向下一会话；G05 仍待实施。
+实际命令/收据/恢复契约见 README，最终验收见验证文档 G05 节与 verification-g05.json。
+七来源两次真实刷新、两技能来源真实增删改/无变化、正常/故障各三次对照及完整检查均已通过。
+历史删除使用公开 PR #665 的真实父子树，生产默认分支契约不变；
+固定输入对照保留默认退避并报告实际成本。复现及限制见 github-scenarios.md。

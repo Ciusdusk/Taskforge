@@ -1647,3 +1647,88 @@ G04 验收后，用户追加要求创建 Git Commit。提交包含 github.refres
 提交准备只同步文档提交状态，生产实现与通过 847 项全量测试的版本一致，
 最后补强的真实 CLI 无凭据断言已单独通过。文档定稿后重新构建并逐字节核对实际归档，
 核心、依赖、历史收据及三份无关 Obsidian/RSS 文档保持原样，不将无关文档纳入提交。
+
+## G05：真实接入与最终交接
+
+验证日期：2026-10-14。**状态：G05 已完成当前环境验收，G01—G05 及整体真实 GitHub 接入已验收。**
+环境为 WSL2/Linux、CPython 3.12.13、uv 0.10.9、httpx 0.28.1。
+本次只处理 G05，不创建 Git Commit；应用 karpathy-guidelines，交接文档应用 writing-for-agents。
+开始时仅三份无关 Obsidian/RSS 文档未跟踪，保留原样；G04 已在 HEAD，不存在未提交 G04 文件。
+
+### 前置与实际发现
+
+读取当前架构、实施/接入计划、README、G01—G04、T01/T10 历史收据、G04/G05 prompt、
+全部 GitHub 实现、默认七来源、测试及核心公开接口/CLI。修改前全量 847 passed，188.00 秒。
+locked github extra 沿用离线缓存；真实数据库/子进程及联网经自动审批允许的沙箱外环境执行。
+默认 pytest 使用受控 HTTP/假凭据；独立验收入口才读取个人认证及访问 GitHub。
+沙箱内 credential unavailable，沙箱外通过既有 resolve_credential 确认可用，仓库只读 HTTP 200；
+公开证据只记录可用性及只读权限结论，不记录 token、完整目录或任意异常原文。
+GitHub 官方版本、分页、Trees、Issues 文档重新复核，生产 API 根地址和 2026-03-10 不变。
+
+首次七来源执行中六项目成功，Codex Issue 因 GitHub Link 改用 numeric repository endpoint 和
+`after` 游标触发 PaginationError；同 Job 三次失败、业务完成标记缺失、checkpoint 保持 null。
+[原始失败证据](github-evidence/initial-failure.json) 与修复后的完整验收分别保存。
+修复仅位于 GitHubHTTP.iter_pages：alias 切到 numeric endpoint 时先以元数据核对仓库 ID，
+保持 endpoint suffix、筛选、per_page、页序、唯一参数及游标推进检查；原门控、缓存、预算和清理不变。
+新增 8 项 HTTP 回归及 1 项验收观测证明测试；没有升级依赖、修改 schema/核心公共接口或另写 Worker。
+新增 acceptance.py、comparison.py 是显式验收工具，生产 registry 不导入它们。
+
+### 当前真实业务证据
+
+| 完成条件 | 独立证据与结果 |
+| --- | --- |
+| 七来源真实基线 | initialization/run.json、submissions.json、7 个终态收据；正式 commands.submit 加原 CLI Worker，七 Job 均 SUCCESS |
+| 新 UUID 重复刷新 | natural_update/run.json、submissions.json、7 个终态收据；六项目 SHA/内容不变，Issue 100 实体/101 版本、1 次真实内容更新 |
+| 远端身份与内容 | remote-audit.json；六项目 179 个已存 Commit/Release 内容全部与远端相等，完整 Release ID、默认分支、固定 SHA、两个普通技能清单一致 |
+| Issue 全字段与上界 | 基线 2 页/103 项，排除 3 PR、100 匹配 Issue；完整增量 1 页/3 项，排除 1 PR、保存 2 快照。独立 GET 中 98 个与远端相等、2 个采集后更新；全部 100 保存内容均与实际采集 HTTP payload 指纹相等且 updated_at≤U |
+| mattpocock 固定历史 | historical_replay/mattpocock-skills/history.json：1bb95954… → 49dd158d…，普通清单 35→38，增4/改19/删1；同 SHA 0 变化 |
+| addyosmani 固定历史 | historical_replay/addyosmani-agent-skills-pr665/history.json：62fcdcd8… → 3b9097e7… → bf060822…，1→26→25 个定义，增25/改1、随后改6/删1；同 SHA 0 变化 |
+| 历史真实性/边界 | ancestry.json 的三段真实 Compare status/base/merge-base；PR #665 当时 open/未合并，真实父子提交删除 requirement-traceability。普通默认/公开分支 704 提交无删除，故明确用公开 PR 历史；生产默认分支契约不变 |
+| 正常/故障对照各三次 | comparison/protocol.json、comparison.json、12 份 run/semantic/终态收据；每对完整业务结果相同，6 次 HTTP，故障恢复未再次采集 |
+| 真实故障阶段/核心终态 | 业务提交后、第一次 export replace 前屏障；确认 core RUNNING 后 SIGKILL(-9)，finally 回收；同 Job 第二次 SUCCESS，历史 INTERRUPTED/SUCCESS；direct 同 UUID 重跑只导出，两者各1次恢复 |
+| 最终复现入口 | github-scenarios.md；三组实际接口、固定 SHA、命令、收据、耗时、操作、未覆盖能力及平台限制分别说明 |
+
+实际索引/收据链接、14 个 live 核心终态、每个历史阶段的完整快照与差分、六组成对次数、
+故障阶段及实际请求/退出码已经逐项核对，文件存在没有替代真实结果。
+初始化/自然更新/历史重放/故障实验分开保存；正常对照另在 comparison/ 的 normal-* 目录。
+公开证据无需完整实体正文即可核对内容 SHA-256；完整原始业务数据仍保存在独立 business.sqlite，
+生产 HTTP 缓存不包含凭据。对照固定输入剔除 Commit 作者/提交者姓名和 email。
+
+审计原先沿用 100 请求预算，逐项读取 100 Issue 加元数据时耗尽；原六项目核验已经完成。
+仅独立 audit 工具改用 200 请求并记录理由/指纹，恢复核验后完整通过；生产预算保持 100，
+没有用增加预算掩盖不完整分页或推进失败检查点。
+
+正常对照总耗时中位数 TaskForge/direct 为 0.698256/0.487496 秒；故障组为
+6.035426/0.754977 秒。采集中位数分别 0.070260/0.072552、0.066925/0.068230 秒。
+TaskForge 保留默认 5 秒持久退避，direct 按预定协议立即重启；恢复成本明确包含该等待，
+不预设框架更快。双方每次故障由脚本 SIGKILL 加一次重启，人工操作 0。
+该对照不支持真实网络吞吐、统计显著性或其他故障阶段的性能结论。
+
+### 质量与分发
+
+首轮分页专项 42 passed；HTTP/项目/Issue 合并专项 225 passed，24.63 秒；
+修复后首轮全量 855 passed，188.63 秒；新增观测证明专项 1 passed，0.39 秒。
+观测证明测试首轮因误把 Source 当成 RefreshInput 失败，修正测试夹具后通过。
+正式 helper 再以当前真实业务库核对全部 100 Issue payload，实际新增 HTTP 为 0。
+最终全量 856 passed，179.15 秒，退出码 0；847 既有 + 9 新增。
+Ruff、format（115 files）、核心/业务 mypy strict（34 source files）、locked sync、
+uv build 和 git diff --check 均退出 0。实际 UTC、命令、退出码和日志见
+[quality/commands.json](github-evidence/quality/commands.json)。
+首次最终全量把 basetemp 放在项目内，855 passed/1 failed：原无 Git 指纹测试
+发现了父级项目 Git HEAD。生产代码无回归；保留失败日志，将 basetemp 移到项目外 /tmp 后复验。
+实际 sdist 初次逐字节核对 210 文件，包含 117 个公开证据文件；wheel 的 19 文件仅含
+核心/py.typed/CLI 及元数据，逐文件匹配核心，entry_points 仍仅 taskforge。
+定稿量化证据新增后再次构建和核对全部 211 文件，具体结果见
+[verification-g05.json](verification-g05.json)。
+18 个核心/示例 SHA-256 匹配 T10 历史收据；依赖、锁文件及两份历史收据与 HEAD 逐字节一致。
+本任务临时脚本和 pytest 临时目录已清理，全部验收子进程已回收；保留正式数据库、
+公开收据/索引、dist 和工具缓存。无关三份用户文档保留，未创建 Git Commit。
+
+### 验证边界
+
+当前真实树均未截断、均无 submodule；symlink 如实排除，截断补齐/失败不推断删除由 G02 测试证明。
+真实联网使用默认空 Issue 筛选；非空组合/退出范围由 G03 受控测试证明，不计为本次联网能力。
+初始只覆盖20 Commit、10 Release内容、100匹配Issue；REST 列表不冻结，不还原中间事件/评论线程。
+未测试 GitHub 写权限、macOS、更高 Python、全新联网安装、技能安装执行、周期调度、
+Obsidian/RSS、Web UI；真实历史 SHA 未来的可访问性由远端决定。
+完整复现步骤与限制见 [github-scenarios.md](github-scenarios.md)。
