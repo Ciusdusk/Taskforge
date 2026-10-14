@@ -50,9 +50,9 @@ T01 已使用完整本机缓存完成离线验收，见 [验证记录](docs/veri
 ## 质量检查与构建
 
 ```bash
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy
+uv run --locked --extra github ruff check .
+uv run --locked --extra github ruff format --check .
+uv run --locked --extra github mypy --strict src/taskforge integrations
 uv build
 ```
 
@@ -61,11 +61,41 @@ uv build
 运行注册、校验、策略、显式加载与真实 SQLite 持久化及原子领取完成的行为测试：
 
 ```bash
-uv run --locked pytest
+uv run --locked --extra github pytest
 ```
 
 T02—T10 已加入实际行为测试，包括真实 SQLite、事务故障、单次执行、协作取消、并发日志上下文、
 独立 Worker/CLI 子进程之间的锁互斥、重复信号停机、持久化重试、强制退出与恢复的原子状态。
+
+## GitHub 接入基础
+
+G01 提供 `integrations/github/` 中的严格配置、认证、HTTP、独立业务存储和锁基础。
+采集器、`github.refresh` 注册表和业务命令入口由 G02—G04 实现；七来源真实验收留给 G05。
+默认七来源见 `integrations/github/default-sources.json`，配置与输入不保存凭据。
+
+在项目根目录同步可选依赖：
+
+```bash
+uv sync --locked --extra github
+```
+
+业务使用源码运行并进入 sdist，wheel 继续仅分发核心与 CLI。pytest 配置将项目根目录
+加入导入路径；运行独立脚本或后续 Worker 时，业务模块须可通过 `PYTHONPATH` 找到。
+默认业务目录是 `.taskforge/github/`，业务数据库为 `business.sqlite`，独立于核心队列。
+
+`GitHubConfig.load()` 加载默认配置或指定 JSON 文件；`RefreshInput` 保存稳定 UUID、规范化
+目录、来源与预算快照、来源代次和操作。`BusinessStore.initialize()` 显式建立 schema v1，
+每次读写独立连接，`apply(BatchWrite)` 原子保存记录、检查点与完成标记；网络在事务外执行。
+来源变更须 `register_source(..., rebaseline=True)`，预算调整保留原检查点。
+
+`resolve_credential()` 依次读取 GH_TOKEN、GITHUB_TOKEN、`gh auth token`。
+`GitHubHTTP` 固定 GitHub API 根地址和版本 `2026-03-10`，提供 GET 与完整分页，
+每次尝试共用 `AttemptBudget`，持久缓存和冷却跨客户端、进程生效，不额外自动重试。
+生产沿用代理与证书环境，测试使用 MockTransport、假凭据和 `trust_env=False`。
+
+来源锁必须包住存储读取、HTTP 客户端生命周期、业务提交及后续导出；嵌套客户端须先关闭，
+再退出来源锁。数据库与 HTTP 操作及凭据子进程在重复取消时仍等待实际结束，锁文件保留。
+实际检查、沙箱限制和交接见 [验证记录](docs/verification.md)。
 
 ## CLI
 

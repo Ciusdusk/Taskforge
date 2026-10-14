@@ -1,0 +1,11 @@
+{
+  "sources": [
+    {"source_id": "mattpocock-skills", "kind": "project", "repository": "mattpocock/skills", "scan_skills": true},
+    {"source_id": "addyosmani-agent-skills", "kind": "project", "repository": "addyosmani/agent-skills", "scan_skills": true},
+    {"source_id": "yetone-magpie", "kind": "project", "repository": "yetone/magpie"},
+    {"source_id": "tt-a1i-archify", "kind": "project", "repository": "tt-a1i/archify"},
+    {"source_id": "deepseek-ai-deepseek-harness", "kind": "project", "repository": "deepseek-ai/deepseek-harness"},
+    {"source_id": "morluto-rea", "kind": "project", "repository": "morluto/rea"},
+    {"source_id": "openai-codex", "kind": "issues", "repository": "openai/codex"}
+  ]
+}

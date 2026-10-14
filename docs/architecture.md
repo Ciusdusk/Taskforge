@@ -4,6 +4,8 @@
 T04 原子领取与完成、T05 单次执行与超时、T06 Worker 与并发控制、T07 持久化重试及
 T08 停机与崩溃恢复、T09 完整 CLI 及 T10 场景与文档已实现。
 当前实际验收覆盖 Linux/CPython 3.12；其他平台范围见 docs/verification.md。
+GitHub G01 配置、HTTP 与业务状态基础已验收；G02—G05 及整体真实接入待实现、待验收；边界见下文，
+任务交接以 [implementation-plan.md](implementation-plan.md) 为准。
 
 ## 场景与范围
 
@@ -14,7 +16,7 @@ MVP 包含装饰器注册、Python/CLI 提交、异步并发、持久状态与�
 协作式超时、结构化日志、查询、正常停机及崩溃恢复。
 调度范围仅为立即执行和重试延迟。
 
-暂不实现 Cron、多 Worker、多机、租约、心跳、CPU 执行池、同步函数自动转线程、
+核心暂不实现 Cron、多 Worker、多机、租约、心跳、CPU 执行池、同步函数自动转线程、
 工作流、用户取消、人工重放、Web API、监控页面、Prometheus、PostgreSQL、
 业务去重、大型结果存储和完整 stdout/stderr 捕获。
 
@@ -258,6 +260,78 @@ T10 的 `examples/` 提供 loopback API 替身、异步同步/下载备份/维�
 独立业务 SQLite 以稳定 Job ID 唯一键和副作用同事务提交，证明重复执行时副作用从两条
 降至一条；该逻辑属于示例业务，不是核心去重能力。步骤见 [scenarios.md](scenarios.md)，
 实测收据见 [verification-t10.json](verification-t10.json)。
+
+## GitHub 接入边界
+
+本节记录已登记的业务设计，实际验收仍以 [verification.md](verification.md) 为准。
+接入结构、输入、身份、默认预算、采集及恢复的设计细则由
+[github-integration-plan.md](github-integration-plan.md) 维护；实现按 G01—G05 分会话推进。
+该接入细化一周业务提案的 GitHub 部分，独立于 Obsidian 备份。
+
+G01 已实现并验收：严格来源/预算/输入配置、七来源默认 JSON、内存认证、固定版本 HTTP、
+ETag 分页缓存、共享持久冷却、来源与 API 文件锁、独立版本化业务 schema 和原子完成标记。
+当前全量 612 项测试及质量、构建、归档检查通过；具体证据见验证文档 G01 节。
+采集、注册、业务命令、导出和真实七来源验证尚未实现，下述相关契约仍为后续任务设计。
+业务实际接口与 G02 前置条件见 [G02 prompt](prompts/G02.md)。
+
+### 来源、运行与分发
+
+首批固定为七个来源：mattpocock/skills、addyosmani/agent-skills 采集默认分支 Commit、
+Release 与原生 Git tree 中普通 SKILL.md 的定义变化；yetone/magpie、tt-a1i/archify、
+deepseek-ai/deepseek-harness、morluto/rea 采集默认分支 Commit 与 Release；
+openai/codex 采集有限 Issue 基线及新增、更新、关闭和重开，排除 PR。
+来源由拒绝未知字段的 JSON 配置管理，不自动发现其他仓库。
+
+运行限定单机、单 Worker、WSL/Linux 本地文件系统，手动触发，使用 httpx.AsyncClient。
+业务代码位于 integrations/github/，使用项目源码运行并加入 sdist；wheel 继续分发核心包和 CLI。
+新增 github 可选依赖，具体约束与安装顺序见接入设计细则。
+默认业务目录为已被忽略的 .taskforge/github/，允许显式指定其他 Linux 本地目录。
+
+### 核心复用与业务职责
+
+业务注册表为 integrations.github.tasks:registry，仅注册 github.refresh。
+任务接收单个 Pydantic 输入模型并返回 None，通过 get_execution_context() 获取 Job/Attempt；
+输入保存 refresh_id、规范化业务目录、非敏感来源与预算快照、来源代次和操作类型。
+采集逻辑与任务包装分离，以独立执行身份供 direct 对照复用。
+
+业务入口 python -m integrations.github 提供 init、submit、reconcile、show、export、direct。
+提交及查询复用公开 TaskForge.submit/get/list/history，Worker 使用已有核心 CLI；
+业务模块不访问核心私有表，不另写 Worker、核心重试或信号处理。
+核心源码与公共接口保持现状，业务永久错误仍消耗已有有限 TASK_ERROR 重试预算。
+
+核心任务数据库保存 Job/Attempt，独立业务数据库使用已有 aiosqlite 保存来源、检查点、
+提交意图、批次、业务记录与变化、技能快照、Release 身份清单、HTTP 缓存及冷却状态。
+业务数据库显式版本化，使用短事务和有界锁等待；网络请求期间不持数据库事务。
+实体身份、内容指纹和 refresh_id 完成标记承担业务去重，核心仍不保证恰好执行一次。
+
+### 一致性、恢复与产物
+
+同一来源由异步互斥与非阻塞文件锁串行覆盖检查点读取、采集、业务提交和批次收据生成。
+同一业务实例所有来源共用并发为 1 的请求门控及持久冷却，文件锁覆盖 Worker 与 direct；
+请求遵守分页、请求数与等待预算，HTTP 层不额外自动重试，凭据只驻留内存。
+
+项目尝试固定目标 SHA；Commit、Release 身份分页和完整技能快照共同通过后，
+记录、完整性、检查点及批次完成标记才同事务提交。历史异常需显式重新建立基线，
+树不完整时不能推断删除。Release 持续监测已保存及后续新增记录的内容编辑，
+初始窗口之外的旧 Release 仅登记身份。Issue 使用有限基线、60 秒重叠窗口及尝试上界，
+完整分页后才提交检查点，保存观察到的状态，不还原刷新间的全部事件。
+
+未提交尝试重试时读取最新检查点；来源配置换仓库、类型或筛选时显式重新建立基线，
+旧代次不得覆盖新检查点。已完成业务批次重试时核对完成标记并修复导出。
+业务 commit 不确定时等待数据库操作结束，以独立连接核对完成标记后再决定下一步；
+取消须等 HTTP、数据库与凭据子进程完成清理，再释放锁并传播。
+两份数据库无法原子提交，提交入口先保存意图，再关联 Job；不确定或中断后由 reconcile
+通过公开查询核对，无法确认时保持待核对，不盲目再次 submit。
+
+业务数据库为结果依据，JSON 收据和最小 Markdown 索引可以从数据库重建，文件原子替换；
+导出失败不回滚已提交数据。收据区分初始化、自然更新、历史重放和故障实验，
+包含执行身份、源码与配置指纹、前后检查点、覆盖范围、计数、诊断、耗时及核验结论。
+公开收据排除凭据和个人完整路径。业务 submit --rebaseline 是新基线操作，
+历史 SHA 重放仅用于隔离验收，两者均不增加核心人工重放能力。
+
+本轮不增加周期调度、Web UI、LLM 摘要、技能安装或执行、完整评论线程采集、
+普通 tag 与 Release 附件下载，也不接入 Obsidian 报告写入或备份。
+默认测试使用受控 API 与临时数据库；真实七来源、历史重放和对照实验由 G05 单独验收。
 
 ## 技术依据
 

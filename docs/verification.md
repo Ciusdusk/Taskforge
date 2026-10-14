@@ -1113,3 +1113,144 @@ T10 验收后，用户追加要求创建 Git Commit。提交包含本地三用�
 提交前仅更新提交状态文档并重新构建，源码与通过 477 项测试的版本一致；
 git diff --check、收据源码指纹及 uv.lock、历史 T01 收据、既有核心源码的保护检查通过。
 前述不创建提交的记录保留为验收阶段历史。
+
+## G01：配置、HTTP 与业务状态基础
+
+验证日期：2026-10-14。**状态：G01 已验收；G02—G05 待实现、待验收，整体真实 GitHub 接入待验收。**
+环境为 WSL2/Linux x86_64、项目 CPython 3.12.13、uv 0.10.9。未升级 Python；验收阶段未创建 Git Commit。
+G02 实际接口与采集范围已交接到 [prompts/G02.md](prompts/G02.md)，本会话停止于 G01。
+
+### 前置复核、外部契约与授权
+
+开始时 `git status --short` 显示用户已有 `docs/architecture.md`、`docs/implementation-plan.md`
+修改，以及未跟踪的 business-integration-plan.md、github-integration-plan.md、
+obsidian-sync-requirements.md、rss-requirements.md、G01.md 和 obsidian-sync-plan.md。
+保留这些来源文件；本次仅在允许范围增加实现和同步对应文档，未改 Obsidian/RSS 需求。
+
+读取 AGENTS.md、karpathy-guidelines、架构、实施与接入计划、验证记录、T01/T10 收据、
+README、依赖配置、核心公开接口、local_tasks 示例及相关行为测试。
+当前公开接口为 TaskRegistry.task/get、TaskDefinition.validate_input/validate_json/serialize_input、
+TaskForge.submit/get/list/history、SQLiteStore、Worker.run/request_stop 和 get_execution_context。
+业务使用独立 aiosqlite 数据库，不访问核心私有表。当前核心与示例的 SHA-256 匹配 T10 收据，
+T01/T10 两份历史收据逐字节匹配 HEAD；历史计数没有替代本次完整回归。
+
+本次重新检查 `/usr/bin/gh`：`gh auth token --hostname github.com` 退出码 0，有非空输出；
+仅记录退出码与是否存在，未输出 token。GH_TOKEN、GITHUB_TOKEN 当时均未设置。
+这只证明本机读取成功，不证明远端权限或七来源兼容性。
+
+本次联网复核以下官方契约，未进行七来源真实采集：
+
+- [GitHub API versions](https://docs.github.com/en/rest/about-the-rest-api/api-versions)：
+  2026-03-10 仍在支持列表，固定 X-GitHub-Api-Version 保持。
+- [GitHub REST best practices](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api)：
+  串行请求、ETag/304、Link、Retry-After、主限流 reset 及无其他期限的二级限流至少等待一分钟。
+- [HTTPX async](https://www.python-httpx.org/async/)、
+  [timeouts](https://www.python-httpx.org/advanced/timeouts/)、
+  [environment variables](https://www.python-httpx.org/environment_variables/)：
+  AsyncClient 显式关闭，分项超时外另加总时限；生产 trust_env=True，受控测试 False。
+- [Commits/Compare](https://docs.github.com/en/rest/commits/commits#compare-two-commits)、
+  [Git trees](https://docs.github.com/en/rest/git/trees#get-a-tree)、
+  [Releases](https://docs.github.com/en/rest/releases/releases#list-releases)、
+  [Issues](https://docs.github.com/en/rest/issues/issues#list-repository-issues)：
+  列表 per_page 上限 100、Compare 文件上限 300、tree 截断需逐子树、Issue 响应可能包含 PR。
+  这些业务完整性检查由 G02/G03 实现，G01 不提供采集结果。
+
+先生成 `github = ["httpx>=0.28.1,<1"]` 和 uv.lock 差异，再展示具体版本并询问安装。
+新增 httpx 0.28.1、httpcore 1.0.9、anyio 4.15.1、certifi 2026.7.22、h11 0.16.0、idna 3.20；
+用 tomllib 比较 HEAD 与当前锁文件，已有 27 个锁定包的版本全部保持。
+用户回答“批准安装”后才执行 `uv sync --locked --extra github`，退出码 0，安装 6 个新依赖并重建
+editable TaskForge；没有全量升级。离线 `uv lock --offline --no-python-downloads` 首次退出码 1，
+因缓存无 HTTPX；默认沙箱联网 uv lock 退出码 2，代理 TCP 连接被拒绝。
+获自动审批的沙箱外 `uv lock --no-python-downloads` 退出码 0，只解析锁文件，未安装环境。
+
+### 当前实现与行为证据
+
+新增 `integrations/github/` 的 config、models、auth、http、storage、locking、lifecycle、errors，
+以及必要包初始化文件和 default-sources.json；未添加采集器、任务注册或业务命令占位模块。
+默认目录 `.taskforge/github/`，独立 `business.sqlite`，PRAGMA user_version=1。
+所有操作使用新连接，写事务为短 BEGIN IMMEDIATE，默认锁等待 5000ms，可配置有限非负整数。
+来源代次历史与检查点分开保存；预算调整保留基线，仓库/类型/扫描/筛选变更须显式 rebaseline。
+
+业务 schema 保存 sources/generations、intents、batches、attempts、entities/versions/changes、
+skill_snapshots/skill_changes、release_ids、http_cache、cooldown。
+实体身份为远端仓库 ID + kind + 对象 ID（Commit 用 SHA）；内容版本另加规范化指纹。
+技能变化唯一键为仓库 ID、前后 SHA、路径；批次唯一键 refresh_id，并核对完整非敏感输入。
+重复内容版本去重，变化记录按批次保留；Issue updated_at 规范化 UTC，旧快照拒绝覆盖。
+BatchWrite 的完整性、业务记录、变化、清单、检查点及完成标记同事务提交。
+apply 在 commit 回执或提交后清理故障时等待操作结束，关闭原连接后独立检查完成标记：
+已完成返回确认结果；明确未完成抛 StateError；核对失败抛 CommitUncertainError，不直接重做。
+
+HTTP 固定根地址、Accept 和 API 版本。AttemptBudget 每次尝试共用请求数与累计冷却等待；
+请求总时限包括门控、冷却、缓存访问及重定向，分项超时保持计划默认值。
+门控采用共享异步互斥及 api.lock，覆盖请求、响应关闭与缓存/冷却持久化。
+每页 per_page=100，默认 10 页；缓存键完整包含 GET、URL/查询、Accept、版本，排除凭据。
+304 仅复用对应缓存的 body/Link，第一页 304 仍请求后页。
+外部主机、异常分页和过滤条件变化、预算中断均明确失败，不返回伪完整结果。
+主限流与 Retry-After 期限取较晚值，二级限流无其他期限时使用持久次数指数等待，
+已有冷却取 max；新进程与换 token 的新客户端都先核对同一数据库冷却。
+
+| G01 要求 | 当前证据 |
+| --- | --- |
+| 七来源、严格配置、预算边界、JSON 往返 | test_github_config.py：73 项；全部字段非法类型、非有限值、负值/零、Commit 上限、未知字段、重复 ID、类型不相容、默认策略、来源与路径规范化 |
+| schema、重开、唯一身份、代次与事务 | test_github_storage.py：17 项；真实文件、版本 0/2/999 拒绝、重开、批次/实体/版本/技能去重、预算保持、旧代次拒绝、真实 SQLite trigger 故障回滚、独立读者的提交前/后原子可见性 |
+| commit 不确定与取消清理 | storage 测试用事件暂停真实 commit，分别验证已提交/未提交后独立核对、核对失败不重做、rollback/close 故障后仍核对；重复取消期间连接实际结束前来源锁仍持有 |
+| 完整分页、缓存与预算 | test_github_http.py：34 项；多页、查询/路径键隔离、304 原 body/Link、第一页不变后页更新、无缓存 304、异常 Link/跳页/端点/外部主机、页/请求预算、失败保留检查点 |
+| 超时、限流和敏感信息 | HTTP 测试覆盖分项异常、总等待超时后等待 transport 清理、主/二级限流、秒数/HTTP-date Retry-After、期限合并、指数等待、累计等待、普通 403；假 token 不进入异常 cause/context、日志、缓存键、数据库，拒绝转义后的敏感响应 |
+| 认证与子进程回收 | test_github_auth.py：5 项；GH_TOKEN/GITHUB_TOKEN/真实 gh 替身顺序，缺失诊断，stderr 不泄漏，spawn 与 communicate 期间取消及重复取消后实际子进程已退出、回收 |
+| 真正跨进程互斥与恢复 | test_github_processes.py：6 项；真实来源 flock 冲突/不同来源可并行、同来源多锁实例异步串行、不同来源进程共享 API 门控、锁 inode 保留、种子进程保存冷却并退出后新 token 进程实际请求数为 0 |
+| HTTP 与客户端关闭的锁生命周期 | process 测试以事件暂停 transport 清理及 AsyncClient.aclose；重复取消仍持来源锁与适用 API 锁，实际清理/关闭后才释放，全部任务与子进程 finally 等待结束 |
+
+### 实际检查命令与退出码
+
+默认沙箱执行 `timeout 12s .venv/bin/python -m pytest tests/test_storage.py -x -q
+--basetemp=/tmp/taskforge-g01-probe` 退出码 124，再次复现历史 aiosqlite 跨线程通知挂起。
+获自动审批的沙箱外单项核心提交测试退出码 0，1 passed；后续真实资源测试均采用该方式，
+未改核心驱动、事务或线程通知语义。
+
+依赖同步、锁文件解析在沙箱外联网；随后检查使用 `UV_OFFLINE=true`、
+`UV_CACHE_DIR="$PWD/.cache/uv"`，同步时 `UV_PYTHON_DOWNLOADS=never`。
+全量 pytest 另设置 `PYTEST_ADDOPTS=--basetemp=/tmp/taskforge-g01-full`；
+pyproject.toml 的 pytest `pythonpath=["."]` 导入源码业务包，进程测试显式设置项目根 PYTHONPATH。
+mypy 实际检查核心及 integrations，保持 strict 与 warn_unreachable，未跳过业务模块。
+
+| 检查 | 实际命令/方法 | 结果 |
+| --- | --- | --- |
+| 授权后环境同步 | uv sync --locked --extra github | 退出码 0；33 个锁定包解析，6 个新依赖安装，已有版本保持 |
+| 配置及存储首轮 | uv run --locked --extra github pytest tests/test_github_config.py tests/test_github_storage.py -q --basetemp=/tmp/taskforge-g01-storage | 退出码 0；85 passed |
+| HTTP 首轮 | uv run --locked --extra github pytest tests/test_github_http.py -q --basetemp=/tmp/taskforge-g01-http | 退出码 0；29 passed |
+| 认证及进程首轮 | uv run --locked --extra github pytest tests/test_github_auth.py tests/test_github_processes.py -q --basetemp=/tmp/taskforge-g01-processes | 退出码 0；10 passed |
+| 存储/HTTP 加固复验 | uv run --locked --extra github pytest tests/test_github_config.py tests/test_github_storage.py tests/test_github_http.py tests/test_github_auth.py tests/test_github_processes.py -q --basetemp=/tmp/taskforge-g01-foundations | 退出码 0；134 passed；之后补入客户端关闭测试，在全量中验证 |
+| 全量行为回归 | uv run --locked --extra github pytest | 退出码 0；612 passed，123.01 秒，无告警；477 既有 + 135 新增 |
+| Ruff | uv run --locked --extra github ruff check . | 退出码 0；All checks passed |
+| 格式 | uv run --locked --extra github ruff format --check . | 退出码 0；首轮 66、G02 交接文档完成后 67 files already formatted |
+| mypy strict | uv run --locked --extra github mypy --strict src/taskforge integrations | 退出码 0；24 个源码文件通过 |
+| 构建 | uv build | 退出码 0；生成 sdist，并从 sdist 构建 wheel；文档交接完成后再次构建 |
+| 归档边界及内容 | 标准库 tarfile/zipfile 对实际归档与当前文件逐字节核对 | 退出码 0；sdist 含 G01 业务/默认配置/测试/文档及 G02 prompt；wheel 含核心、py.typed、CLI 入口，不含 integrations |
+| 保护与差异 | 历史指纹/HEAD 逐字节核对；git diff --check | 退出码 0；核心、示例、T01/T10 收据未改，已有锁定版本保持，无空白错误 |
+
+### 限制与清理
+
+所有新 HTTP 测试使用 MockTransport、假凭据、trust_env=False，认证行为测试使用临时可执行文件
+或真实 Python 子进程替身；默认测试不依赖个人凭据或 GitHub 网络。
+没有建立真实七来源基线，没有远端凭据有效性、采集内容、真实 Worker 故障或 direct 对照结论。
+G02 项目/技能、G03 Issue、G04 注册/CLI/提交核对/导出、G05 真实接入均保持待实现/待验收。
+
+凭据只存内存；诊断调用方须继续提供非敏感业务原因，不能把远端异常正文或 token 交给
+record_attempt。来源上下文须包住 HTTP 客户端和全部数据库/凭据清理；G01 已验证该嵌套生命周期，
+后续编排须复用。取消是协作式等待实际结束，不承诺清理硬时限。
+生产遵循本机代理和证书环境；其他平台、全新环境的全套依赖安装仍不在本次证据范围。
+
+本次创建的 probe、storage、HTTP、process、foundations、full 测试临时根及 G02 草稿已清理；
+真实子进程、客户端、连接、协程均由 finally 等待结束，最终进程检查未发现本次遗留进程。
+保留正常 .cache/uv 工具缓存和 dist 分发产物，不删除其他会话的文件。
+
+
+### G01 Git 提交
+
+G01 验收后，用户追加要求创建 Git Commit。提交包含配置、认证、HTTP、独立业务存储、
+资源清理及锁基础，135 项新增行为测试，github 可选依赖及锁文件，接入计划、验收记录
+和 G02 交接 prompt。此前“不创建提交”的要求与记录保留为验收阶段历史。
+Obsidian/RSS 的独立需求及 Obsidian 交接文档保留在工作区，不纳入本次提交。
+
+提交准备仅同步文档状态，源码与通过 612 项测试的验收版本一致；核心与历史收据保持。
+文档更新后重新构建，核对 sdist/wheel 内容与 git diff --check；不继续实现 G02。

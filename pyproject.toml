@@ -18,6 +18,9 @@ dependencies = [
 [project.scripts]
 taskforge = "taskforge.cli:main"
 
+[project.optional-dependencies]
+github = ["httpx>=0.28.1,<1"]
+
 [dependency-groups]
 dev = [
     "mypy>=1.11,<2",
@@ -35,6 +38,7 @@ include = [
     "/tests",
     "/docs",
     "/examples",
+    "/integrations",
     "/README.md",
     "/pyproject.toml",
     "/uv.lock",
@@ -51,12 +55,13 @@ select = ["E", "F", "I", "B", "UP", "ASYNC"]
 
 [tool.mypy]
 python_version = "3.12"
-files = ["src/taskforge"]
+files = ["src/taskforge", "integrations"]
 strict = true
 warn_unreachable = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "--strict-config --strict-markers --import-mode=importlib"
 asyncio_mode = "strict"
 asyncio_default_fixture_loop_scope = "function"
