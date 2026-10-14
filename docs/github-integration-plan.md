@@ -1,11 +1,11 @@
 # TaskForge GitHub 接入实施计划
 
-登记日期：2026-10-14。状态：G01—G03 已验收；G04—G05 待实现、待验收，整体真实接入待验收。
+登记日期：2026-10-14。状态：G01—G04 已验收；G05 待实现、待验收，整体真实接入待验收。
 
 本文由用户提供的接入草案落盘，作为 GitHub 接入设计细则。架构边界见
 [architecture.md](architecture.md)，任务范围与交接顺序见
 [implementation-plan.md](implementation-plan.md)，实际验收以
-[verification.md](verification.md) 为准；G01—G03 已完成，下一独立会话从 [G04 prompt](prompts/G04.md) 继续。
+[verification.md](verification.md) 为准；G01—G04 已完成，下一独立会话从 [G05 prompt](prompts/G05.md) 继续。
 
 ## 1. 目标、依据与边界
 
@@ -18,7 +18,7 @@
 | openai/codex | Issue 基线、新增、更新、关闭与重开；排除 PR |
 
 草案准备阶段记录了核心接口、示例、依赖及官方 API 文档调查。实施准备时核对了项目文档、核心公开接口与配置，未重新执行核心验收或联网核验。
-G01 基础能力、G02 项目/技能及 G03 Issue 采集现已验收，具体证据见验证文档；真实 GitHub 接入仍待 G05 验收。
+G01 基础能力、G02 项目/技能、G03 Issue 及 G04 入口/恢复现已验收，具体证据见验证文档；真实 GitHub 接入仍待 G05 验收。
 
 用户已确认采用 httpx.AsyncClient，Release 内容更新覆盖已保存记录与后续新增记录。运行限定 WSL/Linux 本地文件系统，不依赖 Obsidian 接入，不增加周期调度、Web UI、LLM 摘要、技能执行或完整评论线程采集。
 
@@ -45,6 +45,9 @@ G01 基础能力、G02 项目/技能及 G03 Issue 采集现已验收，具体证
 | direct | 调用同一采集逻辑，供隔离的直接执行对照实验使用 |
 
 Worker 使用现有 TaskForge CLI 与注册表加载方式；业务入口不另写 Worker、重试或信号处理逻辑。submit --rebaseline 是显式建立新业务基线，不属于核心人工重放。
+G04 已实现上述六命令；稳定意图使用显式 --refresh-id，默认每次命令生成新 UUID。
+代次与意图同事务保存，已有意图只做公开核对；零匹配保持待核对，不自动再次 submit。
+命令参数、退出码、导出计数/耗时范围和场景标注以 README 为准。
 
 ### 输入、身份与存储
 
@@ -179,7 +182,8 @@ G01—G05 已登记到 [implementation-plan.md](implementation-plan.md)，每个
 | G05 真实接入与最终交接 | G01—G04；第 6—7 天 | 七来源真实基线、重复刷新、历史重放、对照收据、完整检查和复现文档 |
 
 任务 prompt 使用 docs/prompts/ 的 G01—G05 对应文件：G01/G02 保留原任务契约，
-[G03.md](prompts/G03.md) 保留原任务契约，[G04.md](prompts/G04.md) 已交接，G05 在 G04 验收后补齐。
+[G03.md](prompts/G03.md)、[G04.md](prompts/G04.md) 保留原任务契约，
+[G05.md](prompts/G05.md) 已在 G04 验收后创建，供下一独立会话使用。
 每个 prompt 指明输入证据、允许修改范围、必要检查、完成标准和下一任务前置条件，并要求读取项目指定 skills。
 
 实施阶段按实际结果更新验证文档及架构状态；保留 T01/T10 历史证据。未通过真实接入前始终标为待验收，不将提案内容计入成果。
@@ -204,4 +208,6 @@ G01—G05 已登记到 [implementation-plan.md](implementation-plan.md)，每个
 真实网络、凭据权限、仓库身份和默认分支留待真实接入验证。G01 安装经用户批准，验收后按用户追加要求提交；
 G02 已完成受控项目/技能采集验收，验收后按用户追加要求创建 Git Commit。
 G03 已完成受控 Issue 增量验收，新增 96 项行为测试、全量 795 项通过，验收后按用户追加要求创建 Git Commit。
-当前基础与采集接口、验收证据见验证文档 G03 节和 G04 prompt；G04—G05 仍待实施。
+G04 已验收注册、六个业务命令、提交核对、可重建原子导出和真实 Worker 故障恢复，
+52 项新增测试及 847 项全量回归通过，验收后按用户追加要求创建 Git Commit。
+实际命令/收据/恢复契约见 README 与验证文档 G04 节，G05 prompt 指向下一会话；G05 仍待实施。

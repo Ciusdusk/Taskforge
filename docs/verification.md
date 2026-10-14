@@ -1509,3 +1509,141 @@ Obsidian/RSS 的三份独立文档保留在工作区，不纳入提交；未继�
 
 提交准备仅同步文档提交状态，实现与通过 795 项测试的版本一致；核心、依赖与历史收据保留。
 文档更新后重新构建并核对实际归档内容，git diff --check 与暂存差异检查通过。
+
+## G04：TaskForge 入口与一致性恢复
+
+验证日期：2026-10-14。**状态：G04 已验收；G05 及整体真实 GitHub 接入待验收。**
+环境沿用 G03：WSL2/Linux、CPython 3.12.13、uv 0.10.9、httpx 0.28.1。
+本次应用 karpathy-guidelines；交接文档应用 writing-for-agents。
+开始时只有 Obsidian/RSS 三份无关未跟踪文档，保留原样；没有创建 Git Commit。
+
+### 前置及实现证据
+
+按 G04 prompt 复核架构、实施/接入计划、G01—G03 验证证据、历史收据、README、配置、
+业务采集与核心公开接口。修改前实际全量 795 passed，144.65 秒，退出码 0。
+18 个 T10 核心/示例 SHA-256 匹配历史收据；依赖及历史收据与 HEAD 逐字节一致。
+T10 的 pyproject.toml 指纹是 G01 增加 github extra 前的历史值，本次保护核对使用当前 HEAD。
+沿用已授权的 github extra、离线工作区缓存及真实 aiosqlite；真实数据库和子进程测试
+通过自动审批允许的沙箱外环境执行，没有替换驱动或缩小验证范围。
+默认测试只使用假凭据、受控 transport、固定 API 根地址/版本和 trust_env=False。
+没有读取个人凭据或采集七个真实 GitHub 来源。
+
+新增 tasks.py、commands.py、__main__.py、receipts.py 与两份入口行为/真实进程测试。
+核心、依赖、G01 HTTP 及 G02/G03 采集器保持原样；schema 仍为 v1。
+BusinessStore 新增公开意图、来源/批次/尝试读取及 prepare_intent；后者在同一短事务中
+建立 rebaseline 代次与非敏感意图，重用完整输入时不再次推进代次。
+
+注册表 integrations.github.tasks:registry 只有 github.refresh，采用 RefreshInput 与 DEFAULT_POLICY。
+任务从 get_execution_context 获取身份、返回 None；execute_refresh 使用同一 collect_project/collect_issues。
+同来源锁覆盖完成核对、最新检查点读取、凭据子进程、HTTP、业务提交、资源清理和正式导出。
+普通失败交给核心 TASK_ERROR 有限重试；已完成的旧代次也可核对并重建文件，无须凭据或网络。
+输入冲突在网络前拒绝；失败尝试只记录异常类型，公开命令/收据省略参数路径和异常原文。
+
+python -m integrations.github 提供 init/submit/reconcile/show/export/direct。
+init 显式建立 tasks.sqlite 和 business.sqlite 并登记来源；submit/direct 支持 --source、
+--refresh-id 和 --rebaseline，默认每次新建 UUID，指定相同 UUID 才表示同一意图。
+无凭据时在生成意图/核心 Job 前失败。来源失败不阻止其他来源提交或 direct 执行。
+submit 在业务意图之后只调用一次公开 TaskForge.submit，再保存关联；已有意图只核对。
+提交应答不确定时按异常给出的 Job ID get；关联中断后 reconcile 按 refresh_id 逐页 list，
+并核对任务名及完整输入。查询失败、零匹配、重复匹配或输入冲突均不能触发再次 submit。
+零匹配保持 pending_reconciliation，需调查后显式使用新 UUID 开始新意图。
+reconcile 的 --job-id 必须配 --refresh-id，且与已有关联冲突时明确拒绝。
+
+show 组合业务公开读取与核心 get/history，展示当前来源代次、检查点、历史批次、覆盖、
+变化、业务诊断、关联状态和 Job/Attempt；失败 Job 明确显示 FAILED，未知身份明确报错。
+direct 复用相同采集、锁、门控和导出，每次调用使用独立 direct-UUID 执行身份，
+相同 refresh_id 已完成时只重建；有关联 Job 的意图拒绝 direct。
+
+### 收据与原子文件契约
+
+批次 coverage 持久保存采集时的 UTC、执行身份、前检查点、请求数、源码 Git HEAD（可空）、
+相对文件 SHA-256 与聚合指纹，以及 collection elapsed_seconds 和 batch_counts。
+未创建 Git Commit 的新代码也进入指纹；无 Git 仓库/Commit 的源码目录仍能生成指纹。
+源码指纹覆盖核心与业务 Python、默认配置、pyproject.toml 和 uv.lock。
+elapsed_seconds 是采集与源码指纹计算耗时，截止业务 apply 前；不包含排队、提交及导出。
+G05 总耗时、排队等待和恢复开销须另从核心时间与实验计时记录，不以此字段代替。
+
+receipts/<refresh_id>.json 和 indexes/<source_id>.md 从已提交业务状态重建，
+保留配置指纹、前后检查点、分层覆盖/诊断、变化、实体与版本计数和公开 Job/Attempt。
+batch_counts 是本批次提交载荷中的身份/指纹/变化数；repository_counts 是导出时该仓库、
+该来源类型的持久实体/版本总数，跨批次版本单独计数，不声称是本批次新增数。
+默认 scenario 根据前检查点分为 initialization/natural_update；export --scenario 可将本次
+导出集合标为 historical_replay/fault_experiment，collection_scenario 保留原始采集分类。
+场景标注不证明真实历史重放或实验已完成；G05 须用隔离目录及独立证据。
+
+任务内导出先于核心 SUCCESS，core_status_at_export 常为 RUNNING；收据只证明已提交业务批次，
+不会预先宣称核心成功。show 或核心终态后 export 可更新核心快照；无关联时 core 为 null。
+公开输出排除 state_directory、核心 params_json、异常消息及 traceback，源码路径均为相对路径。
+Markdown 显示来源代次/仓库链接/检查点、覆盖模式、请求、变化、实体/版本和诊断，并链接 JSON。
+临时文件 flush/fsync 后 os.replace，再 fsync 父目录；每个文件原子替换，收据和索引不是一笔文件事务。
+重复取消等待真实线程写入结束后才释放来源锁。导出故障保留业务 commit，可重试或 export 修复；
+SIGKILL 遗留的对应目标临时文件在持来源锁的下次写入时清理，不删除其他来源临时文件。
+
+### 逐项行为与真实故障证据
+
+| 契约 | 当前测试证据 |
+| --- | --- |
+| 注册/两类分派/策略/输入 | test_github_tasks 的 registered_dispatch_real_worker_receipt_and_replay、registered_input_forbids_unknown_fields、task_requires_core_execution_context；真实 SQLite/Worker/Executor，默认 2 次重试、5/60 秒、300 秒快照 |
+| 同意图与独立刷新 | same_intent_and_different_refresh_ids：并发相同 UUID 只有一个核心 Job；不同 UUID 保持独立，配置冲突拒绝 |
+| 基线及代次 | rebaseline_once_and_stale_pending_job、prepare_intent_and_generation_roll_back_together、completed_old_generation_reexports_without_credentials：真实 trigger 回滚代次与意图，旧未完成拒绝、旧完成重建且输入冲突拒绝 |
+| 提交核对 | submission_reconciliation_never_blindly_resubmits、query_failure_keeps_intent_no_second_job、reconcile_checks_complete_input_and_ambiguity、reconcile_paginates_public_jobs、reconcile_explicit_job_id_and_wrong_task：真实核心提交后注入应答不确定/关联故障、get/list 失败、完整输入/任务/重复身份冲突、跨 100 项分页 |
+| 六命令与真实注册表加载 | test_github_entry_processes 的 six_commands_and_actual_core_cli_registry：两来源各自真实业务 init/submit/reconcile/show/export/direct，原核心 CLI Worker 加载正式 registry 并成功 |
+| 提交持久阶段退出 | real_submit_exit_and_public_reconciliation：意图事务后与真实核心 submit 后/关联前分别 SIGKILL；前者零 Job 保持待核对，后者公开查询关联唯一 Job，重复命令不增加 Job |
+| 业务 commit 后核心成功前退出 | real_sigkill_after_business_commit_before_success_recovers_same_job：两来源均在导出 replace 前屏障；业务已提交、旧文件完整、核心 RUNNING；真实 SIGKILL 后新 CLI Worker 同 Job 第二尝试 SUCCESS，历史 INTERRUPTED/SUCCESS，网络请求日志、覆盖、变化及实体/版本计数保持一致 |
+| 导出故障与原子性 | export_failure_after_commit_recovers_without_network、atomic_replace_failure_preserves_old_file_and_cleans_temporary、export_thread_repeated_cancel_holds_source_lock、export_scenarios_do_not_change_business：故障不回滚、完成重试不采集、旧文件完整、取消等待真实线程、标签不改业务 |
+| 来源隔离与检查点 | worker_source_failure_isolation_and_incomplete_diagnostics、direct_failure_isolation_and_fresh_execution_identity、task_source_lock_covers_export_and_next_checkpoint_read：失败来源 RETRY_WAIT、成功来源独立提交；导出屏障内第二同源不发网络，解锁后读第一成功检查点 |
+| 超时与信号 | http_total_timeout_records_safe_failure_and_keeps_checkpoint；real_worker_repeated_signals_wait_for_http_cleanup：两来源实际 HTTP 总等待超时；分别真实 SIGINT/SIGTERM 及重复信号，HTTP 清理屏障期间仍 RUNNING/持锁，完成清理才持久 INTERRUPTED |
+| 查询、隐私与可追溯 | unknown_identities_fail_explicitly、uncommitted_failed_job_show_is_explicit、entity_and_version_counts_are_independent、source_fingerprint_without_git_commit：未知身份非零、失败状态明确、假敏感内容/完整目录不进入公开输出；一实体两版本，无 Git Commit 指纹随源码变化 |
+
+全量继续复验 G01 的 HTTP/分页/锁/冷却/事务/取消，G02 项目共同完整性及 G03 完整 Issue 增量，
+以及全部核心 SQLite、CLI、Worker、有限重试、超时、重复取消、信号和崩溃恢复。
+所有本任务子进程在 finally 终止并 communicate 回收；业务子进程显式设置项目根 PYTHONPATH。
+
+### 实际检查记录
+
+以下 uv 命令均设置 UV_OFFLINE=true、UV_CACHE_DIR="$PWD/.cache/uv"；记录真实退出码。
+
+| 检查 | 命令 | 结果 |
+| --- | --- | --- |
+| 同步 | uv sync --locked --extra github | 0；33 个包解析、32 个包审核 |
+| 修改前全量 | uv run --locked --extra github pytest -q --basetemp=/tmp/taskforge-g04-before | 0；795 passed，144.65 秒 |
+| 专项首轮 | uv run --locked --extra github pytest tests/test_github_tasks.py -x -q --basetemp=/tmp/taskforge-g04-tasks | 1；31 passed，1 failed；Issue 夹具时间晚于实际观察上界，修正为明确历史时间并增加非空实体断言 |
+| 两类入口/进程 | uv run --locked --extra github pytest tests/test_github_tasks.py tests/test_github_entry_processes.py -x -q --basetemp=/tmp/taskforge-g04-entry | 0；41 passed，32.01 秒 |
+| 扩展专项 | uv run --locked --extra github pytest tests/test_github_tasks.py tests/test_github_entry_processes.py -x -q --basetemp=/tmp/taskforge-g04-expanded | 0；46 passed，31.54 秒 |
+| 首轮全量 | uv run --locked --extra github pytest -q --basetemp=/tmp/taskforge-g04-full | 0；846 passed，177.22 秒 |
+| 最终专项 | uv run --locked --extra github pytest tests/test_github_tasks.py tests/test_github_entry_processes.py -q --basetemp=/tmp/taskforge-g04-final-entry | 0；52 passed，35.52 秒 |
+| 最终全量 | uv run --locked --extra github pytest -q --basetemp=/tmp/taskforge-g04-final-full | 0；847 passed，172.66 秒；795 既有 + 52 新增，无告警 |
+| Ruff | uv run --locked --extra github ruff check . | 0；All checks passed |
+| 格式 | uv run --locked --extra github ruff format --check . | 0；最终 82 files already formatted |
+| strict | uv run --locked --extra github mypy --strict src/taskforge integrations | 0；32 个源码文件通过 |
+| 构建 | uv build | 0；sdist 及从 sdist 构建的 wheel；交接与最后凭据测试定稿后再次构建 |
+| 实际归档 | 标准库 tarfile/zipfile 逐字节核对 | 0；初次 65、最终 66 个业务/配置/测试/文档文件匹配，包含 G05 prompt；wheel 只含核心、py.typed、CLI 与包元数据 |
+| 保护文件 | T10 核心/示例 SHA-256；依赖/历史收据与 HEAD 比较 | 0；18 指纹一致，保护文件不变 |
+
+初期 Ruff 行长/导入及 mypy JsonValue 容器类型诊断已修复，保持 strict。
+最终全量 847 项通过；G04 验收后创建 G05 prompt，交接定稿后再次构建并逐字节核对归档。
+最后补强真实 CLI 无凭据验证：屏蔽 GH_TOKEN/GITHUB_TOKEN 并将 PATH 指向不存在的工具目录，
+submit/direct 均返回 AuthenticationError，意图和核心 Job 均为空；不读取个人 gh 认证。
+实际命令 uv run --locked --extra github pytest
+ tests/test_github_entry_processes.py::test_cli_input_unknown_source_and_missing_credentials_fail
+ -q --basetemp=/tmp/taskforge-g04-credential-cli，退出码 0，1 passed，2.37 秒。
+该补强只增加已有测试断言，生产源码与最终 847 项回归版本一致。
+
+### 限制、清理与交接
+
+G04 证明受控 HTTP 下的入口与一致性恢复，不证明真实远端权限/兼容性、完整历史或恰好执行一次。
+G05 七来源真实基线/重复刷新、两个技能来源固定真实历史重放、正常/故障 direct 各三次对照
+及最终复现文档仍待完成；场景标签、当前受控故障或已有绿色测试不能替代这些证据。
+[README](../README.md)、架构、实施/接入计划及 [G05 prompt](prompts/G05.md) 已同步。
+本任务 pytest 临时根已清理，全部真实子进程已在 finally 回收；保留正常 dist 与工具缓存。
+核心源码、公共接口、依赖、历史收据与三份无关用户文档保持原样；未实施 G05、未创建 Git Commit。
+
+### G04 Git 提交
+
+G04 验收后，用户追加要求创建 Git Commit。提交包含 github.refresh 注册、六个业务命令、
+公开提交核对、原子收据/索引导出、必要业务存储接口、52 项新增行为测试及 G05 交接文档。
+此前未创建提交的记录保留为验收阶段历史；G05 和整体真实 GitHub 接入仍待验收。
+
+提交准备只同步文档提交状态，生产实现与通过 847 项全量测试的版本一致，
+最后补强的真实 CLI 无凭据断言已单独通过。文档定稿后重新构建并逐字节核对实际归档，
+核心、依赖、历史收据及三份无关 Obsidian/RSS 文档保持原样，不将无关文档纳入提交。

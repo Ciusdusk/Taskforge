@@ -5,6 +5,7 @@ from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
+from uuid import UUID
 
 import aiosqlite
 from pydantic import JsonValue
@@ -68,6 +69,12 @@ class CachedResponse:
     etag: str | None
     body: JsonValue
     link: str
+
+
+@dataclass(frozen=True)
+class SubmissionIntent:
+    input: RefreshInput
+    job_id: str | None
 
 
 class BusinessStore:
@@ -152,37 +159,82 @@ class BusinessStore:
 
     async def register_source(self, source: Source, *, rebaseline: bool = False) -> SourceState:
         async def write(connection: aiosqlite.Connection) -> SourceState:
-            row = await self._one(
-                connection,
-                """SELECT g.generation,g.baseline_key,g.checkpoint FROM sources s
-                   JOIN generations g ON s.source_id=g.source_id AND s.generation=g.generation
-                   WHERE s.source_id=?""",
-                (source.source_id,),
+            return await self._register_source(connection, source, rebaseline)
+
+        return await self._write(write)
+
+    async def _register_source(
+        self, connection: aiosqlite.Connection, source: Source, rebaseline: bool
+    ) -> SourceState:
+        row = await self._one(
+            connection,
+            """SELECT g.generation,g.baseline_key,g.checkpoint FROM sources s
+               JOIN generations g ON s.source_id=g.source_id AND s.generation=g.generation
+               WHERE s.source_id=?""",
+            (source.source_id,),
+        )
+        generation = 1 if row is None else int(str(row[0]))
+        if row is not None and row[1] != source.baseline_key() and not rebaseline:
+            raise GenerationError("Source identity changed; explicit rebaseline required")
+        if row is not None and rebaseline:
+            generation += 1
+        if row is None:
+            await connection.execute("INSERT INTO sources VALUES (?,?)", (source.source_id, 1))
+        if row is None or rebaseline:
+            await connection.execute(
+                "INSERT INTO generations VALUES (?,?,?,?,NULL)",
+                (source.source_id, generation, source.baseline_key(), source.model_dump_json()),
             )
-            generation = 1 if row is None else int(str(row[0]))
-            if row is not None and row[1] != source.baseline_key() and not rebaseline:
-                raise GenerationError("Source identity changed; explicit rebaseline required")
-            if row is not None and rebaseline:
-                generation += 1
-            if row is None:
-                await connection.execute("INSERT INTO sources VALUES (?,?)", (source.source_id, 1))
-            if row is None or rebaseline:
-                await connection.execute(
-                    "INSERT INTO generations VALUES (?,?,?,?,NULL)",
-                    (source.source_id, generation, source.baseline_key(), source.model_dump_json()),
+            await connection.execute(
+                "UPDATE sources SET generation=? WHERE source_id=?",
+                (generation, source.source_id),
+            )
+            checkpoint = None
+        else:
+            await connection.execute(
+                "UPDATE generations SET config=? WHERE source_id=? AND generation=?",
+                (source.model_dump_json(), source.source_id, generation),
+            )
+            checkpoint = None if row[2] is None else json.loads(str(row[2]))
+        return SourceState(source, generation, checkpoint)
+
+    async def prepare_intent(
+        self, source: Source, refresh_id: UUID, *, rebaseline: bool = False
+    ) -> tuple[RefreshInput, bool]:
+        """Atomically create the generation and intent; an existing identity never advances it."""
+
+        async def write(connection: aiosqlite.Connection) -> tuple[RefreshInput, bool]:
+            row = await self._one(
+                connection, "SELECT input FROM intents WHERE refresh_id=?", (str(refresh_id),)
+            )
+            if row is not None:
+                data = RefreshInput.model_validate_json(str(row[0]))
+                if (
+                    data.source != source
+                    or data.state_directory != self.directory
+                    or data.operation != ("rebaseline" if rebaseline else "refresh")
+                ):
+                    raise StateError("refresh_id already belongs to another input")
+                return data, False
+            if (
+                await self._one(
+                    connection, "SELECT 1 FROM sources WHERE source_id=?", (source.source_id,)
                 )
-                await connection.execute(
-                    "UPDATE sources SET generation=? WHERE source_id=?",
-                    (generation, source.source_id),
-                )
-                checkpoint = None
-            else:
-                await connection.execute(
-                    "UPDATE generations SET config=? WHERE source_id=? AND generation=?",
-                    (source.model_dump_json(), source.source_id, generation),
-                )
-                checkpoint = None if row[2] is None else json.loads(str(row[2]))
-            return SourceState(source, generation, checkpoint)
+                is None
+            ):
+                raise StateError("Source must be initialized before submission")
+            state = await self._register_source(connection, source, rebaseline)
+            data = RefreshInput(
+                refresh_id=refresh_id,
+                state_directory=self.directory,
+                source=source,
+                source_generation=state.generation,
+                operation="rebaseline" if rebaseline else "refresh",
+            )
+            await connection.execute(
+                "INSERT INTO intents VALUES (?,?,NULL)", (str(refresh_id), data.model_dump_json())
+            )
+            return data, True
 
         return await self._write(write)
 
@@ -231,6 +283,126 @@ class BusinessStore:
             )
 
         await self._write(write)
+
+    async def intent(self, refresh_id: str) -> SubmissionIntent | None:
+        async def read(connection: aiosqlite.Connection) -> SubmissionIntent | None:
+            row = await self._one(
+                connection, "SELECT input,job_id FROM intents WHERE refresh_id=?", (refresh_id,)
+            )
+            return (
+                None
+                if row is None
+                else SubmissionIntent(
+                    RefreshInput.model_validate_json(str(row[0])),
+                    None if row[1] is None else str(row[1]),
+                )
+            )
+
+        return await self._read(read)
+
+    async def intents(self) -> tuple[SubmissionIntent, ...]:
+        async def read(connection: aiosqlite.Connection) -> tuple[SubmissionIntent, ...]:
+            async with connection.execute(
+                "SELECT input,job_id FROM intents ORDER BY refresh_id"
+            ) as c:
+                return tuple(
+                    SubmissionIntent(
+                        RefreshInput.model_validate_json(str(row[0])),
+                        None if row[1] is None else str(row[1]),
+                    )
+                    for row in await c.fetchall()
+                )
+
+        return await self._read(read)
+
+    async def source_ids(self) -> tuple[str, ...]:
+        async def read(connection: aiosqlite.Connection) -> tuple[str, ...]:
+            async with connection.execute("SELECT source_id FROM sources ORDER BY source_id") as c:
+                return tuple(str(row[0]) for row in await c.fetchall())
+
+        return await self._read(read)
+
+    async def batch_ids(self, source_id: str) -> tuple[str, ...]:
+        async def read(connection: aiosqlite.Connection) -> tuple[str, ...]:
+            async with connection.execute(
+                "SELECT refresh_id FROM batches WHERE source_id=? ORDER BY rowid", (source_id,)
+            ) as c:
+                return tuple(str(row[0]) for row in await c.fetchall())
+
+        return await self._read(read)
+
+    async def attempts(self, refresh_id: str) -> list[JsonValue]:
+        async def read(connection: aiosqlite.Connection) -> list[JsonValue]:
+            async with connection.execute(
+                "SELECT execution_id,number,diagnostic FROM attempts "
+                "WHERE refresh_id=? ORDER BY rowid",
+                (refresh_id,),
+            ) as c:
+                return [
+                    {
+                        "execution_id": str(row[0]),
+                        "number": int(row[1]),
+                        "diagnostic": None if row[2] is None else str(row[2]),
+                    }
+                    for row in await c.fetchall()
+                ]
+
+        return await self._read(read)
+
+    async def batch(self, refresh_id: str) -> dict[str, JsonValue]:
+        """Read one consistent snapshot; counts of entities and versions stay separate."""
+
+        async def read(connection: aiosqlite.Connection) -> dict[str, JsonValue]:
+            await connection.execute("BEGIN")
+            row = await self._one(
+                connection,
+                "SELECT input,checkpoint,coverage FROM batches WHERE refresh_id=?",
+                (refresh_id,),
+            )
+            if row is None:
+                raise StateError("Unknown completed refresh")
+            data = RefreshInput.model_validate_json(str(row[0]))
+            checkpoint = json.loads(str(row[1]))
+            result: dict[str, JsonValue] = {
+                "refresh_id": refresh_id,
+                "input": data.model_dump(mode="json"),
+                "checkpoint": checkpoint,
+                "coverage": json.loads(str(row[2])),
+            }
+            for table, columns in (
+                ("changes", "repository_id,kind,remote_id,fingerprint,change_kind,detail"),
+                ("skill_changes", "repository_id,before_sha,after_sha,path,kind,blob_sha"),
+                ("attempts", "execution_id,number,diagnostic"),
+            ):
+                async with connection.execute(
+                    f"SELECT {columns} FROM {table} WHERE refresh_id=? ORDER BY rowid",
+                    (refresh_id,),
+                ) as c:
+                    keys = columns.split(",")
+                    result[table] = [
+                        {
+                            key: json.loads(value) if key == "detail" else value
+                            for key, value in zip(keys, item, strict=True)
+                        }
+                        for item in await c.fetchall()
+                    ]
+            counts: dict[str, JsonValue] = {}
+            kinds = ("issue",) if data.source.kind == "issues" else ("commit", "release")
+            for table in ("entities", "versions"):
+                total = 0
+                for kind in kinds:
+                    count = await self._one(
+                        connection,
+                        f"SELECT count(*) FROM {table} WHERE repository_id=? AND kind=?",
+                        (checkpoint["repository_id"], kind),
+                    )
+                    assert count is not None
+                    total += int(str(count[0]))
+                counts[table] = total
+            result["repository_counts"] = counts
+            return result
+
+        return await self._read(read)
 
     async def record_attempt(
         self, refresh_id: str, execution_id: str, number: int, diagnostic: str | None = None

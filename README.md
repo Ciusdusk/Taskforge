@@ -71,7 +71,7 @@ T02—T10 已加入实际行为测试，包括真实 SQLite、事务故障、单
 
 G01 提供 `integrations/github/` 中的严格配置、认证、HTTP、独立业务存储和锁基础。
 G02 已提供项目 Commit、Release 与技能采集，G03 已提供 Issue 增量采集；
-`github.refresh` 注册表和业务命令入口留给 G04，七来源真实验收留给 G05。
+G04 已验收 `github.refresh` 注册表、业务命令、提交核对和可重建导出。七来源真实验收留给 G05。
 默认七来源见 `integrations/github/default-sources.json`，配置与输入不保存凭据。
 
 在项目根目录同步可选依赖：
@@ -147,7 +147,76 @@ uv sync --locked --extra github
 
 Issue 覆盖保存前检查点、执行身份、观察上界、实际请求数、筛选快照、分页与排除/延后/旧快照计数。
 达到 100 个匹配对象的初始窗口会显式关闭迭代器，`complete` 只表示有限基线契约通过。
-当前 795 项全量回归及分发检查通过，下一独立会话见 [G04 prompt](docs/prompts/G04.md)。
+当前 847 项全量回归及质量/分发检查通过，下一独立会话见 [G05 prompt](docs/prompts/G05.md)。
+
+### GitHub 业务命令与恢复
+
+在项目根目录执行业务命令。`init` 不需要凭据；`submit` 和 `direct` 在提交前读取凭据，
+Worker 执行时重新读取，凭据不进入任务输入或数据库。以下命令会采集真实 GitHub，
+G04 验收使用受控 HTTP；七来源远端兼容性和真实对照留给 G05。
+
+```bash
+uv run --locked --extra github python -m integrations.github init
+uv run --locked --extra github python -m integrations.github submit --source mattpocock-skills
+PYTHONPATH="$PWD" uv run --locked --extra github taskforge worker \
+  --database .taskforge/github/tasks.sqlite --registry integrations.github.tasks:registry
+```
+
+Worker 使用现有核心 CLI，队列空时仍轮询；Ctrl-C 或 SIGTERM 请求协作停机。
+另一个终端可执行：
+
+```bash
+uv run --locked --extra github python -m integrations.github reconcile
+uv run --locked --extra github python -m integrations.github show --source mattpocock-skills
+uv run --locked --extra github python -m integrations.github export --source mattpocock-skills
+```
+
+六个业务命令都支持 `--state-directory`，默认 `.taskforge/github/`。
+`init/submit/direct` 支持 `--config PATH`，默认读取七来源配置；`submit/direct` 省略
+`--source` 时处理全部配置来源，单个来源失败仍返回其他来源的结果。
+
+| 命令 | 行为与输出 |
+| --- | --- |
+| `init` | 显式建立 `tasks.sqlite`、`business.sqlite`，登记来源；返回初始化状态和来源 ID |
+| `submit` | 每来源保存意图、调用公开核心提交、关联 Job；返回 `source/refresh_id/job_id/status` |
+| `reconcile` | 用核心公开 `get/list` 核对完整输入；支持 `--refresh-id UUID`，可加 `--job-id ID`；零匹配保持待核对 |
+| `show` | 来源代次/检查点、批次覆盖/变化/诊断、关联及核心 Job/Attempt；支持 `--source`、`--refresh-id`，未知身份报错 |
+| `export` | 持来源锁重建 JSON 收据和 Markdown 索引；返回相对路径；支持 `--source`、`--scenario` |
+| `direct` | 使用独立 `direct-UUID` 执行身份复用采集、门控、锁和导出；返回来源/批次/是否新提交，供 G05 隔离对照 |
+
+业务命令成功退出码 0；失败或待核对退出码 1，输入语法错误由 Typer 返回 2。
+输出使用 JSON，错误只报告异常类型；`show` 的成功查询可包含明确的 FAILED Job 状态。
+所有命令在项目源码中运行，业务模块不进入 wheel。
+
+`submit/direct` 默认每次生成新 UUID，表示新的刷新；同一意图重试须指定相同
+`--refresh-id UUID`，且只能选一个来源。相同输入不会盲目创建第二个 Job；
+来源配置、目录或操作冲突明确拒绝。不同 UUID 保持独立，不按来源误合并。
+`--rebaseline` 显式建立新代次，与意图在同一业务事务中保存；重复同一意图不再建立代次。
+配置更换仓库、类型或筛选需该选项，调整预算保留检查点；旧代次历史保留。
+
+提交应答不确定或核心提交后关联前退出时，执行 `reconcile`，按 Job ID 或稳定 UUID
+分页核对任务名及完整输入。查询失败、重复匹配或输入冲突不会重新 submit。
+只有意图而查不到 Job 时保持 `pending_reconciliation`；先调查原提交状态，
+确需新操作时显式采用新 UUID，保留旧意图。`direct` 拒绝已经关联 Job 的意图。
+
+业务完整批次与核心 SUCCESS 分属两个事务。任务重试先核对完整输入及业务完成标记，
+已完成时无须凭据或 HTTP，直接修复导出；未完成时从最新成功检查点采集。
+真实 SIGKILL 实验已证明两类来源的同 Job 恢复无第二次网络或业务变化。
+来源锁持续到 HTTP/数据库/凭据子进程及导出线程实际清理结束；重复取消不提前解锁。
+
+收据为 `receipts/<refresh_id>.json`，索引为 `indexes/<source_id>.md`。
+收据保存 UTC、采集时源码 Git HEAD（可空）和相对文件/聚合 SHA-256、配置指纹、执行身份、
+前后检查点、请求数、完整覆盖、变化及耗时。`batch_counts` 是本次载荷计数，
+`repository_counts` 是导出时该仓库/来源类型的持久实体与版本总数；一实体可有多个版本。
+`coverage.elapsed_seconds` 截止业务提交前，包含采集与源码指纹计算；完整实验计时留给 G05。
+公开输出省略完整目录、核心输入 JSON 和异常文本/traceback；源码文件路径均为相对路径。
+
+默认 `scenario` 为 `initialization/natural_update`；隔离实验可用
+`export --scenario historical_replay` 或 `fault_experiment` 标注本次导出集合，
+`collection_scenario` 保留原始采集分类。标注不会执行历史重放或证明实验完成。
+任务内导出在核心 SUCCESS 之前，收据的核心状态可能为 RUNNING；终态后再次 `export`
+更新核心快照。每个文件以临时写入、fsync 和原子替换保存；索引与多个收据不是一笔文件事务。
+导出失败保留已提交业务数据，重试或 `export` 可修复，重复重建不改变业务变化。
 
 ## CLI
 
